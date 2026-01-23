@@ -31,7 +31,7 @@ Here are some reverse-engineered utilizations for a few popular apps.
 | App       | Title         | Subtitle       | Info    | Text      |
 |-----------|---------------|----------------|---------|-----------|
 | Gmail     | Email subject | Google account | (empty) | Full text |
-| Messaging |               |                |         |           |
+| Messaging | Sender        | SIM slot       | (empty) | Full text |
 | WhatsApp  |               |                |         |           |
 | KakaoTalk |               |                |         |           |
 
