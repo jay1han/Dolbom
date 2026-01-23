@@ -52,7 +52,9 @@ fun HelpDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 Text(
                     text = stringResource(R.string.android_github),
@@ -89,7 +91,9 @@ fun HelpDialog(
             
                 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -102,7 +106,7 @@ fun HelpDialog(
                         onClick = { if (dumpFlow > 0) showDump = true }
                     ) {
                         Text(
-                            text = "Dump %d".format(dumpFlow),
+                            text = stringResource(R.string.format_dump).format(dumpFlow),
                             fontSize = Const.smallSize
                         )
                     }
@@ -124,10 +128,14 @@ fun DumpDialog(
         }
     ) {
         Card(
-            modifier = Modifier.fillMaxSize().padding(0.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp)
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().padding(4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
             ) {
                 items(
                     items = dump,
@@ -185,10 +193,10 @@ val PreviewDump = listOf(
             FilterType.Subtitle to mapOf(
                 "People" to "You"
             ),
-            FilterType.Info to mapOf(
+            FilterType.Short to mapOf(
                 "Info" to "Now"
             ),
-            FilterType.Text to mapOf(
+            FilterType.Long to mapOf(
                 "Text" to "World"
             ),
         )

@@ -52,7 +52,9 @@ fun HistoryDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
                     .verticalScroll(scrollState),
             ) {
                 Text(
@@ -66,7 +68,9 @@ fun HistoryDialog(
                             " (${(clockNow - lastReceived).formatDurationSeconds()})",
                     fontSize = Const.textSize,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
                 LaunchedEffect(clockNow) {
                     delay(1000)
@@ -96,9 +100,9 @@ fun HistoryDialog(
                             historyData.cycleDate.formatTime(),
                             (clockNow - historyData.cycleDate).formatDurationMinutes()
                         ))
+                    historyText.append("\n")
                     if (historyData.cycleRate > 0f) {
                         historyText.apply {
-                            append("\n")
                             append(stringResource(R.string.format_rate)
                                 .format(
                                     historyData.cycleRate,
@@ -110,10 +114,10 @@ fun HistoryDialog(
                         if (estimate > 0) {
                             historyText.append(stringResource(R.string.format_estimate).format(estimate))
                         } else {
-                            historyText.append("Please recharge")
+                            historyText.append(stringResource(R.string.low_estimate))
                         }
-                    }
-                } else historyText.append("No past data")
+                    } else historyText.append(stringResource(R.string.not_enough_data))
+                } else historyText.append(stringResource(R.string.no_past_data))
 
                 Text(
                     text = historyText.toString(),
@@ -153,7 +157,9 @@ fun ClearBatteryDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
             ) {
                 if (!historyData.historyDate.isDistantPast) {
                     val duration = Clock.System.now() - historyData.historyDate
@@ -166,13 +172,17 @@ fun ClearBatteryDialog(
                     Text(
                         text = historyText,
                         fontSize = Const.textSize,
-                        modifier = Modifier.fillMaxWidth().padding(10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
                     )
                 } else {
                     Text(
                         text = stringResource(R.string.no_history),
                         fontSize = Const.textSize,
-                        modifier = Modifier.fillMaxWidth().padding(10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
                     )
                 }
 
@@ -180,7 +190,9 @@ fun ClearBatteryDialog(
                     text = stringResource(R.string.clear_battery_history),
                     fontSize = Const.titleSize,
                     lineHeight = Const.titleSize * 1.2,
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
                 )
 
                 Row(

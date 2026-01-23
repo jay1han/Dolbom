@@ -150,7 +150,7 @@ object History {
                 else {
                     val discharge = hist.cycleLevel - level
                     val duration = now - hist.cycleDate
-                    if (discharge >= 10 && duration.inWholeSeconds > 3600) {
+                    if (discharge >= 5 && duration.inWholeSeconds > 12 * 3600) {
                         val inDays = duration.inWholeSeconds.toFloat() / (3600 * 24)
                         val dischargeRate = discharge.toFloat() / inDays
                         

@@ -164,8 +164,8 @@ object Indicators
 enum class FilterType {
     Title { override val r = R.string.filter_title },
     Subtitle { override val r = R.string.filter_sub },
-    Info { override val r = R.string.filter_info },
-    Text { override val r = R.string.filter_text };
+    Short { override val r = R.string.filter_short },
+    Long { override val r = R.string.filter_long };
     abstract val r: Int
     
     fun mapExtrasForFilter(
@@ -183,13 +183,13 @@ enum class FilterType {
                 Notification.EXTRA_SUB_TEXT,
             ))
             
-            Info -> return mapExtrasForList(notification, listOf(
+            Short -> return mapExtrasForList(notification, listOf(
                 Notification.EXTRA_SUMMARY_TEXT,
                 Notification.EXTRA_INFO_TEXT,
+                Notification.EXTRA_TEXT,
             ))
             
-            Text -> return mapExtrasForList(notification, listOf(
-                Notification.EXTRA_TEXT,
+            Long -> return mapExtrasForList(notification, listOf(
                 Notification.EXTRA_TEXT_LINES,
                 Notification.EXTRA_BIG_TEXT,
             ))
@@ -203,7 +203,7 @@ enum class FilterType {
             for (filterType in FilterType.entries) {
                 if (index == filterType.ordinal) return filterType
             }
-            return Info
+            return Short
         }
         
         private fun mapExtrasForList(
@@ -217,7 +217,7 @@ enum class FilterType {
         }
         
         val Extras = mapOf(
-            Info to listOf(
+            Short to listOf(
                 "ticker"
             ),
             Title to listOf(
@@ -228,7 +228,7 @@ enum class FilterType {
             Subtitle to listOf(
                 Notification.EXTRA_PEOPLE_LIST,
             ),
-            Text to listOf(
+            Long to listOf(
                 Notification.EXTRA_TEXT,
                 Notification.EXTRA_TEXT_LINES,
                 Notification.EXTRA_BIG_TEXT,
@@ -258,7 +258,7 @@ val PreviewIndicators = listOf(
     SingleIndicator("com.whatsapp", letter = 'W'),
     SingleIndicator("com.kakao.talk", letter = ' ', ignore = true),
     SingleIndicator("com.kakao.talk", filterText = "Bob", letter = 'b'),
-    SingleIndicator("com.kakao.talk", "talk", "Alice", FilterType.Text, 'b'),
+    SingleIndicator("com.kakao.talk", "talk", "Alice", FilterType.Long, 'b'),
 )
 
 val PreviewActiveList = listOf(

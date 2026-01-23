@@ -28,12 +28,12 @@ There are 3 levels of filtering.
 
 Here are some reverse-engineered utilizations for a few popular apps.
 
-| App       | Title         | Subtitle       | Info    | Text      |
-|-----------|---------------|----------------|---------|-----------|
-| Gmail     | Email subject | Google account | (empty) | Full text |
-| Messaging | Sender        | SIM slot       | (empty) | Full text |
-| WhatsApp  |               |                |         |           |
-| KakaoTalk |               |                |         |           |
+| App       | Title  | Subtitle       | Info    | Text      |
+|-----------|--------|----------------|---------|-----------|
+| Gmail     | Sender | Account | Subject | Full text |
+| Messaging | Sender | SIM slot       | (empty) | Full text |
+| WhatsApp  |        |                |         |           |
+| KakaoTalk |        |                |         |           |
 
 Ignoring a specific configuration means that no indicator will be shown.
 You can also mix ignored notifications at some levels with
