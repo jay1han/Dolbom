@@ -106,6 +106,12 @@ class Protocol
                 pebbleDict.addInt8(DictKey.PHONE_PLUG.ordinal, isPlugged)
                 pebbleDict.addInt8(DictKey.PHONE_BATT.ordinal, percent)
             }
+            
+            MsgType.PHONE_DND.ordinal -> {
+                val dndState = intent.getIntExtra(Const.EXTRA_PHONE_DND, 0).toByte()
+                suppress = isSameOrUpdate(DictKey.PHONE_DND, dndState)
+                pebbleDict.addInt8(DictKey.PHONE_DND.ordinal, dndState)
+            }
     
             MsgType.WIFI.ordinal -> {
                 val ssid = (intent.getStringExtra(Const.EXTRA_WIFI) ?: "").take(Const.MAX_LEN_ID)

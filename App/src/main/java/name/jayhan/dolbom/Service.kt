@@ -23,6 +23,7 @@ class PebbleService:
     private lateinit var bluetoothReceiver: BluetoothReceiver
     private lateinit var wifiCallback: WifiCallback
     private lateinit var phoneCallback: PhoneCallback
+    private lateinit var zenRule: ZenRule
 
     private val receiver = Receiver()
     private lateinit var reviveIntent: PendingIntent
@@ -62,6 +63,7 @@ class PebbleService:
             addAction(Const.INTENT_STOP)
             addAction(Const.INTENT_UPDATE)
             addAction(Const.INTENT_REFRESH)
+            addAction(Const.INTENT_DND)
             addAction(Const.INTENT_SEND_PEBBLE)
         }
         context.registerReceiver(receiver, filter,RECEIVER_EXPORTED)
@@ -131,6 +133,7 @@ class PebbleService:
         Pebble.init(context)
         
         stopModules()
+        zenRule = ZenRule(context)
         phoneFinder = PhoneFinder(context)
         batteryReceiver = BatteryReceiver(context)
         bluetoothReceiver = BluetoothReceiver(context)
@@ -142,6 +145,7 @@ class PebbleService:
     fun refreshService() {
         Log.v(Const.TAG, "RefreshService")
         protocol.reset()
+        zenRule.refresh()
         batteryReceiver.refresh()
         bluetoothReceiver.refresh()
         wifiCallback.refresh()
@@ -151,11 +155,15 @@ class PebbleService:
     
     private fun stopService() {
         stopForeground(STOP_FOREGROUND_REMOVE)
-        notiMan.deleteNotificationChannel(Const.CHANNEL_ID)
-        context.unregisterReceiver(receiver)
+        if (this::context.isInitialized) {
+            Pebble.deinit(context)
+            notiMan.deleteNotificationChannel(Const.CHANNEL_ID)
+            context.unregisterReceiver(receiver)
+        }
     }
     
     private fun stopModules() {
+        if (this::zenRule.isInitialized) zenRule.deinit()
         if (this::batteryReceiver.isInitialized) batteryReceiver.deinit()
         if (this::bluetoothReceiver.isInitialized) bluetoothReceiver.deinit()
         if (this::wifiCallback.isInitialized) wifiCallback.deinit()
@@ -192,6 +200,10 @@ class PebbleService:
                 Const.INTENT_STOP -> {
                     Log.v(Const.TAG, "Intent: Stop service")
                     stopSelf()
+                }
+                
+                Const.INTENT_DND -> {
+                    zenRule.toggle()
                 }
                 
                 Const.INTENT_SEND_PEBBLE ->

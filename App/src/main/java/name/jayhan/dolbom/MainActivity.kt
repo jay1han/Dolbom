@@ -31,7 +31,7 @@ class AppStart:
         when (intent.action) {
             Intent.ACTION_BOOT_COMPLETED -> {
                 Log.v(Const.TAG, "Boot completed")
-                if (!Permissions.allGranted) {
+                if (Permissions.allGranted) {
                     val intent = Intent(context, PebbleService::class.java)
                     context.startForegroundService(intent)
                 }
@@ -42,6 +42,8 @@ class AppStart:
 
 class MainActivity :
     ComponentActivity() {
+
+    private lateinit var zenRule: ZenRule
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

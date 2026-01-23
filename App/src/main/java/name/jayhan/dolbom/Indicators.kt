@@ -212,8 +212,8 @@ enum class FilterType {
         ): Map<String, String> {
             // Kotlin's very sweet syntactic sugar
             return extraList.associateWith {
-                notification.extras.getCharSequence(it)?.toString()
-            }.filter { it.value != null } as Map<String, String>
+                notification.extras.getCharSequence(it, "").toString()
+            }.filter { it.value.isNotEmpty() }
         }
         
         val Extras = mapOf(

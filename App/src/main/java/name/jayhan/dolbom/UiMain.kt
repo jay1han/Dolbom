@@ -3,6 +3,8 @@
 package name.jayhan.dolbom
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -48,21 +52,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import name.jayhan.dolbom.ui.theme.PebbleTheme
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Composable
 fun AppScaffold(
     context: Context
 ) {
-    val watchInfo: WatchInfo by Pebble.infoFlow.collectAsState(WatchInfo())
-    val isConnected: Boolean by Pebble.isConnected.collectAsState(false)
-    val lastReceived: Instant by Pebble.lastReceived.collectAsState(Clock.System.now())
+    val watchInfo by Pebble.infoFlow.collectAsState(WatchInfo())
+    val isConnected by Pebble.isConnected.collectAsState(false)
+    val lastReceived by Pebble.lastReceived.collectAsState(Clock.System.now())
     val permissionsGranted by Permissions.grantFlow.collectAsState(Permissions.allGranted)
     val activeList by Notifications.activeFlow.collectAsState(emptyList())
     val allList by Notifications.allFlow.collectAsState(emptyList())
-    val tzWatch: String by Timezone.tzFlow.collectAsState("")
+    val tzWatch by Timezone.tzFlow.collectAsState("")
     val indicators by Indicators.allFlow.collectAsState(listOf())
-    val historyData: HistoryData by History.historyFlow.collectAsState(HistoryData())
+    val historyData by History.historyFlow.collectAsState(HistoryData())
+    val dndActive by Pebble.stateFlow.collectAsState(false)
+    val dndEnabled by Pebble.enabledFlow.collectAsState(true)
+    var showDnd by remember { mutableStateOf(false) }
     var showHistory by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
 
@@ -74,8 +80,10 @@ fun AppScaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
                 MainTopBar(context, isConnected, watchInfo,
+                    dndEnabled, dndActive,
                     onHelp = { showHelp = true },
-                    onHistory = {showHistory = true },
+                    onHistory = { showHistory = true },
+                    onDnd = { showDnd = true }
                 )
             },
         ) { innerPadding ->
@@ -84,17 +92,25 @@ fun AppScaffold(
                     watchInfo = watchInfo,
                     lastReceived = lastReceived,
                     historyData = historyData,
-                ) {
-                    showHistory = false
-                }
+                ) { showHistory = false }
             }
             
             if (showHelp) {
-                HelpDialog(
-                
-                ) {
-                    showHelp= false
-                }
+                HelpDialog { showHelp= false }
+            }
+            
+            if (showDnd) {
+                DndDialog(dndEnabled, dndActive,
+                    onClose = { showDnd = false },
+                    onJump = {
+                        showDnd = false
+                        context.sendBroadcast(
+//                            Intent(Settings.ACTION_CONDITION_PROVIDER_SETTINGS)
+//                            Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                            Intent(Settings.ACTION_ZEN_MODE_PRIORITY_SETTINGS)
+                        )
+                    },
+                )
             }
 
             MainPage(
@@ -116,8 +132,11 @@ fun MainTopBar(
     context: Context,
     isConnected: Boolean,
     watchInfo: WatchInfo,
+    dndEnabled: Boolean,
+    dndActive: Boolean,
     onHelp: ()-> Unit,
-    onHistory: () -> Unit
+    onHistory: () -> Unit,
+    onDnd: () -> Unit,
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -130,10 +149,25 @@ fun MainTopBar(
             )
         },
         title = {
-            Text(
-                text = watchInfo.modelString().ifEmpty { "Disconnected" },
-                fontSize = Const.titleSize
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { onDnd() }
+            ) {
+                Icon(
+                    painterResource(
+                        if (!dndEnabled) R.drawable.outline_do_not_disturb_off_24
+                        else if (dndActive) R.drawable.outline_do_not_disturb_on_total_silence_24
+                        else R.drawable.outline_do_not_disturb_on_24
+                    ),
+                    contentDescription = "Do not disturb",
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                        .scale(1.5f)
+                )
+                Text(
+                    text = watchInfo.modelString().ifEmpty { "Disconnected" },
+                    fontSize = Const.titleSize
+                )
+            }
         },
         actions = {
             if (isConnected) {
@@ -299,8 +333,10 @@ fun MainTopBarPreview() {
             LocalContext.current,
             isConnected = true,
             watchInfo = PreviewWatchInfo,
+            true, false,
             {},
             {},
+            {}
         )
     }
 }
@@ -313,8 +349,10 @@ fun MainTopBarDisconnected() {
             LocalContext.current,
             isConnected = false,
             watchInfo = WatchInfo(),
+            false, false,
             {},
             {},
+            {}
         )
     }
 }

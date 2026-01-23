@@ -181,7 +181,7 @@ void phone_bt(char *id, int charge, bool active) {
 
 void phone_dnd(bool quiet) {
     if (quiet != (dnd[0] != 0)) {
-        if (quiet) strcpy(dnd, "X");
+        if (quiet) strcpy(dnd, "Q");
         else dnd[0] = 0;
         changed[STOR_DND_4] = true;
         disp_set(disp_dnd, dnd);

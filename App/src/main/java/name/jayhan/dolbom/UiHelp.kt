@@ -25,8 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -128,14 +130,10 @@ fun DumpDialog(
         }
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp)
+            modifier = Modifier.fillMaxSize().padding(0.dp)
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
+                modifier = Modifier.fillMaxWidth().padding(4.dp)
             ) {
                 items(
                     items = dump,
@@ -164,7 +162,10 @@ fun DumpDialog(
                             if (value.isNotEmpty())
                                 Text(
                                     text = buildAnnotatedString {
-                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        withStyle(SpanStyle(
+                                            fontWeight = FontWeight.Bold,
+                                            textDecoration = TextDecoration.Underline,
+                                        )) {
                                             append("$name : ")
                                         }
                                         append(value)

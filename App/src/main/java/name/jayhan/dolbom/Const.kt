@@ -34,6 +34,7 @@ object Const {
     const val EXTRA_PHONE_CHG = "phone_chg"
     const val EXTRA_PHONE_PLUG = "phone_plug"
     const val EXTRA_PHONE_BATT = "phone_batt"
+    const val EXTRA_PHONE_DND = "phone_dnd"
     const val EXTRA_TZ_MIN = "tz_min"
     const val EXTRA_WIFI = "wifi"
     const val EXTRA_NET = "net"
@@ -57,6 +58,8 @@ object Const {
     const val INTENT_FINDING = "name.jayhan.dolbom.FINDING"
     const val INTENT_FOUND = "name.jayhan.dolbom.FOUND"
     const val INTENT_REPEAT = "name.jayhan.dolbom.REPEAT"
+    
+    const val INTENT_DND = "name.jayhan.dolbom.TOGGLE_DND"
     
     const val PREF_INDIC = "name.jayhan.dolbom.INDICATORS"
     const val PREF_HISTORY = "name.jayhan.dolbom.HISTORY"

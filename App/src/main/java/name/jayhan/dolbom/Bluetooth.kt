@@ -44,7 +44,7 @@ class BluetoothReceiver(
     
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onReceive(context: Context, intent: Intent) {
-        proxy.refresh()
+        proxy.rescan()
     }
     
     data class ConnectedDevice(
@@ -85,18 +85,18 @@ class BluetoothReceiver(
         override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
             if (profile == BluetoothProfile.A2DP) a2dpProxy = proxy as BluetoothA2dp
             else headsetProxy = proxy as BluetoothHeadset
-            refresh()
+            rescan()
         }
         
         @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
         override fun onServiceDisconnected(profile: Int) {
             if (profile == BluetoothProfile.A2DP) a2dpProxy = null
             else headsetProxy = null
-            refresh()
+            rescan()
         }
         
         @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
-        fun refresh() {
+        fun rescan() {
             var headsetDevice = ConnectedDevice()
             headsetProxy?.connectedDevices?.forEach {
                 headsetDevice = ConnectedDevice(

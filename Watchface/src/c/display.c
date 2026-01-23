@@ -24,7 +24,7 @@ static struct {
 } disp[disp_end] = {
     {NULL, {{0, 16},    {144, 31}}, 0xC0, 3, -1, Right , FONT_18},  //  disp_quiet
     {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_date
-    {NULL, {{0, -8},    {144, 31}}, 0xFF, 3, -1, Right , FONT_24},  //  disp_dnd !TODO
+    {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_dnd
     {NULL, {{0, 16},    {144, 51}}, 0xC0, 3, -1, Center, FONT_49},  //  disp_home
     {NULL, {{0, 69},    {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_noti
     {NULL, {{2, -8},    {142, 29}}, 0xFF, 3, -1, Left  , FONT_24},  //  disp_bton
@@ -44,7 +44,7 @@ static struct {
     GRect rect;
     uint8_t color;
 } bg[] = {
-    {NULL, {{0, 0},     {144, 21}}, 0xC0},
+    {NULL, {{0, 0},     {144, 22}}, 0xC0},
     {NULL, {{0, 74},    {144, 29}}, 0xC0},
     {NULL, {{0, 147},   {144, 22}}, 0xC0},
     {NULL, {{116, 103}, {28, 25}},  0x3F},  // disp_btc

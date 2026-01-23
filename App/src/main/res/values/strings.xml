@@ -114,5 +114,6 @@
     <string name="not_enough_data">Not enough data</string>
     <string name="no_past_data">No past data</string>
     <string name="format_dump">Dump %d</string>
+    <string name="dnd_description">Toggled via Pebble watch</string>
 
 </resources>

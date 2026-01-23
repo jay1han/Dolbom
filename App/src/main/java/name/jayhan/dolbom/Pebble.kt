@@ -104,6 +104,7 @@ private object AppDataReceiver:
                             context?.sendBroadcast(Intent(Const.INTENT_FIND))
                         }
                         ActionType.DND_TOGGLE.ordinal -> {
+                            context?.sendBroadcast(Intent(Const.INTENT_DND))
                         }
                     }
                 }
@@ -136,6 +137,8 @@ object Pebble
     private val clock = Clock.System
     val lastReceived = MutableStateFlow(Clock.System.now())
     private var lastSent = clock.now()
+    val enabledFlow = MutableStateFlow(false)
+    val stateFlow = MutableStateFlow(false)
 
     fun init(
         context: Context
@@ -153,7 +156,6 @@ object Pebble
         sendIntent(context, MsgType.WBATT) {}
     }
 
-    // TODO: unregister at onPause
     fun deinit(
         context: Context
     ) {

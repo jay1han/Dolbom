@@ -1,6 +1,7 @@
 package name.jayhan.dolbom
 
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -158,7 +159,10 @@ class SinglePermission(
         when (permission) {
             NOTIFICATION_LISTENER -> {
                 activity.startActivity(
-                    Intent(ACTION_LISTENER_SETTING))
+                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+                        .putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                            ComponentName(context, NotificationListener::class.java))
+                )
                 return
             }
             

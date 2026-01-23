@@ -10,7 +10,7 @@ There are 3 levels of filtering.
 
 2. By channel ID
 
-    We can only retrieve the channel ID (not its name), but this is useful for many apps,
+    We can only retrieve the channel ID (not its name), but this is useful for some apps,
     and matches what's shown in the notification setting screen.
     
 3. Other fields
@@ -19,21 +19,22 @@ There are 3 levels of filtering.
     mostly related to the presentation, not the content.
     However, we group these fields in 4 categories to make the filtering more useful.
     
-    | Category | Notification extras                         |
-    |----------|---------------------------------------------|
-    | Title    | `EXTRA_TITLE`<br>`EXTRA_CONVERSATION_TITLE` |
-    | Subtitle | `EXTRA_SUB_TEXT`<br>`EXTRA_PEOPLE_LIST`     |
-    | Info     | `EXTRA_INFO_TEXT`<br>`EXTRA_SUMMARY_TEXT`   |
-    | Text     | `EXTRA_TEXT`<br>`EXTRA_BIG_TEXT`            |
+    | Category | Notification extras                                              |
+    |----------|------------------------------------------------------------------|
+    | Title    | `EXTRA_TITLE`<br>`EXTRA_CONVERSATION_TITLE`<br>`EXTRA_TITLE_BIG` |
+    | Subtitle | `EXTRA_SUB_TEXT`<br>`EXTRA_PEOPLE_LIST`                          |
+    | Short    | `EXTRA_INFO_TEXT`<br>`EXTRA_SUMMARY_TEXT`<br>`EXTRA_TEXT`        |
+    | Long     | `EXTRA_BIG_TEXT`<br>`EXTRA_TEXT_LINES`                           |
 
 Here are some reverse-engineered utilizations for a few popular apps.
 
-| App       | Title  | Subtitle       | Info    | Text      |
-|-----------|--------|----------------|---------|-----------|
-| Gmail     | Sender | Account | Subject | Full text |
-| Messaging | Sender | SIM slot       | (empty) | Full text |
-| WhatsApp  |        |                |         |           |
-| KakaoTalk |        |                |         |           |
+| App              | Channel ID | Title                              | Subtitle | Short                              | Long                       |
+|------------------|------------|------------------------------------|----------|------------------------------------|----------------------------|
+| Gmail            | Account    | Sender name                        | Account  | Subject                            | Full text                  |
+| Messaging        |            | Sender                             | SIM slot | (empty)                            | Full text                  |
+| WhatsApp (Group) | Not useful | Group name with and withour sender | (empty)  | Full text, with and without sender |                            |
+| KakaoTalk        |            |                                    |          |                                    |                            |
+| Outlook          | Account    | Sender name                        | Account  | Subject and text                   | Subject and text (Unicode) |
 
 Ignoring a specific configuration means that no indicator will be shown.
 You can also mix ignored notifications at some levels with

@@ -115,58 +115,41 @@ fun EditIndicator(
                         }
                     }
 
+                    OutlinedTextField(
+                        enabled = !ignore,
+                        value = if (ignore) " " else newLetter.toString(),
+                        onValueChange = {
+                            newLetter = if (ignore) ' ' else acceptLetter(it)
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = Const.titleSize,
+                            textAlign = TextAlign.Center,
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            autoCorrectEnabled = false,
+                        ),
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                    )
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
+                        modifier = Modifier.padding(8.dp)
                     ) {
                         Text(
-                            text = "Indicator",
-                            fontSize = Const.titleSize,
+                            text = stringResource(R.string.ignore_indication),
+                            fontSize = Const.textSize,
                             maxLines = 1,
-                            modifier = Modifier.padding(top = 10.dp)
+                            textAlign = TextAlign.Center
                         )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                        ) {
-                            OutlinedTextField(
-                                enabled = !ignore,
-                                value = if (ignore) " " else newLetter.toString(),
-                                onValueChange = {
-                                    newLetter = if (ignore) ' ' else acceptLetter(it)
-                                },
-                                singleLine = true,
-                                textStyle = TextStyle(
-                                    fontSize = Const.titleSize,
-                                    textAlign = TextAlign.Center,
-                                ),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Uri,
-                                    autoCorrectEnabled = false,
-                                ),
-                                modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
-                            )
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(8.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.ignore_indication),
-                                    fontSize = Const.textSize,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.Center
-                                )
-                                Switch(
-                                    checked = ignore,
-                                    onCheckedChange = { state ->
-                                        ignore = state
-                                        if (ignore) newLetter = ' '
-                                    }
-                                )
+                        Switch(
+                            checked = ignore,
+                            onCheckedChange = { state ->
+                                ignore = state
+                                if (ignore) newLetter = ' '
                             }
-                        }
+                        )
                     }
                 }
 
