@@ -1,0 +1,26 @@
+{
+  "name": "DolbomFace",
+    "author": "Jay Han (jayhan.dev@gmail.com)",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "DolbomFace",
+    "uuid": "aaaab139-d4d0-478f-81f4-4cbbe4992461",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "aplite"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [
+      "dummy"
+    ],
+    "resources": {
+      "media": []
+    }
+  }
+}
