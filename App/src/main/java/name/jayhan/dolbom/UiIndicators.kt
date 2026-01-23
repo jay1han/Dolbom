@@ -180,6 +180,7 @@ fun IndicatorItem(
                 text = indicator.packageName,
                 fontSize = Const.subSize,
                 lineHeight = Const.subSize,
+                fontFamily = Const.condensedFont,
                 modifier = Modifier.fillMaxWidth()
             )
 

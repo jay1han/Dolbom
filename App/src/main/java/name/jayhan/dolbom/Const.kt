@@ -1,6 +1,8 @@
 package name.jayhan.dolbom
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import kotlin.time.Instant
 
@@ -16,6 +18,7 @@ object Const {
     val textSize = 20.sp
     val smallSize = 16.sp
     val subSize = 12.sp
+    val condensedFont = FontFamily(Font(R.font.roboto_condensed_regular))
     val colorIndicatorBack = Color(0xFF000000)
     val colorIndicatorLetter = Color(0xFFFFFFFF)
     val colorRui = Color(0xFFD86DCB)

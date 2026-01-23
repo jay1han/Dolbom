@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -33,14 +35,10 @@ fun DumpDialog(
         }
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp)
+            modifier = Modifier.fillMaxSize().padding(0.dp)
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
+                modifier = Modifier.fillMaxWidth().padding(4.dp)
             ) {
                 items(
                     items = dump,
@@ -49,12 +47,14 @@ fun DumpDialog(
                         notificationDump.packageName,
                         fontSize = Const.textSize,
                         textAlign = TextAlign.Start,
+                        fontFamily = Const.condensedFont,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
                         notificationDump.channelId,
                         fontSize = Const.smallSize,
                         textAlign = TextAlign.End,
+                        fontFamily = Const.condensedFont,
                         modifier = Modifier.fillMaxWidth()
                     )
                     
@@ -74,6 +74,7 @@ fun DumpDialog(
                                     },
                                     lineHeight = Const.subSize * 1.2,
                                     fontSize = Const.subSize,
+                                    fontFamily = Const.condensedFont
                                 )
                         }
                     }

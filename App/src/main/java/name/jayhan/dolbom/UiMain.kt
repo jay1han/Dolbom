@@ -63,6 +63,7 @@ fun AppScaffold(
     val tzWatch: String by Timezone.tzFlow.collectAsState("")
     val indicators by Indicators.allFlow.collectAsState(listOf())
     val historyData: HistoryData by History.historyFlow.collectAsState(HistoryData())
+    var showHistory by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
 
     if (!permissionsGranted) {
@@ -72,18 +73,27 @@ fun AppScaffold(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                MainTopBar(context, isConnected, watchInfo) {
-                    showHelp = true
-                }
+                MainTopBar(context, isConnected, watchInfo,
+                    onHelp = { showHelp = true },
+                    onHistory = {showHistory = true },
+                )
             },
         ) { innerPadding ->
-            if (showHelp) {
-                HelpDialog(
+            if (showHistory) {
+                HistoryDialog(
                     watchInfo = watchInfo,
                     lastReceived = lastReceived,
                     historyData = historyData,
                 ) {
-                    showHelp = false
+                    showHistory = false
+                }
+            }
+            
+            if (showHelp) {
+                HelpDialog(
+                
+                ) {
+                    showHelp= false
                 }
             }
 
@@ -106,19 +116,17 @@ fun MainTopBar(
     context: Context,
     isConnected: Boolean,
     watchInfo: WatchInfo,
-    onHelp: () -> Unit
+    onHelp: ()-> Unit,
+    onHistory: () -> Unit
 ) {
     TopAppBar(
-        modifier = Modifier.fillMaxWidth()
-            .clickable {
-                if (isConnected) onHelp()
-                else Pebble.restartService(context)
-            },
+        modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             Image(
                 painterResource(R.drawable.navicon),
                 contentDescription = "Logo",
-                modifier = Modifier.padding(end = 10.dp).height(40.dp),
+                modifier = Modifier.padding(end = 10.dp).height(40.dp)
+                    .clickable { onHelp() }
             )
         },
         title = {
@@ -132,6 +140,10 @@ fun MainTopBar(
                 Text(
                     text = "${watchInfo.battery}%",
                     fontSize = Const.titleSize,
+                    modifier = Modifier.clickable {
+                        if (isConnected) onHistory()
+                        else Pebble.restartService(context)
+                    },
                 )
             } else {
                 Icon(
@@ -286,8 +298,10 @@ fun MainTopBarPreview() {
         MainTopBar(
             LocalContext.current,
             isConnected = true,
-            watchInfo = PreviewWatchInfo
-        ) {}
+            watchInfo = PreviewWatchInfo,
+            {},
+            {},
+        )
     }
 }
 
@@ -298,8 +312,10 @@ fun MainTopBarDisconnected() {
         MainTopBar(
             LocalContext.current,
             isConnected = false,
-            watchInfo = WatchInfo()
-        ) {}
+            watchInfo = WatchInfo(),
+            {},
+            {},
+        )
     }
 }
 
