@@ -1,0 +1,114 @@
+<resources>
+    <string name="app_name">Dolbom</string>
+    <string name="app_title">Dolbom</string>
+    <string name="channel_description">Notification channel</string>
+    <string name="find_phone">Dolbom Find</string>
+    <string name="find_channel">Find my phone</string>
+    <string name="found">"It's here!"</string>
+
+    <string name="timezone">Timezone</string>
+    <string name="edit">Edit</string>
+    <string name="apply">Apply</string>
+
+    <string name="indicators">Indicators</string>
+    <string name="reset">Reset</string>
+    <string name="add">Add</string>
+
+    <string name="no_indicators">Nothing!</string>
+    <string name="filter_title">Title</string>
+    <string name="filter_sub">Sub</string>
+    <string name="filter_info">Info</string>
+    <string name="filter_text">Text</string>
+    <string name="reset_question">Do you want to clear all indicators?</string>
+    <string name="reset_no">No</string>
+    <string name="reset_yes">Reset!</string>
+
+    <string name="select_package">Choose app</string>
+    <string name="channel_filter">Channel:</string>
+    <string name="package_empty">(choose app)</string>
+    <string name="filter_empty">(empty)</string>
+    <string name="save">Save</string>
+    <string name="remove">Remove</string>
+
+    <string name="no_active">No active notification</string>
+    <string name="list_all">List all</string>
+
+    <string name="battery_invalid">Battery info not available</string>
+    <string name="format_battery">"%d%% "</string>
+    <string name="unplugged">Unplugged</string>
+    <string name="plugged">Plugged</string>
+    <string name="and_charging">" &amp; Charging"</string>
+    <string name="format_rate">%.1f%%/day, %.1f days/chg</string>
+    <string name="format_estimate">%.1f days remaining</string>
+    <string name="format_cycle">"%d%% at %s (%s)"</string>
+    <string name="format_history_since">"%d cycles since %s"</string>
+    <string name="format_data_since">History of %d cycles\nSince %s\n(%s)</string>
+    <string name="ignore_indication">Ignore</string>
+    <string name="clear_battery_history">Clear battery history?</string>
+    <string name="no_history">No history</string>
+
+    <string name="android_github">Android</string>
+    <string name="pebble_github">Pebble</string>
+    <string name="built">"Build "</string>
+
+    <string name="pg_title">Required permissions</string>
+    <string name="accept">Accept</string>
+    <string name="permissions_help">Permissions blabla</string>
+
+    <string name="pg_foreground_service">Foreground service</string>
+    <string name="foreground_service">Allow uninterrupted service</string>
+    <string name="foreground_services_2">A background service needs to be running at all time.
+        Please also consider marking it as \"not optimized for battery\".</string>
+
+    <string name="pg_post_notification">Post notification</string>
+    <string name="post_notification">Show Pebble connection in notifications</string>
+    <string name="post_notification_2">The background service shows a permanent (silent) notification.
+        It also shows the connection status and battery level of the connected Pebble.</string>
+
+    <string name="pg_modem_state">Read phone state</string>
+    <string name="modem_state">Read the cell coverage</string>
+    <string name="modem_state_2">Access the telephony service state to show coverage (4G/5G),
+        and receive real-time information when the coverage changes.</string>
+
+    <string name="pg_nearby_services">Nearby services</string>
+    <string name="nearby_service">Check the Bluetooth adapter state</string>
+    <string name="nearby_service_2">This notifies when a Bluetooth device is connected or disconnected,
+        and also allows querying its battery level.</string>
+
+    <string name="pg_fine_location">Fine location</string>
+    <string name="fine_location">Check WiFi state</string>
+    <string name="fine_location_2">Allows to query WiFi state as well as the connected SSID,
+        and be notified when something changes.</string>
+
+    <string name="pg_background_location">Background location</string>
+    <string name="background_location">Continuous monitoring of Bluetooth and WiFi</string>
+    <string name="background_location_2">The background service must receive notice of any changes
+        in WiFi connection.</string>
+
+    <string name="pg_query_apps">Query apps</string>
+    <string name="query_apps">Find application icons</string>
+    <string name="query_apps_2">Allows to retrieve an application\'s icon.
+        This makes it easier to find an application in the full list.</string>
+
+    <string name="pg_read_notifications">Read notifications</string>
+    <string name="read_notifications">Transfer notifications to the watch</string>
+    <string name="read_notifications_2">To show unread notification indicators on the watch,
+        this permission allows reading other apps\' notifications to begin with.</string>
+
+    <string name="pg_boot_completed">Start at boot</string>
+    <string name="boot_completed">Receives the BOOT_COMPLETED broadcast</string>
+    <string name="boot_completed_2">When the phone reboots, it sends this broadcast
+        so the background service may start automatically.</string>
+
+    <string name="pg_zen_rule">Zen mode</string>
+    <string name="zen_rule">Create and manage a Zen rule</string>
+    <string name="zen_rule_2">In order to control the phone\'s Do-not-disturb feature,
+        a Zen rule must be registered and toggled on or off.</string>
+    <string name="pg_audio_settings">Modify volume</string>
+    <string name="audio_settings">Set the media volume to maximum</string>
+    <string name="audio_settings_2">When looking for the phone, the app must play the ringtone at maximum volume.</string>
+    <string name="fullscreen_2">A full-screen dialog is displayed when looking for the phone, in order to illuminate the screen and also make it easier to cut off the racket.</string>
+    <string name="pg_fullscreen">Full-screen alert</string>
+    <string name="fullscreen">Use full-screen dialog to find phone</string>
+
+</resources>
