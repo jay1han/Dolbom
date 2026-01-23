@@ -70,6 +70,7 @@ object Notifications : BroadcastReceiver()
     private var mapPackageToName = mapOf<String, String>()
     
     var dump = mutableListOf<NotificationDump>()
+    val dumpFlow = MutableStateFlow(0)
 
     fun onNotification(
         context: Context,
@@ -107,6 +108,7 @@ object Notifications : BroadcastReceiver()
                 }
             }
         activeFlow.value = activeList.dedup()
+        dumpFlow.value = dump.size
 
         val text = letters.getCompact()
             .take(Const.MAX_NOTI_INDICATORS)

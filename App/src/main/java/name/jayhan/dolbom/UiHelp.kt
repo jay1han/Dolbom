@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ fun HelpDialog(
     onClose: () -> Unit
 ) {
     var showDump by remember { mutableStateOf(false) }
+    val dumpFlow by Notifications.dumpFlow.collectAsState(0)
     
     if (showDump) {
         DumpDialog(Notifications.dump) {
@@ -87,7 +89,7 @@ fun HelpDialog(
             
                 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -97,10 +99,10 @@ fun HelpDialog(
                         fontSize = Const.smallSize
                     )
                     Button(
-                        onClick = { showDump = true }
+                        onClick = { if (dumpFlow > 0) showDump = true }
                     ) {
                         Text(
-                            text = "Dump",
+                            text = "Dump %d".format(dumpFlow),
                             fontSize = Const.smallSize
                         )
                     }
@@ -182,6 +184,9 @@ val PreviewDump = listOf(
             ),
             FilterType.Subtitle to mapOf(
                 "People" to "You"
+            ),
+            FilterType.Info to mapOf(
+                "Info" to "Now"
             ),
             FilterType.Text to mapOf(
                 "Text" to "World"
