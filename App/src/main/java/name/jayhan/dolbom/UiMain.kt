@@ -57,8 +57,8 @@ fun AppScaffold(
     val tzWatch by Timezone.tzFlow.collectAsState("")
     val indicators by Indicators.allFlow.collectAsState(listOf())
     val historyData by History.historyFlow.collectAsState(HistoryData())
-    val dndActive by Pebble.stateFlow.collectAsState(false)
-    val dndEnabled by Pebble.enabledFlow.collectAsState(true)
+    val dndActive by Pebble.dndStateFlow.collectAsState(false)
+    val dndEnabled by Pebble.dndEnabledFlow.collectAsState(true)
     var showDnd by remember { mutableStateOf(false) }
     var showHistory by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }

@@ -91,12 +91,12 @@ class ZenRule(
                 zenRuleId = notiMan.addAutomaticZenRule(zenRule)
             } catch (_: Exception) {}
         } else {
-            notiMan.updateAutomaticZenRule(zenRuleId, zenRule)
+            // notiMan.updateAutomaticZenRule(zenRuleId, zenRule)
             notiMan.setAutomaticZenRuleState(zenRuleId, makeCondition(false))
         }
         
         ruleEnabled = notiMan.getAutomaticZenRule(zenRuleId).isEnabled
-        Pebble.enabledFlow.value = ruleEnabled
+        Pebble.dndEnabledFlow.value = ruleEnabled
     }
     
     fun deinit() {
@@ -112,19 +112,20 @@ class ZenRule(
         }
         
         dndState = notiMan.getAutomaticZenRuleState(zenRuleId) != Condition.STATE_TRUE
-        Pebble.stateFlow.value = dndState
         notiMan.setAutomaticZenRuleState(zenRuleId, makeCondition(dndState))
+        dndState = notiMan.getAutomaticZenRuleState(zenRuleId) == Condition.STATE_TRUE
+        Pebble.dndStateFlow.value = dndState
         sendToPebble()
     }
     
     fun read() {
         ruleEnabled = notiMan.getAutomaticZenRule(zenRuleId).isEnabled
-        Pebble.enabledFlow.value = ruleEnabled
+        Pebble.dndEnabledFlow.value = ruleEnabled
         val ruleState = ruleEnabled &&
                 notiMan.getAutomaticZenRuleState(zenRuleId) == Condition.STATE_TRUE
         if (dndState != ruleState) {
             dndState = ruleState
-            Pebble.stateFlow.value = dndState
+            Pebble.dndStateFlow.value = dndState
             sendToPebble()
         }
     }
@@ -136,6 +137,8 @@ class ZenRule(
     }
     
     fun refresh() {
+        dndState = notiMan.getAutomaticZenRuleState(zenRuleId) == Condition.STATE_TRUE
+        Pebble.dndStateFlow.value = dndState
         sendToPebble()
     }
     

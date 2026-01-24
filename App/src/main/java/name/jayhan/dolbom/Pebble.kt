@@ -141,8 +141,8 @@ object Pebble
     private val clock = Clock.System
     val lastReceived = MutableStateFlow(Clock.System.now())
     private var lastSent = clock.now()
-    val enabledFlow = MutableStateFlow(false)
-    val stateFlow = MutableStateFlow(false)
+    val dndEnabledFlow = MutableStateFlow(false)
+    val dndStateFlow = MutableStateFlow(false)
 
     fun init(
         context: Context
