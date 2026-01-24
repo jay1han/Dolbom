@@ -433,7 +433,7 @@ fun EditIndicatorPreview() {
         indicator = SingleIndicator(
             packageName = "com.android.google.apps.messaging",
             channel = "jayhan.dev",
-            filterText = "text",
+            filterText = "Subtitle",
             filterType = FilterType.Subtitle,
             letter = 'S',
         ),
@@ -449,6 +449,9 @@ fun EditIndicatorIgnore() {
         context = LocalContext.current,
         indicator = SingleIndicator(
             packageName = "com.android.google.apps.messaging",
+            filterText = "long",
+            filterType = FilterType.Long,
+            ignore = true
         ),
         activeList = PreviewActiveList,
         allList = listOf()
@@ -457,10 +460,14 @@ fun EditIndicatorIgnore() {
 
 @Preview
 @Composable
-fun EditIndicatorEmpty() {
+fun EditIndicatorOngoing() {
     EditIndicator(
         context = LocalContext.current,
-        indicator = SingleIndicator(ignore = false),
+        indicator = SingleIndicator(
+            ongoing = true,
+            sticky = true,
+            letter = 'A',
+        ),
         activeList = PreviewActiveList,
         allList = listOf(),
 ) { }

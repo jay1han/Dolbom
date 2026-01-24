@@ -7,10 +7,8 @@
 
 ## Features
 
-- Revise texts (blabla permission)
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
 - Add menu for background management setting
-- Add DND UI
 - Watchface: Disconnection indicator
 - Watchface: Quiet mode
 

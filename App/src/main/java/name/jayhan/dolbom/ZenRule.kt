@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -177,7 +178,8 @@ fun DndDialog(
                 modifier = Modifier.fillMaxWidth().padding(8.dp)
             ) {
                 Text(
-                    "Blabla Modes"
+                    stringResource(R.string.modes_explanation),
+                    fontSize = Const.textSize
                 )
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -187,7 +189,7 @@ fun DndDialog(
                         onClick = onJump
                     ) {
                         Text(
-                            text = "Go to Settings",
+                            text = stringResource(R.string.go_to_settings),
                             fontSize = Const.textSize
                         )
                     }

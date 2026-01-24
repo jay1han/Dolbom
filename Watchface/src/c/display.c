@@ -22,21 +22,21 @@ static struct {
     GTextAlignment align;
     const char *font;
 } disp[disp_end] = {
-    {NULL, {{0, 16},    {144, 31}}, 0xC0, 3, -1, Right , FONT_18},  //  disp_quiet
+    {NULL, {{0, -10},   {142, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_quiet
     {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_date
     {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_dnd
     {NULL, {{0, 16},    {144, 51}}, 0xC0, 3, -1, Center, FONT_49},  //  disp_home
     {NULL, {{0, 69},    {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_noti
-    {NULL, {{2, -8},    {142, 29}}, 0xFF, 3, -1, Left  , FONT_24},  //  disp_bton
-    {NULL, {{29, 97},   {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_btid
-    {NULL, {{0, 95},    {142, 31}}, 0xC0, 4,  3, Right , FONT_28},  //  disp_btc
-    {NULL, {{4, 97},    {144, 31}}, 0xC0, 4, -1, Left  , FONT_24},  //  disp_sim
-    {NULL, {{2, 116},   {144, 31}}, 0xC0, 4, -1, Left  , FONT_28},  //  disp_net 
-    {NULL, {{29, 116},  {144, 31}}, 0xC0, 4, -1, Left  , FONT_28},  //  disp_plmn
-    {NULL, {{29, 118},  {144, 29}}, 0xC0, 4, -1, Left  , FONT_24},  //  disp_wifi
-    {NULL, {{0, 140},   {140, 31}}, 0xFF, 4, -1, Center, FONT_28},  //  disp_away
-    {NULL, {{0, 140},   {144, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_wbat
-    {NULL, {{0, 140},   {144, 31}}, 0xFF, 4, -1, Right , FONT_28},  //  disp_pbat
+    {NULL, {{8, 97},    {142, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_bton
+    {NULL, {{54, 97},   {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_btid
+    {NULL, {{28, 95},   {142, 31}}, 0xC0, 3, -1, Right , FONT_28},  //  disp_btc
+    {NULL, {{28, 118},  {142, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_sim
+    {NULL, {{2, 116},   {144, 31}}, 0xC0, 3, -1, Left  , FONT_28},  //  disp_net 
+    {NULL, {{54, 116},  {144, 31}}, 0xC0, 3, -1, Left  , FONT_28},  //  disp_plmn
+    {NULL, {{54, 118},  {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_wifi
+    {NULL, {{0, 140},   {140, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_away
+    {NULL, {{0, 140},   {144, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_wbat
+    {NULL, {{0, 140},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_pbat
 };
 
 static struct {
