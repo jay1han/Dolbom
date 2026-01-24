@@ -57,6 +57,10 @@ private object FaceDataReceiver:
                     if (!Pebble.watchInfo.hasInfo())
                         if (context != null) Pebble.sendIntent(context, MsgType.INFO) {}
                 }
+                
+                MsgType.PING.ordinal -> {
+                    Log.v(Const.TAG, "in PONG")
+                }
             }
             
             Pebble.received(context, true)
@@ -157,7 +161,7 @@ object Pebble
             context.registerReceiver(it.value, filter, Context.RECEIVER_EXPORTED)
         }
 
-        sendIntent(context, MsgType.WBATT) {}
+        sendIntent(context, MsgType.INFO) {}
     }
 
     fun deinit(
@@ -217,9 +221,9 @@ object Pebble
         context: Context?,
         isAcked: Boolean
     ) {
-        isConnected.value = isAcked
         if (isAcked) {
             lastReceived.value = clock.now()
+            context?.sendBroadcast(Intent(Const.INTENT_PEBBLE_PONG))
         } else {
             restartService(context)
         }

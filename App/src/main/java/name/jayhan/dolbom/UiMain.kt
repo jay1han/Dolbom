@@ -163,26 +163,19 @@ fun MainTopBar(
                         else R.drawable.outline_do_not_disturb_on_24
                     ),
                     contentDescription = "Do not disturb",
-                    modifier = Modifier
-                        .padding(end = 12.dp)
-                        .scale(1.5f)
+                    modifier = Modifier.padding(end = 12.dp).scale(1.5f)
                 )
                 
-                if(isConnected) {
-                    Text(
-                        text = watchInfo.modelString()
-                            .ifEmpty { stringResource(R.string.disconnected) },
-                        fontSize = Const.titleSize,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp)
-                            .clickable { onWatch() }
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.disconnected)
-                    )
-                }
+                Text(
+                    text =
+                        if (isConnected) watchInfo.modelString()
+                        else stringResource(R.string.disconnected),
+                    fontSize = Const.titleSize,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                        .clickable {
+                            if(isConnected) onWatch()
+                        }
+                )
             }
         },
         actions = {
@@ -190,10 +183,7 @@ fun MainTopBar(
                 Text(
                     text = "${watchInfo.battery}%",
                     fontSize = Const.titleSize,
-                    modifier = Modifier.clickable {
-                        if (isConnected) onHistory()
-                        else Pebble.restartService(context)
-                    },
+                    modifier = Modifier.clickable { onHistory() }
                 )
             } else {
                 Icon(

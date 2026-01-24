@@ -1,5 +1,6 @@
 package name.jayhan.dolbom
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -31,6 +32,9 @@ class PebbleService:
     private lateinit var launchIntent: PendingIntent
     private lateinit var phoneFinder: PhoneFinder
     private val protocol = Protocol()
+    
+    private lateinit var alarmMan: AlarmManager
+    private val alarmListener = AlarmListener()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -67,6 +71,7 @@ class PebbleService:
             addAction(Const.INTENT_DND)
             addAction(Const.INTENT_CLEAR)
             addAction(Const.INTENT_SEND_PEBBLE)
+            addAction(Const.INTENT_PEBBLE_PONG)
         }
         context.registerReceiver(receiver, filter,RECEIVER_EXPORTED)
 
@@ -89,6 +94,9 @@ class PebbleService:
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
         )
 
+        alarmMan = context.getSystemService(ALARM_SERVICE)
+                as AlarmManager
+        
         try {
             restartService()
         } catch (e: Exception) {
@@ -120,13 +128,19 @@ class PebbleService:
             setOngoing(true)
             setDeleteIntent(reviveIntent)
             setContentIntent(launchIntent)
-            setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-            setContentText("\u2590%s\u258c \u26a1%.1f days"
-                .format(
-                    Notifications.indicators,
-                    (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+            
+            if (Pebble.isConnected.value) {
+                setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
+                setContentText("\u2590%s\u258c \u26a1%.1f days"
+                    .format(
+                        Notifications.indicators,
+                        (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                    )
                 )
-            )
+            } else {
+                setContentTitle("Disconnected")
+                setContentText("")
+            }
             setSmallIcon(R.mipmap.ic_launcher)
             setVisibility(Notification.VISIBILITY_SECRET)
         }.build()
@@ -146,6 +160,7 @@ class PebbleService:
         bluetoothReceiver = BluetoothReceiver(context)
         wifiCallback = WifiCallback(context)
         phoneCallback = PhoneCallback(context)
+        alarmListener.startTimer()
         Log.v(Const.TAG, "Modules started")
     }
     
@@ -178,6 +193,42 @@ class PebbleService:
         if (this::phoneFinder.isInitialized) phoneFinder.deinit()
         Log.v(Const.TAG, "Modules stopped")
     }
+    
+    inner class AlarmListener:
+        AlarmManager.OnAlarmListener
+    {
+        private var isAlarmed = false
+        
+        fun startTimer() {
+            alarmMan.set(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + Const.PING_INTERVAL_S * 1000,
+                null,
+                this,
+                null
+            )
+        }
+        
+        fun clearAlarm() {
+            if (isAlarmed) {
+                isAlarmed = false
+                refreshService()
+            }
+            if (!Pebble.isConnected.value) {
+                Pebble.isConnected.value = true
+                updateNofitication()
+            }
+            startTimer()
+        }
+        
+        override fun onAlarm() {
+            Pebble.sendIntent(context, MsgType.PING) {}
+            if (isAlarmed) {
+                Pebble.isConnected.value = false
+                updateNofitication()
+            } else isAlarmed = true
+        }
+    }
 
     inner class Receiver: BroadcastReceiver() {
 
@@ -209,16 +260,13 @@ class PebbleService:
                     stopSelf()
                 }
                 
-                Const.INTENT_DND -> {
-                    zenRule.toggle()
-                }
+                Const.INTENT_DND -> zenRule.toggle()
                 
-                Const.INTENT_CLEAR -> {
-                    Notifications.Accumulator.clearSticky()
-                }
+                Const.INTENT_CLEAR -> Notifications.Accumulator.clearSticky()
                 
-                Const.INTENT_SEND_PEBBLE ->
-                    protocol.send(context, intent)
+                Const.INTENT_PEBBLE_PONG -> alarmListener.clearAlarm()
+                
+                Const.INTENT_SEND_PEBBLE -> protocol.send(context, intent)
             }
         }
     }

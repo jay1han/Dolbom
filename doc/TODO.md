@@ -3,6 +3,7 @@
 ## Bugs
 
 - Watchface: Quiet time not working
+- Move ZenRule permissions to Permissions.kt
 
 ## Features
 
