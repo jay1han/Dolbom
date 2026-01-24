@@ -185,9 +185,11 @@ object Notifications : BroadcastReceiver()
         }
     
         fun add(sbn: StatusBarNotification) {
-            val indicator = Indicators.findIndicator(sbn)
-            if (indicator != null) {
-                litList = litList.filter { !indicator.equals(it) }.toMutableList()
+            val indicator = Indicators.findIndicator(sbn) ?: return
+            
+            litList = litList.filter { !indicator.equals(it) }.toMutableList()
+            if (!sbn.isOngoing || indicator.ongoing) {
+                indicator.timeInfo = sbn.notification.`when`
                 litList.add(indicator)
             }
         }

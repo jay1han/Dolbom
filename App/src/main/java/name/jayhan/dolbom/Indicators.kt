@@ -8,15 +8,15 @@ import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class SingleIndicator(
-    var packageName: String = "",
-    var channel: String = "",
-    var filterText: String = "",
-    var filterType: FilterType = FilterType.Title,
-    var letter: Char = ' ',
-    var ignore: Boolean = false,
-    var sticky: Boolean = false,
-    var ongoing: Boolean = false,
-    val timeInfo: Long = 0L,
+    val packageName: String = "",
+    val channel: String = "",
+    val filterText: String = "",
+    val filterType: FilterType = FilterType.Title,
+    val letter: Char = ' ',
+    val ignore: Boolean = false,
+    val sticky: Boolean = false,
+    val ongoing: Boolean = false,
+    var timeInfo: Long = 0L,
 ) {
     fun equals(
         other: SingleIndicator
@@ -81,9 +81,6 @@ object Indicators
                 newList.add(SingleIndicator.fromKeyValue(it.key, it.value as String))
             } catch (_: ClassCastException) {}
         }
-        newList.forEach {
-            if (it.ignore) it.letter = ' '
-        }
 
         saveList(newList)
     }
@@ -136,10 +133,9 @@ object Indicators
             }
         }
 
-        if (match > 0 && found != null) {
-            if (found.ignore) return null
-            return found
-        } else return SingleIndicator.Other
+        if (found == null) return SingleIndicator.Other
+        if (found.ignore) return null
+        return found
     }
 
     fun add(
