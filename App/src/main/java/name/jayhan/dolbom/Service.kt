@@ -114,7 +114,7 @@ class PebbleService:
         super.onDestroy()
     }
     
-    fun updateNofitication() {
+    fun updateNotification() {
         Log.v(Const.TAG, "Update Notification")
         notiMan.notify(Const.NOTI_SERVICE, buildNotification())
     }
@@ -216,7 +216,7 @@ class PebbleService:
             }
             if (!Pebble.isConnected.value) {
                 Pebble.isConnected.value = true
-                updateNofitication()
+                updateNotification()
             }
             startTimer()
         }
@@ -225,7 +225,7 @@ class PebbleService:
             Pebble.sendIntent(context, MsgType.PING) {}
             if (isAlarmed) {
                 Pebble.isConnected.value = false
-                updateNofitication()
+                updateNotification()
             } else isAlarmed = true
         }
     }
@@ -247,7 +247,7 @@ class PebbleService:
 
                 Const.INTENT_UPDATE -> {
                     Log.v(Const.TAG, "Intent: Update notification")
-                    updateNofitication()
+                    updateNotification()
                 }
 
                 Const.INTENT_REFRESH -> {

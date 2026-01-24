@@ -85,7 +85,7 @@ void phone_charge(int batt, bool plugged, bool charging) {
     else snprintf(p, 3, "%d", batt);
     pbat1[3] = 0;
 
-//    APP_LOG(APP_LOG_LEVEL_INFO, "PBAT %s:%s", pbat, pbat1);
+    APP_LOG(APP_LOG_LEVEL_INFO, "PBAT level=%d plugged=%d charging=%d", batt, plugged, charging);
     if (strcmp(pbat, pbat1)) {
         strncpy(pbat, pbat1, sizeof(pbat));
         pbat[sizeof(pbat) - 1] = 0;
