@@ -2,7 +2,6 @@
 
 ## Bugs
 
-- Test Notification Listener setting going to the right place (Permissions.kt)
 - DND doesn't deactivate
 - Watchface: Detect disconnection
 - Phone: Test watch disconnected
