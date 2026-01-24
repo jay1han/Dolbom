@@ -32,6 +32,15 @@ static void tz_update(time_t *temp) {
     disp_set(disp_away, away);
 }
 
+static void update_quiet_time() {
+    static bool quiet_time = false;
+    if (quiet_time != quiet_time_is_active()) {
+        quiet_time = quiet_time_is_active();
+        if (quiet_time) disp_set(disp_quiet, "Q");
+        else disp_set(disp_quiet, "");
+    }
+}
+
 void time_update() {
     time_t temp = time(NULL);
     struct tm *now = localtime(&temp);
@@ -43,6 +52,7 @@ void time_update() {
     disp_set(disp_date, date);
 
     tz_update(&temp);
+    update_quiet_time();
 }
 
 void tz_set(int minutes) {
@@ -77,13 +87,17 @@ void charge_update(BatteryChargeState charge_state) {
         disp_set(disp_wbat, wbat);
         send_batt();
     }
+    
+    update_quiet_time();
 }
 
 static bool conn_app = false;
 static bool conn_kit = false;
 
 static void connection_disp() {
+    update_quiet_time();
     disp_connected(conn_app && conn_kit);
+    // Timeout then send FRESH
 }
 
 void connection_update(bool connected) {

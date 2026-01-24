@@ -2,15 +2,14 @@
 
 ## Bugs
 
-- Watchface: Detect disconnection
-- Phone: Test watch disconnected
+- Watchface: Quiet time not working
 
 ## Features
 
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-- Add menu for background management setting
-- Watchface: Disconnection indicator
-- Watchface: Quiet mode
+- Manager disconnection
+  - Use timer on Watch side before declaring connection closed
+  - Use timer on Phone to detect disconnection (PING)
 
 ## Non-functional
 

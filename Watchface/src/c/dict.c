@@ -41,6 +41,7 @@ typedef enum {
     MSG_WIFI,
     MSG_BT,
     MSG_NOTI,
+    MSG_PING,
     MSG_TYPE
 } msg_type_t;
 
