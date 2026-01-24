@@ -14,8 +14,11 @@ class SingleIndicator(
     var filterType: FilterType = FilterType.Title,
     var letter: Char = ' ',
     var ignore: Boolean = false,
+    var sticky: Boolean = false,
+    var ongoing: Boolean = false,
+    val timeInfo: Long = 0L,
 ) {
-    fun equalTo(
+    fun equals(
         other: SingleIndicator
     ): Boolean {
         return packageName == other.packageName &&
@@ -24,19 +27,37 @@ class SingleIndicator(
                 filterType == other.filterType
     }
 
+    fun storeKey(): String {
+        return "$letter\n$packageName\n$channel\n$filterText\n${filterType.name}"
+    }
+    
+    fun storeValue(): String {
+        return StringBuilder().apply {
+            if (sticky) append("S")
+            if (ongoing) append("O")
+            if (ignore) append("I")
+        }.toString()
+    }
+
     companion object {
+        val Other = SingleIndicator(letter = '+')
         fun fromKeyValue(
             key: String,
-            value: Boolean
+            value: String
         ): SingleIndicator {
             val elements = key.split('\n', limit = 5)
+            val sticky = value.contains("S")
+            val ongoing = value.contains("O")
+            val ignore = value.contains("I")
             return SingleIndicator(
                 packageName = elements[1],
                 channel = elements[2],
                 filterText = elements[3],
                 filterType = FilterType.valueOf(elements[4]),
                 letter = elements[0][0],
-                ignore = value,
+                ignore = ignore,
+                sticky = sticky,
+                ongoing = ongoing,
             )
         }
     }
@@ -44,7 +65,7 @@ class SingleIndicator(
 
 object Indicators
 {
-    private var allList = mutableListOf<SingleIndicator>()
+    private var allIndicators = mutableListOf<SingleIndicator>()
     val allFlow = MutableStateFlow(mutableListOf<SingleIndicator>())
     private lateinit var savedSettings: SharedPreferences
 
@@ -56,7 +77,9 @@ object Indicators
 
         val newList = mutableListOf<SingleIndicator>()
         savedSettings.all.forEach {
-            newList.add(SingleIndicator.fromKeyValue(it.key, it.value as Boolean))
+            try {
+                newList.add(SingleIndicator.fromKeyValue(it.key, it.value as String))
+            } catch (_: ClassCastException) {}
         }
         newList.forEach {
             if (it.ignore) it.letter = ' '
@@ -65,32 +88,32 @@ object Indicators
         saveList(newList)
     }
 
-    fun getLetter(
+    fun findIndicator(
         sbn: StatusBarNotification
-    ): Char {
+    ): SingleIndicator? {
         val packageName = sbn.packageName
         val notification = sbn.notification
         val channel = notification.channelId
 
-        var provision: SingleIndicator? = null
+        var found: SingleIndicator? = null
         var match = 0
 
-        for (indicator in allList) {
+        for (indicator in allIndicators) {
             if (indicator.packageName == packageName) {
                 if (match < 5) {
                     match = 5
-                    provision = indicator
+                    found = indicator
                 }
                 if (indicator.channel.isEmpty()) {
                     if (indicator.filterText.isEmpty()) {
                         if (match < 10) {
-                            provision = indicator
+                            found = indicator
                             match = 10
                         }
                     } else {
                         if (notification.matches(indicator)) {
                             if (match < 20) {
-                                provision = indicator
+                                found = indicator
                                 match = 20
                             }
                         }
@@ -99,12 +122,12 @@ object Indicators
                     if (channel.contains(indicator.channel)) {
                         if (indicator.filterText.isEmpty()) {
                             if (match < 50) {
-                                provision = indicator
+                                found = indicator
                                 match = 50
                             }
                         } else {
                             if (notification.matches(indicator)) {
-                                provision = indicator
+                                found = indicator
                                 match = 100
                             }
                         }
@@ -113,45 +136,42 @@ object Indicators
             }
         }
 
-        if (match > 0 && provision != null) {
-            if (provision.ignore) return ' '
-            return provision.letter
-        } else return '+'
+        if (match > 0 && found != null) {
+            if (found.ignore) return null
+            return found
+        } else return SingleIndicator.Other
     }
 
     fun add(
         indicator: SingleIndicator
     ) {
-        allList.add(indicator)
-        saveList(allList)
+        allIndicators.add(indicator)
+        saveList(allIndicators)
     }
 
     private fun saveList(
         newList: List<SingleIndicator>
     ) {
-        allList = newList.sortedBy {
+        allIndicators = newList.sortedBy {
             Notifications.getApplicationName(it.packageName) + ":${it.channel}:${it.filterText}"
         }.toMutableList()
 
         savedSettings.edit {
             clear()
-            for (item in allList) {
-                val key = with (item) {
-                    "$letter\n$packageName\n$channel\n$filterText\n${filterType.name}"
-                }
-                putBoolean(key, item.ignore)
+            for (indicator in allIndicators) {
+                putString(indicator.storeKey(), indicator.storeValue())
             }
             commit()
         }
 
-        allFlow.value = allList
+        allFlow.value = allIndicators
     }
 
     fun remove(
         indicator: SingleIndicator
     ) {
-        val newList = allList.filterNot {
-            it.equalTo(indicator)
+        val newList = allIndicators.filterNot {
+            it.equals(indicator)
         }
         saveList(newList)
     }
@@ -215,28 +235,6 @@ enum class FilterType {
                 notification.extras.getCharSequence(it, "").toString()
             }.filter { it.value.isNotEmpty() }
         }
-        
-        val Extras = mapOf(
-            Text to listOf(
-                "ticker"
-            ),
-            Title to listOf(
-                Notification.EXTRA_TITLE,
-                Notification.EXTRA_CONVERSATION_TITLE,
-                Notification.EXTRA_TITLE_BIG,
-            ),
-            Subtitle to listOf(
-                Notification.EXTRA_PEOPLE_LIST,
-            ),
-            Long to listOf(
-                Notification.EXTRA_TEXT,
-                Notification.EXTRA_TEXT_LINES,
-                Notification.EXTRA_BIG_TEXT,
-                Notification.EXTRA_INFO_TEXT,
-                Notification.EXTRA_SUB_TEXT,
-                Notification.EXTRA_SUMMARY_TEXT,
-            ),
-        )
     }
 }
 
@@ -244,7 +242,7 @@ fun Notification.matches(
     indicator: SingleIndicator
 ): Boolean {
     return indicator.filterText.isNotEmpty() &&
-            indicator.filterType.mapExtrasForFilter(this).any { (key, value) ->
+            indicator.filterType.mapExtrasForFilter(this).any { (_, value) ->
                 value.contains(indicator.filterText)
             }
 }

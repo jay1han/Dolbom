@@ -45,7 +45,7 @@ fun IndicatorList(
     indicators: List<SingleIndicator>
 ) {
     var editDialog by remember { mutableStateOf(false) }
-    var editIndicator by remember { mutableStateOf(SingleIndicator(ignore = false)) }
+    var editIndicator by remember { mutableStateOf(SingleIndicator()) }
     val scrollState = rememberScrollState()
     var resetDialog by remember { mutableStateOf(false) }
 
@@ -57,7 +57,7 @@ fun IndicatorList(
             allList = allList
         ) {
             editDialog = false
-            editIndicator = SingleIndicator(ignore = false)
+            editIndicator = SingleIndicator()
         }
     }
 
@@ -95,7 +95,7 @@ fun IndicatorList(
             )
             Button(
                 onClick = {
-                    editIndicator = SingleIndicator(ignore = false)
+                    editIndicator = SingleIndicator()
                     editDialog = true
                 },
             ) {
@@ -292,7 +292,6 @@ fun IndicatorItemPreview() {
                 "jayhan.dev",
                 "text",
                 letter = 'S',
-                ignore = false
             ),
         ) { }
     }

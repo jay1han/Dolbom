@@ -15,13 +15,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -58,6 +61,8 @@ fun EditIndicator(
     var showPackageList by remember { mutableStateOf(false) }
     var ignore by remember { mutableStateOf(indicator.ignore) }
     var indicatorError by remember { mutableStateOf(false) }
+    var sticky by remember { mutableStateOf(indicator.sticky) }
+    var ongoing by remember { mutableStateOf(indicator.ongoing) }
 
     if (showPackageList) {
         SelectPackage(
@@ -76,83 +81,15 @@ fun EditIndicator(
         onDismissRequest = onClose,
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth().padding(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth(.4f)
-                    ) {
-                        val icon: ImageBitmap? =
-                            if (activeList == PreviewActiveList) null
-                            else getApplicationIcon(LocalContext.current, newPackage)
-                        if (icon != null) {
-                            Image(
-                                bitmap = icon,
-                                contentDescription = newPackage,
-                                alignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth()
-                                    .clickable { showPackageList = true }
-                            )
-                        } else {
-                            TextButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = { showPackageList = true }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.select_package),
-                                    fontSize = Const.textSize,
-                                    lineHeight = Const.titleSize,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    }
-
-                    OutlinedTextField(
-                        enabled = !ignore,
-                        value = if (ignore) " " else newLetter.toString(),
-                        onValueChange = {
-                            newLetter = if (ignore) ' ' else acceptLetter(it)
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = Const.titleSize,
-                            textAlign = TextAlign.Center,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Uri,
-                            autoCorrectEnabled = false,
-                        ),
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
-                    )
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.ignore_indication),
-                            fontSize = Const.textSize,
-                            maxLines = 1,
-                            textAlign = TextAlign.Center
-                        )
-                        Switch(
-                            checked = ignore,
-                            onCheckedChange = { state ->
-                                ignore = state
-                                if (ignore) newLetter = ' '
-                            }
-                        )
-                    }
-                }
-
                 // PackageName
                 var editPackageName by remember { mutableStateOf(false) }
                 OutlinedTextField(
@@ -163,14 +100,147 @@ fun EditIndicator(
                     onValueChange = { newPackage = it },
                     textStyle = TextStyle(
                         fontSize = Const.textSize,
+                        fontFamily = Const.condensedFont,
                     ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Uri,
                         autoCorrectEnabled = false,
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
                         .onFocusChanged { editPackageName = it.isFocused },
                 )
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    // App icon
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxWidth(.3f)
+                    ) {
+                        val icon: ImageBitmap? =
+                            if (activeList == PreviewActiveList) null
+                            else getApplicationIcon(LocalContext.current, newPackage)
+                        if (icon != null) {
+                            Image(
+                                bitmap = icon,
+                                contentDescription = newPackage,
+                                alignment = Alignment.Center,
+                                modifier = Modifier
+                                    .clickable { showPackageList = true }
+                            )
+                        } else {
+                            IconButton(
+                                modifier = Modifier,
+                                onClick = { showPackageList = true }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.outline_search_24),
+                                    contentDescription = "Search",
+                                    modifier = Modifier.scale(1.5f),
+                                )
+                            }
+                        }
+                    }
+
+                    // Checkboxes
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(-16.dp),
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        // Ignore
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = ignore,
+                                onCheckedChange = { state ->
+                                    ignore = state
+                                    if (ignore) {
+                                        newLetter = ' '
+                                        sticky = false
+                                    }
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text = stringResource(R.string.ignore_indication),
+                                fontSize = Const.textSize,
+                                fontFamily = Const.condensedFont,
+                            )
+                        }
+                        
+                        // Sticky
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = sticky,
+                                onCheckedChange = { state ->
+                                    sticky = state
+                                    if (sticky) ignore = false
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text = stringResource(R.string.sticky_indication),
+                                fontSize = Const.textSize,
+                            )
+                        }
+                        
+                        // Ongoing
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = ongoing,
+                                onCheckedChange = { state ->
+                                    ongoing = state
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text = stringResource(R.string.ongoing_indication),
+                                fontSize = Const.textSize,
+                                fontFamily = Const.condensedFont,
+                            )
+                        }
+                    }
+                    
+                    // Letter
+                    OutlinedTextField(
+                        enabled = !ignore,
+                        value = if (ignore) " " else newLetter.toString(),
+                        onValueChange = {
+                            newLetter = if (ignore) ' ' else acceptLetter(it)
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = Const.titleSize,
+                            textAlign = TextAlign.Center,
+                            fontFamily = Const.condensedFont,
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            autoCorrectEnabled = false,
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                    )
+                
+                }
 
                 // Channel
                 Spacer(Modifier.height(8.dp))
@@ -198,7 +268,8 @@ fun EditIndicator(
                             keyboardType = KeyboardType.Uri,
                             autoCorrectEnabled = false,
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .onFocusChanged { editChannel = it.isFocused },
                         maxLines = 1,
                     )
@@ -243,14 +314,17 @@ fun EditIndicator(
                     keyboardOptions = KeyboardOptions(
                         autoCorrectEnabled = false,
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .onFocusChanged { editFilter = it.isFocused },
                     maxLines = 1,
                 )
 
                 // Buttons
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
@@ -267,6 +341,8 @@ fun EditIndicator(
                                             filterType = newType,
                                             letter = if (ignore) ' ' else newLetter,
                                             ignore = ignore,
+                                            sticky = sticky,
+                                            ongoing = ongoing,
                                         )
                                     )
                                     Notifications.refresh(context)
@@ -306,16 +382,22 @@ fun IndicatorError(
         onDismissRequest = { onExit() }
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth().padding(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
             ) {
                 Text(
                     text = "Indicator must be a visible letter",
                     fontSize = Const.textSize,
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
                 )
                 Button(
                     onClick = onExit
@@ -354,7 +436,6 @@ fun EditIndicatorPreview() {
             filterText = "text",
             filterType = FilterType.Subtitle,
             letter = 'S',
-            ignore = false
         ),
         activeList = PreviewActiveList,
         allList = listOf()
@@ -368,7 +449,6 @@ fun EditIndicatorIgnore() {
         context = LocalContext.current,
         indicator = SingleIndicator(
             packageName = "com.android.google.apps.messaging",
-            ignore = false
         ),
         activeList = PreviewActiveList,
         allList = listOf()
@@ -382,8 +462,8 @@ fun EditIndicatorEmpty() {
         context = LocalContext.current,
         indicator = SingleIndicator(ignore = false),
         activeList = PreviewActiveList,
-        allList = listOf()
-    ) { }
+        allList = listOf(),
+) { }
 }
 
 @Preview

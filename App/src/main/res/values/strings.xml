@@ -118,5 +118,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="format_last_contact">"Last contact %s"</string>
     <string name="format_last_ago">"%s ago"</string>
+    <string name="sticky_indication">Sticky</string>
+    <string name="ongoing_indication">Ongoing</string>
 
 </resources>

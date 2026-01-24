@@ -106,6 +106,10 @@ private object AppDataReceiver:
                         ActionType.DND_TOGGLE.ordinal -> {
                             context?.sendBroadcast(Intent(Const.INTENT_DND))
                         }
+                        
+                        ActionType.CLEAR_STICKY.ordinal -> {
+                            context?.sendBroadcast(Intent(Const.INTENT_CLEAR))
+                        }
                     }
                 }
             }
@@ -159,12 +163,14 @@ object Pebble
     fun deinit(
         context: Context
     ) {
-        FaceReceivers.forEach {
-            context.unregisterReceiver(it.value)
-        }
-        AppReceivers.forEach {
-            context.unregisterReceiver(it.value)
-        }
+        try {
+            FaceReceivers.forEach {
+                context.unregisterReceiver(it.value)
+            }
+            AppReceivers.forEach {
+                context.unregisterReceiver(it.value)
+            }
+        } catch (_: IllegalArgumentException) {}
     }
 
     fun sendIntent(

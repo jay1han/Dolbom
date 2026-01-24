@@ -65,6 +65,7 @@ class PebbleService:
             addAction(Const.INTENT_UPDATE)
             addAction(Const.INTENT_REFRESH)
             addAction(Const.INTENT_DND)
+            addAction(Const.INTENT_CLEAR)
             addAction(Const.INTENT_SEND_PEBBLE)
         }
         context.registerReceiver(receiver, filter,RECEIVER_EXPORTED)
@@ -120,7 +121,7 @@ class PebbleService:
             setDeleteIntent(reviveIntent)
             setContentIntent(launchIntent)
             setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-            setContentText("\"%s\" Battery %.1f days"
+            setContentText("\u2590%s\u258c \u26a1%.1f days"
                 .format(
                     Notifications.indicators,
                     (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
@@ -210,6 +211,10 @@ class PebbleService:
                 
                 Const.INTENT_DND -> {
                     zenRule.toggle()
+                }
+                
+                Const.INTENT_CLEAR -> {
+                    Notifications.Accumulator.clearSticky()
                 }
                 
                 Const.INTENT_SEND_PEBBLE ->

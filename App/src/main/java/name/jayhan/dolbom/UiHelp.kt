@@ -1,7 +1,9 @@
 package name.jayhan.dolbom
 
+import android.app.Notification
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -126,13 +128,27 @@ fun DumpDialog(
                         fontFamily = Const.condensedFont,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text(
-                        notificationDump.channelId,
-                        fontSize = Const.smallSize,
-                        textAlign = TextAlign.End,
-                        fontFamily = Const.condensedFont,
+                    
+                    Box(
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ) {
+                        if ((notificationDump.flags and Notification.FLAG_ONGOING_EVENT) != 0) {
+                            Text(
+                                "(ongoing)",
+                                fontSize = Const.smallSize,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        
+                        Text(
+                            notificationDump.channelId,
+                            fontSize = Const.smallSize,
+                            textAlign = TextAlign.End,
+                            fontFamily = Const.condensedFont,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                     
                     notificationDump.extraMap.forEach { (filterType, extrasMap) ->
                         Text(
@@ -181,7 +197,8 @@ val PreviewDump = listOf(
             FilterType.Long to mapOf(
                 "Text" to "World"
             ),
-        )
+        ),
+        Notification.FLAG_ONGOING_EVENT
     )
 )
 

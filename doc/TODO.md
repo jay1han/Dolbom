@@ -2,10 +2,8 @@
 
 ## Bugs
 
-- DND doesn't deactivate
 - Watchface: Detect disconnection
 - Phone: Test watch disconnected
-- Sort notifications by latest first
 
 ## Features
 
@@ -15,10 +13,10 @@
 - Add DND UI
 - Watchface: Disconnection indicator
 - Watchface: Quiet mode
-- Watchface: Third button?
 
 ## Non-functional
 
 - Use theme and colorize
 - Remove hard-coded dimensions
 - Move shared data to companion objects
+- Reduce calls to Notifications.updateAllList()

@@ -16,7 +16,7 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 }
 
 static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-//    send_action(ACTION_TBD);
+    send_action(ACTION_CLEAR);
     window_stack_pop_all(true);
 }
 
@@ -33,7 +33,7 @@ static struct {
 } options[3] = {
     {NULL, 8, "Quiet mode"},
     {NULL, 64, "Find phone"},
-    {NULL, 120, "Go back"}
+    {NULL, 120, "Clear sticky"}
 };
 
 static void window_load(Window *window) {

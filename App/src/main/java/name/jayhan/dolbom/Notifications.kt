@@ -41,6 +41,7 @@ class NotificationDump(
     val packageName: String,
     val channelId: String,
     val extraMap: Map<FilterType, Map<String, String>>,
+    val flags: Int
 ) {
     companion object {
         fun fromSBN(
@@ -54,7 +55,8 @@ class NotificationDump(
             return NotificationDump(
                 sbn.packageName,
                 notification.channelId,
-                extraMap
+                extraMap,
+                notification.flags
             )
         }
     }
@@ -91,28 +93,21 @@ object Notifications : BroadcastReceiver()
         context: Context,
         activeNotifications: Array<StatusBarNotification>
     ) {
-        val letters = Letters()
-        dump = mutableListOf()
-        
         val activeList = mutableListOf<String>()
-            .apply {
-                for (sbn in activeNotifications
-                    .filter { !it.isOngoing && it.isClearable }
-                ) {
-                    dump.add(NotificationDump.fromSBN(sbn))
-                    
-                    if (sbn.packageName.startsWith(BuildConfig.APPLICATION_ID))
-                        continue
-                    add(sbn.packageName)
-                    val letter = Indicators.getLetter(sbn)
-                    if (letter != ' ') letters.add(letter, sbn.notification.`when`)
-                }
-            }
+        dump = mutableListOf()
+        Accumulator.clear()
+
+        for (sbn in activeNotifications) {
+            if (sbn.packageName.startsWith(BuildConfig.APPLICATION_ID)) continue
+            
+            dump.add(NotificationDump.fromSBN(sbn))
+            activeList.add(sbn.packageName)
+            Accumulator.add(sbn)
+        }
         activeFlow.value = activeList.dedup()
         dumpFlow.value = dump.size
 
-        indicators = letters.getCompact()
-            .take(Const.MAX_NOTI_INDICATORS)
+        indicators = Accumulator.getCompact().take(Const.MAX_NOTI_INDICATORS)
 
         Pebble.sendIntent(context, MsgType.NOTI) {
             putExtra(Const.EXTRA_NOTI, indicators)
@@ -122,7 +117,6 @@ object Notifications : BroadcastReceiver()
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (context == null || intent == null) return
         updateAllList()
     }
 
@@ -131,8 +125,7 @@ object Notifications : BroadcastReceiver()
     ) {
         packMan = context.packageManager
 
-        val filter = IntentFilter()
-            .apply {
+        val filter = IntentFilter().apply {
                 addAction(Intent.ACTION_PACKAGE_ADDED)
                 addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED)
             }
@@ -148,31 +141,23 @@ object Notifications : BroadcastReceiver()
     }
 
     private fun updateAllList() {
-        val newList = packMan
+        val packageList = packMan
             .queryIntentActivities(
                 Intent(Intent.ACTION_MAIN)
                     .apply { addCategory(Intent.CATEGORY_LAUNCHER) },
-                0
+                PackageManager.MATCH_ALL
             )
             .filter { !it.activityInfo.packageName.startsWith(BuildConfig.APPLICATION_ID)}
             .map { it.activityInfo.packageName }
 
-        val newPairs = mutableListOf<Pair<String, String>>()
-            .apply {
-                for (packageName in newList) {
-                    val appInfo = packMan.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-                    val appName = packMan.getApplicationLabel(appInfo).toString()
-                    add(Pair(packageName, appName))
-                }
-            }
-            .apply { sortBy { it.second } }
+        mapPackageToName = packageList.associateWith { packageName ->
+            val appInfo = packMan.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+            packMan.getApplicationLabel(appInfo).toString()
+        }
 
-        mapPackageToName = mutableMapOf<String, String>()
-            .apply {
-                for (pair in newPairs) put(pair.first, pair.second)
-            }
-
-        allFlow.value = newPairs.map { it.first }
+        allFlow.value = mapPackageToName.toList()
+            .sortedBy { it.second }
+            .map { it.first }
     }
 
     fun refresh(
@@ -183,9 +168,38 @@ object Notifications : BroadcastReceiver()
             process(context, activeNotifications)
         }
     }
-
+    
     fun getApplicationName(packageName: String): String {
         return mapPackageToName[packageName] ?: ""
+    }
+    
+    object Accumulator {
+        private var litList = mutableListOf<SingleIndicator>()
+        
+        fun clear() {
+            litList = litList.filter { it.sticky }.toMutableList()
+        }
+        
+        fun clearSticky() {
+            litList = litList.filter { !it.sticky }.toMutableList()
+        }
+    
+        fun add(sbn: StatusBarNotification) {
+            val indicator = Indicators.findIndicator(sbn)
+            if (indicator != null) {
+                litList = litList.filter { !indicator.equals(it) }.toMutableList()
+                litList.add(indicator)
+            }
+        }
+        
+        fun getCompact(): String {
+            val letters = litList
+                .sortedBy { it.timeInfo }
+                .reversed()
+                .map { it.letter }
+                .toMutableList()
+            return letters.joinToString("")
+        }
     }
 }
 
@@ -195,29 +209,4 @@ fun List<String>.dedup(): List<String> {
         if (!newList.contains(item)) newList.add(item)
     }
     return newList
-}
-
-private class Letters {
-    data class Letter(
-        val letter: Char,
-        val ref: Long
-    )
-    private val letters = mutableListOf<Letter>()
-
-    fun add(
-        letter: Char,
-        ref: Long
-    ) {
-        letters.removeIf { it.letter == letter }
-        letters.add(Letter(letter, ref))
-    }
-
-    fun getCompact(): String {
-        val apps = letters.filter { it.letter != '-' && it.letter != '+' && it.letter != ' ' }
-        val sorted = apps.sortedBy { it.ref }.reversed()
-        val indicators = sorted.map { it.letter }.toMutableList()
-        if (letters.find { it.letter == '+'} != null) indicators.add('+')
-        if (letters.find { it.letter == '-'} != null) indicators.add('-')
-        return indicators.joinToString("")
-    }
 }

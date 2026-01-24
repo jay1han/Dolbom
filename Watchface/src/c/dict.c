@@ -62,7 +62,7 @@ static const char MSG_NAME[MSG_TYPE][8] = {
 typedef enum {
     ACTION_FIND = 1,
     ACTION_DND,
-    ACTION_TBD
+    ACTION_CLEAR
 } action_t;
 
 static struct {

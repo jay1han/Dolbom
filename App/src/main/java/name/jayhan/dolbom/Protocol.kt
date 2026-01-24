@@ -55,6 +55,7 @@ enum class ActionType {
     ZERO,
     FIND_PHONE,
     DND_TOGGLE,
+    CLEAR_STICKY
 }
 
 class Protocol
