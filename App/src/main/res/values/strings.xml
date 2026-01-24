@@ -17,7 +17,7 @@
     <string name="no_indicators">Nothing!</string>
     <string name="filter_title">Title</string>
     <string name="filter_sub">Sub</string>
-    <string name="filter_short">Short</string>
+    <string name="filter_text">Text</string>
     <string name="filter_long">Long</string>
     <string name="reset_question">Do you want to clear all indicators?</string>
     <string name="reset_no">No</string>
@@ -115,5 +115,8 @@
     <string name="no_past_data">No past data</string>
     <string name="format_dump">Dump %d</string>
     <string name="dnd_description">Toggled via Pebble watch</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="format_last_contact">"Last contact %s"</string>
+    <string name="format_last_ago">"%s ago"</string>
 
 </resources>

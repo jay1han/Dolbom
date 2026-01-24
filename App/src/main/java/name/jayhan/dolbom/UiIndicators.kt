@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -223,6 +224,7 @@ fun IndicatorItem(
                 Image(
                     painter = painterResource(R.drawable.outline_toggle_on_24),
                     contentDescription = "Ignored",
+                    modifier = Modifier.scale(1.5f)
                 )
         }
 

@@ -23,18 +23,18 @@ There are 3 levels of filtering.
     |----------|------------------------------------------------------------------|
     | Title    | `EXTRA_TITLE`<br>`EXTRA_CONVERSATION_TITLE`<br>`EXTRA_TITLE_BIG` |
     | Subtitle | `EXTRA_SUB_TEXT`<br>`EXTRA_PEOPLE_LIST`                          |
-    | Short    | `EXTRA_INFO_TEXT`<br>`EXTRA_SUMMARY_TEXT`<br>`EXTRA_TEXT`        |
+    | Text     | `EXTRA_INFO_TEXT`<br>`EXTRA_SUMMARY_TEXT`<br>`EXTRA_TEXT`        |
     | Long     | `EXTRA_BIG_TEXT`<br>`EXTRA_TEXT_LINES`                           |
 
 Here are some reverse-engineered utilizations for a few popular apps.
 
-| App              | Channel ID | Title                              | Subtitle | Short                              | Long                       |
-|------------------|------------|------------------------------------|----------|------------------------------------|----------------------------|
-| Gmail            | Account    | Sender name                        | Account  | Subject                            | Full text                  |
-| Messaging        |            | Sender                             | SIM slot | (empty)                            | Full text                  |
-| WhatsApp (Group) | Not useful | Group name with and withour sender | (empty)  | Full text, with and without sender |                            |
-| KakaoTalk        |            |                                    |          |                                    |                            |
-| Outlook          | Account    | Sender name                        | Account  | Subject and text                   | Subject and text (Unicode) |
+| App              | Channel ID | Title                              | Subtitle   | Text                               | Long                       |
+|------------------|------------|------------------------------------|------------|------------------------------------|----------------------------|
+| Gmail            | Account    | Sender name                        | Account    | Subject                            | Full text                  |
+| Messaging        |            | Sender                             | SIM slot   | (empty)                            | Full text                  |
+| WhatsApp (Group) | Not useful | Group name with and withour sender | (empty)    | Full text, with and without sender |                            |
+| KakaoTalk        |            | Sender name                        | Group name | Full text                          |                            |
+| Outlook          | Account    | Sender name                        | Account    | Subject and text                   | Subject and text (Unicode) |
 
 Ignoring a specific configuration means that no indicator will be shown.
 You can also mix ignored notifications at some levels with

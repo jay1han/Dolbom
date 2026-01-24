@@ -13,6 +13,7 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import android.util.Log
+import name.jayhan.dolbom.Pebble.watchInfo
 
 class PebbleService:
     Service()
@@ -119,7 +120,12 @@ class PebbleService:
             setDeleteIntent(reviveIntent)
             setContentIntent(launchIntent)
             setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-            setContentText("")
+            setContentText("\"%s\" Battery %.1f days"
+                .format(
+                    Notifications.indicators,
+                    (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                )
+            )
             setSmallIcon(R.mipmap.ic_launcher)
             setVisibility(Notification.VISIBILITY_SECRET)
         }.build()

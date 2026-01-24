@@ -77,7 +77,7 @@ fun PermissionsTopBar(
             .clickable { onHelp() },
         navigationIcon = {
             Image(
-                painterResource(R.drawable.navicon),
+                painterResource(R.drawable.dolbom),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .padding(4.dp)

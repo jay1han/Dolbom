@@ -1,5 +1,6 @@
 package name.jayhan.dolbom
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,11 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,48 +55,28 @@ fun HelpDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
+                modifier = Modifier.fillMaxWidth().padding(10.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.android_github),
-                    fontSize = Const.smallSize,
+                Image(
+                    painterResource(R.drawable.dolbom),
+                    contentDescription = "Dolbom",
+                    modifier = Modifier.fillMaxWidth().padding(16.dp)
                 )
                 Text(
-                    textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = Const.smallSize,
                     text = buildAnnotatedString {
+                        pushStyle(SpanStyle(fontFamily = Const.condensedFont))
                         withLink(
-                            LinkAnnotation.Url(Const.GITHUB_ANDROID)
+                            LinkAnnotation.Url(Const.GITHUB)
                         ) {
-                            append(Const.GITHUB_ANDROID)
+                            append(Const.GITHUB)
                         }
                     }
                 )
-                Text(
-                    text = stringResource(R.string.pebble_github),
-                    fontSize = Const.smallSize,
-                )
-                Text(
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth(),
-                    fontSize = Const.smallSize,
-                    text = buildAnnotatedString {
-                        withLink(
-                            LinkAnnotation.Url(Const.GITHUB_PEBBLE)
-                        ) {
-                            append(Const.GITHUB_PEBBLE)
-                        }
-                    }
-                )
-            
                 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -194,7 +175,7 @@ val PreviewDump = listOf(
             FilterType.Subtitle to mapOf(
                 "People" to "You"
             ),
-            FilterType.Short to mapOf(
+            FilterType.Text to mapOf(
                 "Info" to "Now"
             ),
             FilterType.Long to mapOf(

@@ -58,12 +58,12 @@ class ZenRule(
     private val zenRule = AutomaticZenRule.Builder("Dolbom", zenUri)
         .setTriggerDescription(context.getString(R.string.dnd_description))
         .setType(AutomaticZenRule.TYPE_OTHER)
-        .setManualInvocationAllowed(true) // TODO: Change for prod
+        .setManualInvocationAllowed(true)
         .setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_PRIORITY)
         .setEnabled(true)
         .setZenPolicy(zenPolicy)
         .setConfigurationActivity(ComponentName(context, ZenRuleActivity::class.java))
-        .setIconResId(R.drawable.navicon)
+        .setIconResId(R.drawable.bom)
         .build()
     
     init {

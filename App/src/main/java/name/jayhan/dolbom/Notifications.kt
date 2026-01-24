@@ -71,6 +71,7 @@ object Notifications : BroadcastReceiver()
     
     var dump = mutableListOf<NotificationDump>()
     val dumpFlow = MutableStateFlow(0)
+    var indicators = ""
 
     fun onNotification(
         context: Context,
@@ -104,18 +105,20 @@ object Notifications : BroadcastReceiver()
                         continue
                     add(sbn.packageName)
                     val letter = Indicators.getLetter(sbn)
-                    if (letter != ' ') letters.add(letter, sbn.postTime)
+                    if (letter != ' ') letters.add(letter, sbn.notification.`when`)
                 }
             }
         activeFlow.value = activeList.dedup()
         dumpFlow.value = dump.size
 
-        val text = letters.getCompact()
+        indicators = letters.getCompact()
             .take(Const.MAX_NOTI_INDICATORS)
 
         Pebble.sendIntent(context, MsgType.NOTI) {
-            putExtra(Const.EXTRA_NOTI, text)
+            putExtra(Const.EXTRA_NOTI, indicators)
         }
+        
+        Pebble.updateNotification(context)
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {

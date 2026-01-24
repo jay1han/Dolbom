@@ -164,7 +164,7 @@ object Indicators
 enum class FilterType {
     Title { override val r = R.string.filter_title },
     Subtitle { override val r = R.string.filter_sub },
-    Short { override val r = R.string.filter_short },
+    Text { override val r = R.string.filter_text },
     Long { override val r = R.string.filter_long };
     abstract val r: Int
     
@@ -183,7 +183,7 @@ enum class FilterType {
                 Notification.EXTRA_SUB_TEXT,
             ))
             
-            Short -> return mapExtrasForList(notification, listOf(
+            Text -> return mapExtrasForList(notification, listOf(
                 Notification.EXTRA_SUMMARY_TEXT,
                 Notification.EXTRA_INFO_TEXT,
                 Notification.EXTRA_TEXT,
@@ -203,7 +203,7 @@ enum class FilterType {
             for (filterType in FilterType.entries) {
                 if (index == filterType.ordinal) return filterType
             }
-            return Short
+            return Text
         }
         
         private fun mapExtrasForList(
@@ -217,7 +217,7 @@ enum class FilterType {
         }
         
         val Extras = mapOf(
-            Short to listOf(
+            Text to listOf(
                 "ticker"
             ),
             Title to listOf(

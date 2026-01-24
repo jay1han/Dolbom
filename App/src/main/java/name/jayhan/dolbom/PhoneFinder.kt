@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.Icon
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -118,6 +119,7 @@ class PhoneFinder(
             setContentText("Click to stop")
             setCategory(Notification.CATEGORY_ALARM)
             setSmallIcon(R.mipmap.ic_noti)
+            setLargeIcon(Icon.createWithResource(context, R.drawable.bom))
             setVisibility(Notification.VISIBILITY_PUBLIC)
         }.build()
         notiMan.notify(Const.NOTI_FIND, notification)

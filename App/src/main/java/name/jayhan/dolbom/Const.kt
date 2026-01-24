@@ -8,8 +8,7 @@ import kotlin.time.Instant
 
 object Const {
     const val TAG = "Dolbom"
-    const val GITHUB_ANDROID = "https://github.com/jay1han/PebbleAndroid"
-    const val GITHUB_PEBBLE = "https://github.com/jay1han/Pebble"
+    const val GITHUB = "https://github.com/jay1han/Dolbom"
     val buildDateTime = Instant
         .fromEpochMilliseconds(BuildConfig.BUILDTIME)
         .formatDateTime()
