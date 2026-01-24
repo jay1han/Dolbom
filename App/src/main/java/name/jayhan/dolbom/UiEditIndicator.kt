@@ -17,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -81,14 +80,10 @@ fun EditIndicator(
         onDismissRequest = onClose,
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
             ) {
                 // PackageName
                 var editPackageName by remember { mutableStateOf(false) }
@@ -106,14 +101,13 @@ fun EditIndicator(
                         keyboardType = KeyboardType.Uri,
                         autoCorrectEnabled = false,
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
                         .onFocusChanged { editPackageName = it.isFocused },
                 )
                 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(-8.dp)
                 ){
                     // App icon
                     Box(
@@ -132,23 +126,89 @@ fun EditIndicator(
                                     .clickable { showPackageList = true }
                             )
                         } else {
-                            IconButton(
-                                modifier = Modifier,
-                                onClick = { showPackageList = true }
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.outline_search_24),
-                                    contentDescription = "Search",
-                                    modifier = Modifier.scale(1.5f),
-                                )
-                            }
+                            Icon(
+                                painter = painterResource(R.drawable.outline_search_24),
+                                contentDescription = "Search",
+                                modifier = Modifier.scale(scale = 3f)
+                                    .clickable { showPackageList = true }
+                            )
                         }
                     }
 
                     // Checkboxes
                     Column(
                         verticalArrangement = Arrangement.spacedBy(-16.dp),
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(end = 8.dp),
+                    ) {
+                        // Sticky
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = sticky,
+                                onCheckedChange = { state ->
+                                    sticky = state
+                                    if (sticky) ignore = false
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text = stringResource(R.string.sticky_indication),
+                                fontSize = Const.smallSize,
+                                fontFamily = Const.condensedFont,
+                            )
+                        }
+                        
+                        // Ongoing
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = ongoing,
+                                onCheckedChange = { state ->
+                                    ongoing = state
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text = stringResource(R.string.ongoing_indication),
+                                fontSize = Const.smallSize,
+                                fontFamily = Const.condensedFont,
+                            )
+                        }
+                        
+                        // Ongoing
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Checkbox(
+                                modifier = Modifier.padding(0.dp),
+                                checked = ongoing,
+                                onCheckedChange = { state ->
+                                    ongoing = state
+                                }
+                            )
+                            Text(
+                                modifier = Modifier.padding(0.dp),
+                                text ="Relay",
+                                fontSize = Const.smallSize,
+                                fontFamily = Const.condensedFont,
+                            )
+                        }
+                    }
+                    
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        //verticalArrangement = Arrangement.spacedBy(-4.dp),
+                        modifier = Modifier//.padding(8.dp),
                     ) {
                         // Ignore
                         Row(
@@ -170,76 +230,30 @@ fun EditIndicator(
                             Text(
                                 modifier = Modifier.padding(0.dp),
                                 text = stringResource(R.string.ignore_indication),
-                                fontSize = Const.textSize,
+                                fontSize = Const.smallSize,
                                 fontFamily = Const.condensedFont,
                             )
                         }
                         
-                        // Sticky
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                            modifier = Modifier.padding(0.dp)
-                        ) {
-                            Checkbox(
-                                modifier = Modifier.padding(0.dp),
-                                checked = sticky,
-                                onCheckedChange = { state ->
-                                    sticky = state
-                                    if (sticky) ignore = false
-                                }
-                            )
-                            Text(
-                                modifier = Modifier.padding(0.dp),
-                                text = stringResource(R.string.sticky_indication),
-                                fontSize = Const.textSize,
-                            )
-                        }
-                        
-                        // Ongoing
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                            modifier = Modifier.padding(0.dp)
-                        ) {
-                            Checkbox(
-                                modifier = Modifier.padding(0.dp),
-                                checked = ongoing,
-                                onCheckedChange = { state ->
-                                    ongoing = state
-                                }
-                            )
-                            Text(
-                                modifier = Modifier.padding(0.dp),
-                                text = stringResource(R.string.ongoing_indication),
-                                fontSize = Const.textSize,
-                                fontFamily = Const.condensedFont,
-                            )
-                        }
+                        // Letter
+                        OutlinedTextField(
+                            enabled = !ignore,
+                            value = if (ignore) " " else newLetter.toString(),
+                            onValueChange = {
+                                newLetter = if (ignore) ' ' else acceptLetter(it)
+                            },
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = Const.titleSize,
+                                textAlign = TextAlign.Center,
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Uri,
+                                autoCorrectEnabled = false,
+                            ),
+                            modifier = Modifier.fillMaxWidth().padding(start = 18.dp)
+                        )
                     }
-                    
-                    // Letter
-                    OutlinedTextField(
-                        enabled = !ignore,
-                        value = if (ignore) " " else newLetter.toString(),
-                        onValueChange = {
-                            newLetter = if (ignore) ' ' else acceptLetter(it)
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = Const.titleSize,
-                            textAlign = TextAlign.Center,
-                            fontFamily = Const.condensedFont,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Uri,
-                            autoCorrectEnabled = false,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp)
-                    )
-                
                 }
 
                 // Channel
@@ -250,6 +264,7 @@ fun EditIndicator(
                     Text(
                         text = stringResource(R.string.channel_filter),
                         fontSize = Const.textSize,
+                        fontFamily = Const.condensedFont,
                         modifier = Modifier.padding(end = 10.dp)
                     )
 
@@ -295,6 +310,7 @@ fun EditIndicator(
                             Text(
                                 text = stringResource(label),
                                 maxLines = 1,
+                                fontFamily = Const.condensedFont,
                                 autoSize = TextAutoSize.StepBased()
                             )
                         }

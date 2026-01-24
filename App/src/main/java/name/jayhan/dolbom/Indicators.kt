@@ -16,6 +16,7 @@ class SingleIndicator(
     val ignore: Boolean = false,
     val sticky: Boolean = false,
     val ongoing: Boolean = false,
+    val relay: Boolean = false,
     var timeInfo: Long = 0L,
 ) {
     fun equals(

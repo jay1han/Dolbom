@@ -7,6 +7,7 @@
 ## Features
 
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+- Relay notifications by Dolbom (Kakaovoice to send alert to Watch)
 - Manager disconnection
   - Use timer on Watch side before declaring connection closed
   - Use timer on Phone to detect disconnection (PING)
