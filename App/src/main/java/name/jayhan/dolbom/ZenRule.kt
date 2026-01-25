@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.service.notification.Condition
 import android.service.notification.ZenPolicy
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +48,6 @@ class ZenRule(
         .path("name.jayhan.dolbom")
         .query("dnd")
         .build()
-    private val receiver = Receiver()
     var zenRuleId = ""
     var dndState = false
     var ruleEnabled = false
@@ -70,20 +68,13 @@ class ZenRule(
         .setConfigurationActivity(ComponentName(context, ZenRuleActivity::class.java))
         .setIconResId(R.drawable.bom)
         .build()
+    private val receiver = Receiver()
     
     init {
-        // TODO: move permission check into Permissions
         val filter = IntentFilter().apply {
-            addAction(NotificationManager.ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED)
             addAction(NotificationManager.ACTION_AUTOMATIC_ZEN_RULE_STATUS_CHANGED)
         }
         context.registerReceiver(receiver, filter,Context.RECEIVER_EXPORTED)
-        
-        if (!notiMan.isNotificationPolicyAccessGranted()) {
-            context.startActivity(
-                Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-            )
-        }
         
         for (rule in notiMan.automaticZenRules) {
             if (rule.value.name == "Dolbom") {
@@ -183,7 +174,8 @@ fun DndDialog(
             ) {
                 Text(
                     text = stringResource(R.string.modes_explanation),
-                    fontSize = Const.textSize
+                    fontSize = Const.textSize,
+                    textAlign = TextAlign.Justify,
                 )
                 
                 Text(
@@ -231,5 +223,5 @@ fun DndDialog(
 @Preview
 @Composable
 fun DndDialogPreview() {
-    DndDialog(true, false, {}, {})
+    DndDialog(dndEnabled = true, dndActive = false, onClose = {}, onJump = {})
 }

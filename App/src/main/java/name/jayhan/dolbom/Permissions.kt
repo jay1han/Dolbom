@@ -1,6 +1,7 @@
 package name.jayhan.dolbom
 
 import android.app.NotificationManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,7 @@ const val PHONE_STATE = "android.permission.READ_PHONE_STATE"
 const val QUERY_ALL_PACKAGES = "android.permission.QUERY_ALL_PACKAGES"
 const val RECEIVE_BOOT_COMPLETED = "android.permission.RECEIVE_BOOT_COMPLETED"
 const val NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY"
+const val NOTIFICATION_POLICY_ACCESS = "dolbom.permission.NOTIFICATION_POLICY_ACCESS"
 const val NOTIFICATION_LISTENER = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
 const val AUDIO_SETTINGS = "android.permission.MODIFY_AUDIO_SETTINGS"
 const val USE_FULLSCREEN = "android.permission.USE_FULL_SCREEN_INTENT"
@@ -146,6 +148,11 @@ class SinglePermission(
                             as NotificationManager
                     ).canUseFullScreenIntent()
             
+            NOTIFICATION_POLICY_ACCESS -> (
+                    context.getSystemService(Context.NOTIFICATION_SERVICE)
+                            as NotificationManager
+                    ).isNotificationPolicyAccessGranted
+            
             else ->
                 context.checkSelfPermission(permission) ==
                         PackageManager.PERMISSION_GRANTED
@@ -157,6 +164,7 @@ class SinglePermission(
     fun request() {
         when (permission) {
             NOTIFICATION_LISTENER -> {
+                activity.shouldShowRequestPermissionRationale(permission)
                 activity.startActivity(
                     Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
                 )
@@ -164,9 +172,22 @@ class SinglePermission(
             }
             
             USE_FULLSCREEN -> {
+                activity.shouldShowRequestPermissionRationale(permission)
                 activity.startActivity(
                     Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
                         .setData("package:${context.packageName}".toUri())
+                )
+                return
+            }
+            
+            NOTIFICATION_POLICY_ACCESS -> {
+//                val filter = IntentFilter().apply {
+//                    addAction(NotificationManager.ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED)
+//                }
+//                context.registerReceiver(receiver, filter,Context.RECEIVER_EXPORTED)
+                
+                context.startActivity(
+                    Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
                 )
                 return
             }
@@ -175,6 +196,16 @@ class SinglePermission(
                 activity.shouldShowRequestPermissionRationale(permission)
         }
         launcher.launch(arrayOf(permission))
+    }
+    
+    inner class NotificationPolicyAccessGrantedReceiver: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                NotificationManager.ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED -> {
+                
+                }
+            }
+        }
     }
 }
 

@@ -53,7 +53,12 @@
 
     <string name="pg_title">Required permissions</string>
     <string name="accept">Accept</string>
-    <string name="permissions_help">Permissions blabla</string>
+    <string name="permissions_help">This application requires several permissions to work properly.
+        Since most of its functionality runs in the background,
+        there\'s no point trying to ask for a permission at its point of usage.
+        So all the permissions are requested during the first launch.
+        Please accept the permissions as they are presented.
+        Each type of permissions comes with further explanations on why they\'re needed and what they do.</string>
 
     <string name="pg_foreground_service">Foreground service</string>
     <string name="foreground_service">Allow uninterrupted service</string>

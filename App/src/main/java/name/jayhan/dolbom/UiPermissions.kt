@@ -80,7 +80,7 @@ fun PermissionsTopBar(
                 painterResource(R.drawable.dolbom),
                 contentDescription = "Logo",
                 modifier = Modifier
-                    .padding(4.dp)
+                    .padding(8.dp)
                     .height(40.dp),
             )
         },
@@ -109,12 +109,13 @@ fun PermissionHelp(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(20.dp)
     ) {
         Text(
             text = stringResource(R.string.permissions_help),
             fontSize = Const.textSize,
             lineHeight = Const.titleSize,
+            textAlign = TextAlign.Justify,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -221,6 +222,7 @@ fun Rationale(
                 Text(
                     text = stringResource(permissionGroup.rationale),
                     fontSize = Const.smallSize,
+                    textAlign = TextAlign.Justify,
                     modifier = Modifier.padding(4.dp)
                 )
                 Row(

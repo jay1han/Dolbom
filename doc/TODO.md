@@ -18,15 +18,12 @@
 ## Sub-functional
   
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-- Move ZenRule permissions to Permissions.kt
-  - Add Permissions overall help screen
 
 ## Internal
 
-- Manage acked/unacked data sent
-  - Apply to FRESH response
 - Manage disconnection
   - Use timer on Watch side before declaring connection closed
+  - Send FRESH on timeout
 
 ## Non-functional
 
