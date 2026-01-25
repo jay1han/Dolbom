@@ -12,10 +12,7 @@
 
 ## Features
 
-- DND: add current status in Dialog
-- App shows charging state in notification
-  - Also notify fully charged
-- History Clear Dialog: add historical rate
+- Notify when fully charged
 - Export/Import
 
 ## Sub-functional

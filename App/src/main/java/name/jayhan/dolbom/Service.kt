@@ -131,9 +131,10 @@ class PebbleService:
             
             if (Pebble.isConnected.value) {
                 setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-                setContentText("\u2590%s\u258c \u26a1%.1f days"
+                setContentText("\u2590%s\u258c %s%.1f days"
                     .format(
                         Notifications.indicators,
+                        if (watchInfo.charging) "\u26a1" else "",
                         (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
                     )
                 )

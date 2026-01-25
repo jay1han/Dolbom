@@ -125,7 +125,7 @@
     <string name="sticky_indication">Sticky</string>
     <string name="ongoing_indication">Ongoing</string>
     <string name="modes_explanation">Since Android 15, an app can no longer control the system\'s Do-not-disturb mode.
-    It can only register its own \"Zen rule\" and toggle that.
+    It can only register its own rule and toggle that.
     You can see the \"Dolbom\" rule in the settings.</string>
     <string name="go_to_settings">Go to Settings</string>
 

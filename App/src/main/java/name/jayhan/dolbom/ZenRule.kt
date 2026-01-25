@@ -25,6 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -178,9 +182,34 @@ fun DndDialog(
                 modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 Text(
-                    stringResource(R.string.modes_explanation),
+                    text = stringResource(R.string.modes_explanation),
                     fontSize = Const.textSize
                 )
+                
+                Text(
+                    modifier = Modifier.fillMaxWidth().padding(10.dp),
+                    textAlign = TextAlign.Center,
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(fontSize = Const.textSize)) {
+                            append("The rule is currently")
+                        }
+                        withStyle(SpanStyle(fontSize = Const.titleSize)) {
+                            append("\n" +
+                                    (if (dndEnabled) "Enabled" else "Disabled") +
+                                    "\n"
+                            )
+                        }
+                        withStyle(SpanStyle(fontSize = Const.textSize)) {
+                            append("and")
+                        }
+                        withStyle(SpanStyle(fontSize = Const.titleSize)) {
+                            append("\n"+
+                                    (if (dndActive) "Active" else "Inactive")
+                            )
+                        }
+                    }
+                )
+                
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp)

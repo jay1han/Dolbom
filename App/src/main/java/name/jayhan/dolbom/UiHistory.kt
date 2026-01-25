@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,7 @@ fun HistoryDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
             ) {
                 val batteryText =
@@ -97,19 +99,14 @@ fun HistoryDialog(
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                Button(
+                    onClick = { confirmClear = true },
+                    modifier = Modifier.padding(4.dp)
                 ) {
-                    Button(
-                        onClick = { confirmClear = true },
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Text(
-                            text = "Clear history",
-                            fontSize = Const.textSize,
-                        )
-                    }
+                    Text(
+                        text = "Clear history",
+                        fontSize = Const.textSize,
+                    )
                 }
             }
         }
@@ -129,6 +126,7 @@ fun ClearBatteryDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth().padding(10.dp),
             ) {
                 if (!historyData.historyDate.isDistantPast) {
@@ -142,13 +140,20 @@ fun ClearBatteryDialog(
                     Text(
                         text = historyText,
                         fontSize = Const.textSize,
-                        modifier = Modifier.fillMaxWidth()
                     )
+                    if (historyData.historyRate > 0f) {
+                        Text(
+                            text = "Historical rate\n%.1f%%/day\n%.1f days/charge"
+                                .format(historyData.historyRate,
+                                    90f/historyData.historyRate),
+                            fontSize = Const.textSize,
+                            modifier = Modifier.padding(top = 10.dp)
+                        )
+                    }
                 } else {
                     Text(
                         text = stringResource(R.string.no_history),
                         fontSize = Const.textSize,
-                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -156,7 +161,7 @@ fun ClearBatteryDialog(
                     text = stringResource(R.string.clear_battery_history),
                     fontSize = Const.titleSize,
                     lineHeight = Const.titleSize * 1.2,
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    modifier = Modifier.padding(10.dp)
                 )
 
                 Row(
