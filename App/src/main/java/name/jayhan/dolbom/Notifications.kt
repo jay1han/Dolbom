@@ -316,6 +316,7 @@ object Notifications : BroadcastReceiver()
                 .sortedBy { it.timeInfo }
                 .reversed()
                 .map { it.letter }
+                .distinct()
                 .toMutableList()
             return letters.joinToString("")
         }

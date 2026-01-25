@@ -3,8 +3,8 @@
 ## Bugs
 
 - Watchface: Quiet time not working
-- Test repeated relay
-- Watchface doesn't report battery sometimes
+- Relayed notification doesn't vibrate watch
+  - It also doesn't repeat
 
 ## Tests
 
