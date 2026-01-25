@@ -269,13 +269,13 @@ enum class FilterType {
 
 val PreviewIndicators = listOf(
     SingleIndicator("com.android.google.apps.dialer", letter = 'C'),
-    SingleIndicator("com.android.google.apps.messaging", letter = 'T'),
-    SingleIndicator("com.android.google.apps.gm", "jay", letter = 'j'),
-    SingleIndicator("com.android.google.apps.gm", "pebble", letter = 'p'),
+    SingleIndicator("com.android.google.apps.messaging", letter = 'T', sticky = true, relay = true),
+    SingleIndicator("com.android.google.apps.gm", "jay", letter = 'j', relay = true),
+    SingleIndicator("com.android.google.apps.gm", "pebble", letter = 'p', relay = true, repeat = true),
     SingleIndicator("com.android.google.apps.gm", letter = ' ', flags = "I"),
-    SingleIndicator("com.whatsapp", letter = 'W'),
+    SingleIndicator("com.whatsapp", letter = 'W', sticky = true),
     SingleIndicator("com.kakao.talk", letter = ' ', flags = "I"),
-    SingleIndicator("com.kakao.talk", filterText = "Bob", letter = 'b'),
+    SingleIndicator("com.kakao.talk", filterText = "Bob", letter = 'b', flags = "SrR"),
     SingleIndicator("com.kakao.talk", "talk", "Alice", FilterType.Long, 'b'),
 )
 

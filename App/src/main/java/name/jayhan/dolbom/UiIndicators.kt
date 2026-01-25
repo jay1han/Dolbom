@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -210,29 +209,42 @@ fun IndicatorItem(
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.background(color =
-                if (indicator.ignore) Color.Transparent else Const.colorIndicatorBack)
+            modifier = Modifier.background(color = Const.colorIndicatorBack)
         ) {
             Text(
-                text = indicator.letter.toString(),
+                text = if (indicator.ignore) "" else indicator.letter.toString(),
                 fontSize = Const.titleSize,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(.1f).padding(horizontal = 16.dp),
                 textAlign = TextAlign.Center,
-                color = if (indicator.ignore) Color.Transparent else Const.colorIndicatorLetter,
+                color = Const.colorIndicatorLetter,
             )
-            if (indicator.ignore)
-                Image(
-                    painter = painterResource(R.drawable.outline_toggle_on_24),
-                    contentDescription = "Ignored",
-                    modifier = Modifier.scale(1.5f)
-                )
         }
 
-        Icon(
-            painterResource(R.drawable.outline_chevron_forward_24),
-            contentDescription = "Refresh",
-        )
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.outline_circle_28),
+                contentDescription = "",
+                tint = if (indicator.sticky) Color(0xFF000000) else Color(0x00FFFFFF)
+            )
+            if (indicator.relay) {
+                if (indicator.repeat)
+                    IndicatorFlagIcon(R.drawable.outline_keyboard_double_arrow_right_24)
+                else
+                    IndicatorFlagIcon(R.drawable.outline_keyboard_arrow_right_24)
+            }
+        }
     }
+}
+
+@Composable
+fun IndicatorFlagIcon(res: Int) {
+    Icon(
+        painter = painterResource(res),
+        contentDescription = "Flag",
+    )
 }
 
 @Composable
