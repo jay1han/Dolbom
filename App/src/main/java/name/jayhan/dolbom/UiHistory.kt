@@ -80,7 +80,7 @@ fun HistoryDialog(
                             append(stringResource(R.string.format_rate)
                                 .format(
                                     historyData.cycleRate,
-                                    100f / historyData.cycleRate
+                                    90f / historyData.cycleRate
                                 ))
                             append("\n")
                         }

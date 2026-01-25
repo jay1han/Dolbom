@@ -78,7 +78,7 @@ fun IndicatorList(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
         ) {
             Button(
                 onClick = { resetDialog = true },
@@ -222,7 +222,8 @@ fun IndicatorItem(
         }
 
         Box(
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(start = 4.dp)
         ) {
             Icon(
                 painter = painterResource(R.drawable.outline_circle_28),
