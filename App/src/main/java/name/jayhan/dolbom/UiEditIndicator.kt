@@ -53,7 +53,7 @@ fun EditIndicator(
     onClose: () -> Unit
 ) {
     var newPackage by remember { mutableStateOf(indicator.packageName) }
-    var newChannel by remember { mutableStateOf(indicator.channel) }
+    var newChannel by remember { mutableStateOf(indicator.channelId) }
     var newText by remember { mutableStateOf(indicator.filterText) }
     var newType by remember { mutableStateOf(indicator.filterType) }
     var newLetter by remember { mutableStateOf(indicator.letter) }
@@ -352,7 +352,7 @@ fun EditIndicator(
                                     Indicators.add(
                                         SingleIndicator(
                                             packageName = newPackage,
-                                            channel = newChannel,
+                                            channelId = newChannel,
                                             filterText = newText,
                                             filterType = newType,
                                             letter = if (ignore) ' ' else newLetter,
@@ -448,7 +448,7 @@ fun EditIndicatorPreview() {
         context = LocalContext.current,
         indicator = SingleIndicator(
             packageName = "com.android.google.apps.messaging",
-            channel = "jayhan.dev",
+            channelId = "jayhan.dev",
             filterText = "Subtitle",
             filterType = FilterType.Subtitle,
             letter = 'S',

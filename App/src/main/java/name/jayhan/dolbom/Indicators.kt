@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class SingleIndicator(
     val packageName: String = "",
-    val channel: String = "",
+    val channelId: String = "",
     val filterText: String = "",
     val filterType: FilterType = FilterType.Title,
     val letter: Char = ' ',
@@ -23,13 +23,13 @@ class SingleIndicator(
         other: SingleIndicator
     ): Boolean {
         return packageName == other.packageName &&
-                channel == other.channel &&
+                channelId == other.channelId &&
                 filterText == other.filterText &&
                 filterType == other.filterType
     }
 
     fun storeKey(): String {
-        return "$letter\n$packageName\n$channel\n$filterText\n${filterType.name}"
+        return "$letter\n$packageName\n$channelId\n$filterText\n${filterType.name}"
     }
     
     fun storeValue(): String {
@@ -63,7 +63,7 @@ class SingleIndicator(
             val ignore = value.contains("I")
             return SingleIndicator(
                 packageName = elements[1],
-                channel = elements[2],
+                channelId = elements[2],
                 filterText = elements[3],
                 filterType = FilterType.valueOf(elements[4]),
                 letter = elements[0][0],
@@ -102,18 +102,14 @@ object Indicators
     ): SingleIndicator? {
         val packageName = sbn.packageName
         val notification = sbn.notification
-        val channel = notification.channelId
+        val channelId = notification.channelId
 
         var found: SingleIndicator? = null
         var match = 0
 
         for (indicator in allIndicators) {
             if (indicator.packageName == packageName) {
-                if (match < 5) {
-                    match = 5
-                    found = indicator
-                }
-                if (indicator.channel.isEmpty()) {
+                if (indicator.channelId.isEmpty()) {
                     if (indicator.filterText.isEmpty()) {
                         if (match < 10) {
                             found = indicator
@@ -128,7 +124,7 @@ object Indicators
                         }
                     }
                 } else {
-                    if (channel.contains(indicator.channel)) {
+                    if (channelId.contains(indicator.channelId)) {
                         if (indicator.filterText.isEmpty()) {
                             if (match < 50) {
                                 found = indicator
@@ -137,7 +133,7 @@ object Indicators
                         } else {
                             if (indicator.matches(notification)) {
                                 found = indicator
-                                match = 100
+                                break
                             }
                         }
                     }
@@ -161,7 +157,7 @@ object Indicators
         newList: List<SingleIndicator>
     ) {
         allIndicators = newList.sortedBy {
-            Notifications.getApplicationName(it.packageName) + ":${it.channel}:${it.filterText}"
+            Notifications.getApplicationName(it.packageName) + ":${it.channelId}:${it.filterText}"
         }.toMutableList()
 
         savedSettings.edit {

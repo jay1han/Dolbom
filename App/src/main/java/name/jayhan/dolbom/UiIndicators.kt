@@ -185,9 +185,9 @@ fun IndicatorItem(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (indicator.channel.isNotEmpty()) {
+            if (indicator.channelId.isNotEmpty()) {
                 Text(
-                    text = indicator.channel,
+                    text = indicator.channelId,
                     fontSize = Const.subSize,
                     lineHeight = Const.subSize,
                     fontWeight = FontWeight.Bold,
