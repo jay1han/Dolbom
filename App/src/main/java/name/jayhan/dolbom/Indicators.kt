@@ -18,7 +18,7 @@ class SingleIndicator(
     val ongoing: Boolean = false,
     val relay: Boolean = false,
     val repeat: Boolean = false,
-    val silent: Boolean = false,
+    val local: Boolean = false,
     var timeInfo: Long = 0L,
 ) {
     constructor(
@@ -40,9 +40,20 @@ class SingleIndicator(
         ongoing = flags.contains("O"),
         relay = flags.contains("R"),
         repeat = flags.contains("r"),
-        silent = flags.contains("Z"),
+        local = flags.contains("L"),
         timeInfo = timeInfo,
     )
+    
+    fun flags(): String {
+        return listOf(
+            if (ignore) "I" else "",
+            if (sticky) "S" else "",
+            if (ongoing) "O" else "",
+            if (relay) "R" else "",
+            if (repeat) "r" else "",
+            if (local) "L" else "",
+        ).joinToString(separator = "")
+    }
     
     fun equals(
         other: SingleIndicator
@@ -60,17 +71,6 @@ class SingleIndicator(
                 this.filterType.listExtrasOf(notification).any { (_, value) ->
                     value.contains(this.filterText)
                 }
-    }
-    
-    fun flags(): String {
-        return listOf(
-            if (ignore) "I" else "",
-            if (sticky) "S" else "",
-            if (ongoing) "O" else "",
-            if (relay) "R" else "",
-            if (repeat) "r" else "",
-            if (silent) "Z" else "",
-        ).joinToString(separator = "")
     }
     
     companion object {

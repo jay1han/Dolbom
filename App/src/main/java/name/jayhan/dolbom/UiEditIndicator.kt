@@ -64,7 +64,7 @@ fun EditIndicator(
     var ongoing by remember { mutableStateOf(indicator.ongoing) }
     var relay by remember { mutableStateOf(indicator.relay) }
     var repeat by remember { mutableStateOf(indicator.repeat) }
-    var silent by remember { mutableStateOf(indicator.silent) }
+    var local by remember { mutableStateOf(indicator.local) }
 
     if (showPackageList) {
         SelectPackage(
@@ -289,7 +289,6 @@ fun EditIndicator(
                         modifier = Modifier
                             .fillMaxWidth()
                             .onFocusChanged { editChannel = it.isFocused },
-                        maxLines = 1,
                     )
                 }
 
@@ -364,7 +363,7 @@ fun EditIndicator(
                                             ongoing = ongoing,
                                             relay = relay,
                                             repeat = repeat,
-                                            silent = silent,
+                                            local = local,
                                         )
                                     )
                                     Notifications.refresh(context)
