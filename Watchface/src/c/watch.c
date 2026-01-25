@@ -70,11 +70,21 @@ int tz_get() {
     return tz;
 }
 
-BatteryChargeState watch_battery = {0, false, false};
 
+BatteryChargeState watch_battery = {0, false, false};
+static bool battery_initialized = false;
 void charge_update(BatteryChargeState charge_state) {
+    if (!battery_initialized) {
+        watch_battery = charge_state;
+        battery_initialized = true;
+    } else if (watch_battery.charge_percent != charge_state.charge_percent ||
+             watch_battery.is_charging != charge_state.is_charging ||
+             watch_battery.is_plugged != charge_state.is_plugged) {
+        watch_battery = charge_state;
+        send_batt();
+    }
+    
     char wbat1[4];
-    watch_battery = charge_state;
     if (charge_state.charge_percent >= 100) strcpy(wbat1, "00");
     else {
         snprintf(wbat1, sizeof(wbat1), "%d", charge_state.charge_percent);
@@ -85,7 +95,6 @@ void charge_update(BatteryChargeState charge_state) {
         wbat[sizeof(wbat) - 1] = 0;
         changed[STOR_WBAT_4] = true;
         disp_set(disp_wbat, wbat);
-        send_batt();
     }
     
     update_quiet_time();

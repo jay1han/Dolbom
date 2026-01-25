@@ -5,6 +5,7 @@
 - Watchface: Quiet time not working
 - Move ZenRule permissions to Permissions.kt
 - Test repeated relay
+- Watchface doesn't report battery
 
 ## Features
 
@@ -13,6 +14,8 @@
 - Show toggles in indicator list (main screen)
 - Manager disconnection
   - Use timer on Watch side before declaring connection closed
+- App shows charging state in notification
+  - Also notify fully charged
 
 ## Non-functional
 

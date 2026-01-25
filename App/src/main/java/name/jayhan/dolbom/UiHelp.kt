@@ -132,14 +132,20 @@ fun DumpDialog(
                     Box(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        if ((notificationDump.flags and Notification.FLAG_ONGOING_EVENT) != 0) {
-                            Text(
-                                "(ongoing)",
-                                fontSize = Const.smallSize,
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                        val flags = StringBuilder().apply {
+                            if (notificationDump.flags.maskAll(Notification.FLAG_ONGOING_EVENT))
+                                append("(ongoing)")
+                            if (notificationDump.flags.maskAll(Notification.FLAG_LOCAL_ONLY))
+                                append("(local)")
+                        }.toString()
+
+                        Text(
+                            text = flags,
+                            fontSize = Const.smallSize,
+                            textAlign = TextAlign.Start,
+                            fontFamily = Const.condensedFont,
+                            modifier = Modifier.fillMaxWidth()
+                        )
                         
                         Text(
                             notificationDump.channelId,
@@ -198,7 +204,7 @@ val PreviewDump = listOf(
                 "Text" to "World"
             ),
         ),
-        Notification.FLAG_ONGOING_EVENT
+        Notification.FLAG_ONGOING_EVENT or Notification.FLAG_LOCAL_ONLY
     )
 )
 

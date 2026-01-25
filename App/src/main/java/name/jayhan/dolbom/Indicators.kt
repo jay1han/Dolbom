@@ -159,7 +159,10 @@ object Indicators
         }
 
         if (found == null) return SingleIndicator.Other
-        if (found.ignore) return null
+        if (found.ignore ||
+            (found.local && !notification.flags.maskAll(Notification.FLAG_LOCAL_ONLY))
+            )
+            return null
         return found
     }
 

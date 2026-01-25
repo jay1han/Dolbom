@@ -82,3 +82,6 @@ object Const {
     const val MAX_LEN_ID = 19
     const val PING_INTERVAL_S = 120
 }
+
+fun Int.maskAny(mask: Int) = (this and mask) != 0
+fun Int.maskAll(mask: Int) = (this and mask) == mask

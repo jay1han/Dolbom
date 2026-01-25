@@ -232,8 +232,9 @@ object Notifications : BroadcastReceiver()
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == Intent.ACTION_PACKAGE_ADDED ||
-            intent?.action == Intent.ACTION_PACKAGE_FULLY_REMOVED)
-        updateAllList()
+            intent?.action == Intent.ACTION_PACKAGE_FULLY_REMOVED) {
+            updateAllList()
+        }
     }
 
     fun init(

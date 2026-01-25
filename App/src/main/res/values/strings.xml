@@ -24,7 +24,7 @@
     <string name="reset_yes">Reset!</string>
 
     <string name="select_package">Choose app</string>
-    <string name="channel_filter">Channel</string>
+    <string name="channel_filter">"Channel: "</string>
     <string name="package_empty">(choose app)</string>
     <string name="filter_empty">(empty)</string>
     <string name="save">Save</string>

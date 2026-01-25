@@ -175,7 +175,7 @@ fun DndDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(8.dp)
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 Text(
                     stringResource(R.string.modes_explanation),
