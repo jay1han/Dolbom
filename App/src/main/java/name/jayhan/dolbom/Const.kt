@@ -58,6 +58,7 @@ object Const {
     
     const val CHANNEL_RELAY = "Dolbom Relay"
     const val NOTI_RELAY = 30
+    const val RELAY_INTERVAL_S = 5
     
     const val INTENT_FIND = "name.jayhan.dolbom.FIND_PHONE"
     const val INTENT_FINDING = "name.jayhan.dolbom.FINDING"

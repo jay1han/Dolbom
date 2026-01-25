@@ -9,7 +9,7 @@
 
 - Show noti in app
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-- Relay notifications by Dolbom (Kakaovoice to send alert to Watch)
+- Insistent relay
 - Show toggles in indicator list
 - Manager disconnection
   - Use timer on Watch side before declaring connection closed

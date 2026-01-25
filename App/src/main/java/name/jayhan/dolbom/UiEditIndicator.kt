@@ -62,6 +62,9 @@ fun EditIndicator(
     var indicatorError by remember { mutableStateOf(false) }
     var sticky by remember { mutableStateOf(indicator.sticky) }
     var ongoing by remember { mutableStateOf(indicator.ongoing) }
+    var relay by remember { mutableStateOf(indicator.relay) }
+    var repeat by remember { mutableStateOf(indicator.repeat) }
+    var silent by remember { mutableStateOf(indicator.silent) }
 
     if (showPackageList) {
         SelectPackage(
@@ -183,7 +186,7 @@ fun EditIndicator(
                             )
                         }
                         
-                        // Ongoing
+                        // Relay
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(-8.dp),
@@ -191,9 +194,9 @@ fun EditIndicator(
                         ) {
                             Checkbox(
                                 modifier = Modifier.padding(0.dp),
-                                checked = ongoing,
+                                checked = relay,
                                 onCheckedChange = { state ->
-                                    ongoing = state
+                                    relay = state
                                 }
                             )
                             Text(
@@ -359,6 +362,9 @@ fun EditIndicator(
                                             ignore = ignore,
                                             sticky = sticky,
                                             ongoing = ongoing,
+                                            relay = relay,
+                                            repeat = repeat,
+                                            silent = silent,
                                         )
                                     )
                                     Notifications.refresh(context)

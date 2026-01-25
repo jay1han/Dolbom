@@ -17,8 +17,33 @@ class SingleIndicator(
     val sticky: Boolean = false,
     val ongoing: Boolean = false,
     val relay: Boolean = false,
+    val repeat: Boolean = false,
+    val silent: Boolean = false,
     var timeInfo: Long = 0L,
 ) {
+    constructor(
+        packageName: String = "",
+        channelId: String = "",
+        filterText: String = "",
+        filterType: FilterType = FilterType.Title,
+        letter: Char = ' ',
+        flags: String = "",
+        timeInfo: Long = 0L,
+    ): this(
+        packageName = packageName,
+        channelId = channelId,
+        filterText = filterText,
+        filterType = filterType,
+        letter = letter,
+        ignore = flags.contains("I"),
+        sticky = flags.contains("S"),
+        ongoing = flags.contains("O"),
+        relay = flags.contains("R"),
+        repeat = flags.contains("r"),
+        silent = flags.contains("Z"),
+        timeInfo = timeInfo,
+    )
+    
     fun equals(
         other: SingleIndicator
     ): Boolean {
@@ -28,18 +53,6 @@ class SingleIndicator(
                 filterType == other.filterType
     }
 
-    fun storeKey(): String {
-        return "$letter\n$packageName\n$channelId\n$filterText\n${filterType.name}"
-    }
-    
-    fun storeValue(): String {
-        return StringBuilder().apply {
-            if (sticky) append("S")
-            if (ongoing) append("O")
-            if (ignore) append("I")
-        }.toString()
-    }
-    
     fun matches(
         notification: Notification
     ): Boolean {
@@ -48,9 +61,18 @@ class SingleIndicator(
                     value.contains(this.filterText)
                 }
     }
-
-
-
+    
+    fun flags(): String {
+        return listOf(
+            if (ignore) "I" else "",
+            if (sticky) "S" else "",
+            if (ongoing) "O" else "",
+            if (relay) "R" else "",
+            if (repeat) "r" else "",
+            if (silent) "Z" else "",
+        ).joinToString(separator = "")
+    }
+    
     companion object {
         val Other = SingleIndicator(letter = '+')
         fun fromKeyValue(
@@ -58,18 +80,13 @@ class SingleIndicator(
             value: String
         ): SingleIndicator {
             val elements = key.split('\n', limit = 5)
-            val sticky = value.contains("S")
-            val ongoing = value.contains("O")
-            val ignore = value.contains("I")
             return SingleIndicator(
                 packageName = elements[1],
                 channelId = elements[2],
                 filterText = elements[3],
                 filterType = FilterType.valueOf(elements[4]),
                 letter = elements[0][0],
-                ignore = ignore,
-                sticky = sticky,
-                ongoing = ongoing,
+                flags = value
             )
         }
     }
@@ -96,7 +113,7 @@ object Indicators
 
         saveList(newList)
     }
-
+    
     fun findIndicator(
         sbn: StatusBarNotification
     ): SingleIndicator? {
@@ -163,7 +180,12 @@ object Indicators
         savedSettings.edit {
             clear()
             for (indicator in allIndicators) {
-                putString(indicator.storeKey(), indicator.storeValue())
+                putString(
+                    with(indicator) {
+                        "$letter\n$packageName\n$channelId\n$filterText\n${filterType.name}"
+                    },
+                    indicator.flags()
+                )
             }
             commit()
         }
@@ -247,9 +269,9 @@ val PreviewIndicators = listOf(
     SingleIndicator("com.android.google.apps.messaging", letter = 'T'),
     SingleIndicator("com.android.google.apps.gm", "jay", letter = 'j'),
     SingleIndicator("com.android.google.apps.gm", "pebble", letter = 'p'),
-    SingleIndicator("com.android.google.apps.gm", letter = ' ', ignore = true),
+    SingleIndicator("com.android.google.apps.gm", letter = ' ', flags = "I"),
     SingleIndicator("com.whatsapp", letter = 'W'),
-    SingleIndicator("com.kakao.talk", letter = ' ', ignore = true),
+    SingleIndicator("com.kakao.talk", letter = ' ', flags = "I"),
     SingleIndicator("com.kakao.talk", filterText = "Bob", letter = 'b'),
     SingleIndicator("com.kakao.talk", "talk", "Alice", FilterType.Long, 'b'),
 )

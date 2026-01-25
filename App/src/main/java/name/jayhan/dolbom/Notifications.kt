@@ -1,5 +1,6 @@
 package name.jayhan.dolbom
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -17,6 +18,7 @@ class NotificationListener:
     NotificationListenerService() {
     private lateinit var context: Context
     private lateinit var notiMan: NotificationManager
+    private lateinit var alarmMan: AlarmManager
 
     override fun onListenerConnected() {
         super.onListenerConnected()
@@ -38,6 +40,8 @@ class NotificationListener:
             }
             notiMan.createNotificationChannel(channel)
         
+        alarmMan = context.getSystemService(ALARM_SERVICE) as AlarmManager
+        
         Notifications.onNotification(context, activeNotifications)
     }
 
@@ -47,30 +51,36 @@ class NotificationListener:
         if (sbn != null) {
             val indicator = Indicators.findIndicator(sbn)
             if (indicator?.relay?:false) {
-                notiMan.notify(
-                    indicator.packageName,
-                    Const.NOTI_RELAY,
-                    convertNotification(sbn)
-                )
+                val notification = sbn.notification
+                val extras = notification.extras
+                val relayNotification = Notification.Builder(
+                    context,
+                    Const.CHANNEL_RELAY
+                ).apply {
+                    setContentTitle(extras.getCharSequence(Notification.EXTRA_TITLE))
+                    setContentText(extras.getCharSequence(Notification.EXTRA_TEXT))
+                    setSmallIcon(notification.smallIcon)
+                }.build()
+                
+                if (indicator.repeat) {
+                    RelayAlarm.new(
+                        indicator.packageName,
+                        alarmMan,
+                        callback = {
+                            notiMan.notify(
+                                indicator.packageName,
+                                Const.NOTI_RELAY,
+                                relayNotification
+                            )
+                        }
+                    )
+                }
             }
         }
         
         Notifications.onNotification(context, activeNotifications)
     }
     
-    private fun convertNotification(sbn: StatusBarNotification): Notification {
-        val notification = sbn.notification
-        val extras = notification.extras
-        return Notification.Builder(
-            context,
-            Const.CHANNEL_RELAY
-        ).apply {
-            setContentTitle(extras.getCharSequence(Notification.EXTRA_TITLE))
-            setContentText(extras.getCharSequence(Notification.EXTRA_TEXT))
-            setSmallIcon(notification.smallIcon)
-        }.build()
-    }
-
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
 
@@ -81,6 +91,10 @@ class NotificationListener:
                     indicator.packageName,
                     Const.NOTI_RELAY
                 )
+                
+                if (indicator.repeat) {
+                    RelayAlarm.cancel(indicator.packageName)
+                }
             }
         }
         
@@ -90,6 +104,51 @@ class NotificationListener:
     override fun onListenerDisconnected() {
         Log.v(Const.TAG, "Listener disconnected")
         super.onListenerDisconnected()
+    }
+
+}
+
+class RelayAlarm(
+    private val tag: String,
+    private val alarmMan: AlarmManager,
+    private val callback: () -> Unit
+): AlarmManager.OnAlarmListener
+{
+    init {
+        callback()
+    }
+    
+    override fun onAlarm() {
+        callback()
+        alarmMan.set(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis() + Const.RELAY_INTERVAL_S * 1000,
+            tag,
+            this,
+            null,
+        )
+    }
+    
+    fun cancel() {
+        alarmMan.cancel(this)
+    }
+    
+    companion object {
+        private val alarms = mutableMapOf<String, RelayAlarm>()
+        
+        fun new(
+            tag: String,
+            alarmMan: AlarmManager,
+            callback: () -> Unit
+        ): RelayAlarm {
+            val alarm = RelayAlarm(tag, alarmMan, callback)
+            alarms[tag] = alarm
+            return alarm
+        }
+        
+        fun cancel(tag: String) {
+            alarms.remove(tag)?.cancel()
+        }
     }
 }
 

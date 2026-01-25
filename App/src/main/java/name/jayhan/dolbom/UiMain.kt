@@ -205,7 +205,7 @@ fun MainPage(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().padding(8.dp)
     ){
         IndicatorList(
             context = context,
