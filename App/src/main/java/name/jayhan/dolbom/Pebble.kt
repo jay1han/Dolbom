@@ -58,7 +58,7 @@ private object FaceDataReceiver:
                         if (context != null) Pebble.sendIntent(context, MsgType.INFO) {}
                 }
                 
-                MsgType.PING.ordinal -> {
+                MsgType.PONG.ordinal -> {
                     Log.v(Const.TAG, "in PONG")
                 }
             }

@@ -23,7 +23,6 @@
 
 ## Internal
 
-- Separate PING and PONG messages
 - Manage acked/unacked data sent
   - Apply to FRESH response
 - Manage disconnection

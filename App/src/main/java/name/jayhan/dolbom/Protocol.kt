@@ -45,7 +45,8 @@ enum class MsgType {
     WIFI,
     BT,
     NOTI,
-    PING
+    PING,
+    PONG
 }
 
 val MsgName = listOf(

@@ -42,6 +42,7 @@ typedef enum {
     MSG_BT,
     MSG_NOTI,
     MSG_PING,
+    MSG_PONG,
     MSG_TYPE
 } msg_type_t;
 
@@ -58,7 +59,8 @@ static const char MSG_NAME[MSG_TYPE][8] = {
     "WIFI",
     "BT",
     "NOTI",
-    "PING"
+    "PING",
+    "PONG"
 };
 
 typedef enum {
@@ -124,7 +126,7 @@ void send_batt() {
 void send_pong() {
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
-    dict_write_int8(iter, KEY_MSG_TYPE_I8, MSG_PING);
+    dict_write_int8(iter, KEY_MSG_TYPE_I8, MSG_PONG);
     app_message_outbox_send();
     APP_LOG(APP_LOG_LEVEL_INFO, "PONG out");
 }

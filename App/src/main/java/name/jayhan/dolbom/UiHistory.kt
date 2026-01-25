@@ -140,6 +140,7 @@ fun ClearBatteryDialog(
                     Text(
                         text = historyText,
                         fontSize = Const.textSize,
+                        textAlign = TextAlign.Center,
                     )
                     if (historyData.historyRate > 0f) {
                         Text(
@@ -147,12 +148,14 @@ fun ClearBatteryDialog(
                                 .format(historyData.historyRate,
                                     90f/historyData.historyRate),
                             fontSize = Const.textSize,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier.padding(top = 10.dp)
                         )
                     }
                 } else {
                     Text(
                         text = stringResource(R.string.no_history),
+                        textAlign = TextAlign.Center,
                         fontSize = Const.textSize,
                     )
                 }
@@ -161,6 +164,7 @@ fun ClearBatteryDialog(
                     text = stringResource(R.string.clear_battery_history),
                     fontSize = Const.titleSize,
                     lineHeight = Const.titleSize * 1.2,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.padding(10.dp)
                 )
 
