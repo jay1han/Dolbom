@@ -58,3 +58,4 @@ dkms.conf
 **/*~
 .lock-waf_linux_build
 build/
+/pebble.log

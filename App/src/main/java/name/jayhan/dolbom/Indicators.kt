@@ -39,6 +39,17 @@ class SingleIndicator(
             if (ignore) append("I")
         }.toString()
     }
+    
+    fun matches(
+        notification: Notification
+    ): Boolean {
+        return this.filterText.isNotEmpty() &&
+                this.filterType.listExtrasOf(notification).any { (_, value) ->
+                    value.contains(this.filterText)
+                }
+    }
+
+
 
     companion object {
         val Other = SingleIndicator(letter = '+')
@@ -109,7 +120,7 @@ object Indicators
                             match = 10
                         }
                     } else {
-                        if (notification.matches(indicator)) {
+                        if (indicator.matches(notification)) {
                             if (match < 20) {
                                 found = indicator
                                 match = 20
@@ -124,7 +135,7 @@ object Indicators
                                 match = 50
                             }
                         } else {
-                            if (notification.matches(indicator)) {
+                            if (indicator.matches(notification)) {
                                 found = indicator
                                 match = 100
                             }
@@ -185,28 +196,28 @@ enum class FilterType {
     Long { override val r = R.string.filter_long };
     abstract val r: Int
     
-    fun mapExtrasForFilter(
+    fun listExtrasOf(
         notification: Notification,
     ): Map<String, String> {
         when (this) {
-            Title -> return mapExtrasForList(notification, listOf(
+            Title -> return listExtrasOf(notification, listOf(
                 Notification.EXTRA_TITLE,
                 Notification.EXTRA_CONVERSATION_TITLE,
                 Notification.EXTRA_TITLE_BIG,
             ))
             
-            Subtitle -> return mapExtrasForList(notification, listOf(
+            Subtitle -> return listExtrasOf(notification, listOf(
                 Notification.EXTRA_PEOPLE_LIST,
                 Notification.EXTRA_SUB_TEXT,
             ))
             
-            Text -> return mapExtrasForList(notification, listOf(
+            Text -> return listExtrasOf(notification, listOf(
                 Notification.EXTRA_SUMMARY_TEXT,
                 Notification.EXTRA_INFO_TEXT,
                 Notification.EXTRA_TEXT,
             ))
             
-            Long -> return mapExtrasForList(notification, listOf(
+            Long -> return listExtrasOf(notification, listOf(
                 Notification.EXTRA_TEXT_LINES,
                 Notification.EXTRA_BIG_TEXT,
             ))
@@ -223,7 +234,7 @@ enum class FilterType {
             return Text
         }
         
-        private fun mapExtrasForList(
+        private fun listExtrasOf(
             notification: Notification,
             extraList: List<String>
         ): Map<String, String> {
@@ -233,15 +244,6 @@ enum class FilterType {
             }.filter { it.value.isNotEmpty() }
         }
     }
-}
-
-fun Notification.matches(
-    indicator: SingleIndicator
-): Boolean {
-    return indicator.filterText.isNotEmpty() &&
-            indicator.filterType.mapExtrasForFilter(this).any { (_, value) ->
-                value.contains(indicator.filterText)
-            }
 }
 
 val PreviewIndicators = listOf(

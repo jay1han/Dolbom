@@ -1,5 +1,8 @@
 package name.jayhan.dolbom
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,21 +16,74 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class NotificationListener:
     NotificationListenerService() {
     private lateinit var context: Context
+    private lateinit var notiMan: NotificationManager
 
     override fun onListenerConnected() {
+        super.onListenerConnected()
+        
         Log.v(Const.TAG, "Listener connected")
         context = applicationContext
-        super.onListenerConnected()
+        notiMan = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        
+        val channel = NotificationChannel(
+            Const.CHANNEL_RELAY,
+            "Dolbom relay",
+            NotificationManager.IMPORTANCE_DEFAULT,
+            ).apply {
+                setShowBadge(false)
+                enableVibration(true)
+                setBypassDnd(false)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                description = "Dolbom relay for ongoing notification"
+            }
+            notiMan.createNotificationChannel(channel)
+        
         Notifications.onNotification(context, activeNotifications)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
+        
+        if (sbn != null) {
+            val indicator = Indicators.findIndicator(sbn)
+            if (indicator?.relay?:false) {
+                notiMan.notify(
+                    indicator.packageName,
+                    Const.NOTI_RELAY,
+                    convertNotification(sbn)
+                )
+            }
+        }
+        
         Notifications.onNotification(context, activeNotifications)
+    }
+    
+    private fun convertNotification(sbn: StatusBarNotification): Notification {
+        val notification = sbn.notification
+        val extras = notification.extras
+        return Notification.Builder(
+            context,
+            Const.CHANNEL_RELAY
+        ).apply {
+            setContentTitle(extras.getCharSequence(Notification.EXTRA_TITLE))
+            setContentText(extras.getCharSequence(Notification.EXTRA_TEXT))
+            setSmallIcon(notification.smallIcon)
+        }.build()
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         super.onNotificationRemoved(sbn)
+
+        if (sbn != null) {
+            val indicator = Indicators.findIndicator(sbn)
+            if (indicator?.relay?:false) {
+                notiMan.cancel(
+                    indicator.packageName,
+                    Const.NOTI_RELAY
+                )
+            }
+        }
+        
         Notifications.onNotification(context, activeNotifications)
     }
     
@@ -49,7 +105,7 @@ class NotificationDump(
         ): NotificationDump {
             val notification = sbn.notification
             val extraMap = FilterType.entries.toList().associateWith {
-                it.mapExtrasForFilter(notification)
+                it.listExtrasOf(notification)
             }
             
             return NotificationDump(
@@ -86,7 +142,6 @@ object Notifications : BroadcastReceiver()
 
         savedNotifications = activeNotifications
         process(context, activeNotifications)
-        // TODO Check this: updateAllList()
     }
 
     fun process(
@@ -117,6 +172,8 @@ object Notifications : BroadcastReceiver()
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        if (intent?.action == Intent.ACTION_PACKAGE_ADDED ||
+            intent?.action == Intent.ACTION_PACKAGE_FULLY_REMOVED)
         updateAllList()
     }
 

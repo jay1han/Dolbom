@@ -46,6 +46,7 @@ object Const {
     const val EXTRA_BTON = "bton"
 
     const val CHANNEL_ID = "Dolbom"
+    
     const val NOTI_SERVICE = 10
     const val LAUNCH_REQUEST = 11
     const val REVIVE_REQUEST = 12
@@ -54,6 +55,10 @@ object Const {
     const val FOUND_REQUEST = 21
     const val FINDING_REQUEST = 22
     const val REPEAT_REQUEST = 23
+    
+    const val CHANNEL_RELAY = "Dolbom Relay"
+    const val NOTI_RELAY = 30
+    
     const val INTENT_FIND = "name.jayhan.dolbom.FIND_PHONE"
     const val INTENT_FINDING = "name.jayhan.dolbom.FINDING"
     const val INTENT_FOUND = "name.jayhan.dolbom.FOUND"
