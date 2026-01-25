@@ -35,10 +35,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -219,9 +221,12 @@ fun EditIndicator(
                     // Letter
                     OutlinedTextField(
                         enabled = !ignore,
-                        value = if (ignore) " " else newLetter.toString(),
+                        value = TextFieldValue(
+                            text = newLetter.toString(),
+                            selection = TextRange(start = 1, end = 1)
+                        ),
                         onValueChange = {
-                            newLetter = if (ignore) ' ' else acceptLetter(it)
+                            newLetter = acceptLetter(it.text)
                         },
                         singleLine = true,
                         textStyle = TextStyle(

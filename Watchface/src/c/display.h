@@ -6,16 +6,16 @@ typedef enum {
     disp_dnd ,
     disp_home,
     disp_noti,
-    disp_bton,
     disp_btid,
-    disp_btc,
-    disp_sim,
-    disp_net,
     disp_plmn,
     disp_wifi,
     disp_away,
     disp_wbat,
     disp_pbat,
+    disp_bton,
+    disp_net,
+    disp_sim,
+    disp_btc,
     disp_end
 } disp_t;
 

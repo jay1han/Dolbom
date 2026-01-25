@@ -6,16 +6,23 @@
 - Move ZenRule permissions to Permissions.kt
 - Test repeated relay
 - Watchface doesn't report battery
+- Separate PING and PONG messages
 
 ## Features
 
-- Show noti shown in Watch in Phone's Help screen 
+- Add Permissions overall help screen
+- DND: add current status in Dialog
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
 - Show toggles in indicator list (main screen)
-- Manager disconnection
+- Manage disconnection
   - Use timer on Watch side before declaring connection closed
 - App shows charging state in notification
   - Also notify fully charged
+- Manage acked/unacked data sent
+  - Apply to FRESH response
+- History Clear Dialog: add historical rate
+  
+## Watch
 
 ## Non-functional
 

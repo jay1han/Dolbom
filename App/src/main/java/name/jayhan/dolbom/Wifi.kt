@@ -18,7 +18,6 @@ class WifiCallback(
     private var ssid = ""
 
     init {
-        refresh()
         val networkRequest = NetworkRequest.Builder()
             .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
             .build()
