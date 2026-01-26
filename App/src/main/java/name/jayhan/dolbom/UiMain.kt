@@ -11,11 +11,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -78,13 +80,11 @@ fun AppScaffold(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                MainTopBar(context, isConnected, watchInfo,
-                    dndEnabled, dndActive,
-                    onHelp = { showHelp = true },
+                MainTopBar(isConnected, watchInfo, dndEnabled,
+                    dndActive, onHelp = { showHelp = true },
                     onHistory = { showHistory = true },
-                    onDnd = { showDnd = true },
-                    onWatch = { showWatch = true }
-                )
+                    onDnd = { showDnd = true }
+                ) { showWatch = true }
             },
         ) { innerPadding ->
             
@@ -118,9 +118,10 @@ fun AppScaffold(
                     lastReceived = lastReceived,
                     isConnected = isConnected,
                     tzWatch = tzWatch,
-                    onStats = {
-                        showStats = true
-                    },
+                    onStats = { showStats = true },
+                    onRefresh = {
+                        Pebble.sendIntent(context, MsgType.INFO) {}
+                    }
                 ) { showWatch = false }
             }
             
@@ -146,15 +147,14 @@ fun AppScaffold(
 
 @Composable
 fun MainTopBar(
-    context: Context,
     isConnected: Boolean,
     watchInfo: WatchInfo,
     dndEnabled: Boolean,
     dndActive: Boolean,
-    onHelp: ()-> Unit,
+    onHelp: () -> Unit,
     onHistory: () -> Unit,
     onDnd: () -> Unit,
-    onWatch:() -> Unit
+    onWatch: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -244,6 +244,7 @@ fun WatchDialog(
     isConnected: Boolean,
     lastReceived: Instant,
     onStats: () -> Unit,
+    onRefresh: ()-> Unit,
     onClose: () -> Unit
 ){
     Dialog(
@@ -288,20 +289,29 @@ fun WatchDialog(
                 }
                 
                 Row(
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedButton(
                         onClick = onStats,
                         border = BorderStroke(width = 1.dp, color = LocalContentColor.current)
                     ){
-                        Text("%d:%d"
-                            .format(PebbleStats.packetsSent, PebbleStats.packetsReceived),
+                        Text("%.1f".format(PebbleStats.getAverage()),
+                            fontSize = Const.textSize
+                        )
+                    }
+                    
+                    Button(
+                        onClick = onRefresh
+                    ) {
+                        Text(
+                            text = "Refresh",
                             fontSize = Const.textSize
                         )
                     }
                 }
-
+                
+                Spacer(Modifier.height(12.dp))
                 if (isConnected) {
                     UiTimezone(
                         tzWatch = tzWatch
@@ -324,15 +334,13 @@ val PreviewWatchInfo = WatchInfo(
 fun MainTopBarPreview() {
     PebbleTheme {
         MainTopBar(
-            LocalContext.current,
             isConnected = true,
             watchInfo = PreviewWatchInfo,
-            true, false,
-            {},
-            {},
+            true,
+            false, {},
             {},
             {}
-        )
+        ) {}
     }
 }
 
@@ -341,15 +349,13 @@ fun MainTopBarPreview() {
 fun MainTopBarDisconnected() {
     PebbleTheme {
         MainTopBar(
-            LocalContext.current,
             isConnected = false,
             watchInfo = WatchInfo(),
-            false, false,
-            {},
-            {},
+            false,
+            false, {},
             {},
             {}
-        )
+        ) {}
     }
 }
 
@@ -375,7 +381,8 @@ fun ShowWatchPreview() {
         lastReceived = Clock.System.now(),
         isConnected = true,
         tzWatch = "+8.0",
-        onStats = {}
+        onStats = {},
+        onRefresh = {},
     ) {}
 }
 
@@ -387,6 +394,7 @@ fun ShowWatchDisconnected() {
         lastReceived = Clock.System.now(),
         isConnected = false,
         tzWatch = "+8.0",
-        onStats = {}
+        onStats = {},
+        onRefresh = {},
     ) {}
 }

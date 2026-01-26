@@ -247,8 +247,8 @@ fun IndicatorItem(
                 Text(
                     text = "[$filterName] ${indicator.filterText}",
                     fontSize = Const.subSize,
-                    lineHeight = Const.subSize,
                     fontStyle = FontStyle.Italic,
+                    fontFamily = Const.condensedFont,
                     textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth()
                 )

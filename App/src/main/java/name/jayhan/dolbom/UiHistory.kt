@@ -47,7 +47,9 @@ fun HistoryDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 val batteryText =
                     if (watchInfo.plugged) {
@@ -99,14 +101,23 @@ fun HistoryDialog(
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
-                Button(
-                    onClick = { confirmClear = true },
-                    modifier = Modifier.padding(4.dp)
-                ) {
+                if (historyData.historyDate.isDistantPast) {
                     Text(
-                        text = "Clear history",
+                        text = stringResource(R.string.no_history),
+                        textAlign = TextAlign.Center,
                         fontSize = Const.textSize,
+                        modifier = Modifier.padding(8.dp)
                     )
+                } else {
+                    Button(
+                        onClick = { confirmClear = true },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.clear_history),
+                            fontSize = Const.textSize,
+                        )
+                    }
                 }
             }
         }
@@ -127,36 +138,30 @@ fun ClearBatteryDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
             ) {
-                if (!historyData.historyDate.isDistantPast) {
-                    val duration = Clock.System.now() - historyData.historyDate
-                    val historyText = stringResource(R.string.format_data_since)
-                        .format(
-                            historyData.historyCycles,
-                            historyData.historyDate.formatDate(),
-                            duration.formatDuration()
-                        )
-                    Text(
-                        text = historyText,
-                        fontSize = Const.textSize,
-                        textAlign = TextAlign.Center,
+                val duration = Clock.System.now() - historyData.historyDate
+                val historyText = stringResource(R.string.format_data_since)
+                    .format(
+                        historyData.historyCycles,
+                        historyData.historyDate.formatDate(),
+                        duration.formatDuration()
                     )
-                    if (historyData.historyRate > 0f) {
-                        Text(
-                            text = "Historical rate\n%.1f%%/day\n%.1f days/charge"
-                                .format(historyData.historyRate,
-                                    90f/historyData.historyRate),
-                            fontSize = Const.textSize,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
-                    }
-                } else {
+                Text(
+                    text = historyText,
+                    fontSize = Const.textSize,
+                    textAlign = TextAlign.Center,
+                )
+                if (historyData.historyRate > 0f) {
                     Text(
-                        text = stringResource(R.string.no_history),
-                        textAlign = TextAlign.Center,
+                        text = "Historical rate\n%.1f%%/day\n%.1f days/charge"
+                            .format(historyData.historyRate,
+                                90f/historyData.historyRate),
                         fontSize = Const.textSize,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 10.dp)
                     )
                 }
 

@@ -214,7 +214,7 @@ fun EditIndicator(
                         enabled = !ignore,
                         value = TextFieldValue(
                             text = newLetter.toString(),
-                            selection = TextRange(start = 1, end = 1)
+                            selection = TextRange(start = 0, end = 0)
                         ),
                         onValueChange = {
                             newLetter = acceptLetter(it.text)
@@ -484,7 +484,7 @@ fun acceptLetter(input: String): Char {
     if (input.isEmpty()) return ' '
 
     val letter = try {
-        input.removePrefix(" ").removeSuffix(" ").last()
+        input.removePrefix(" ").first()
     } catch (_: NoSuchElementException) {
         ' '
     }

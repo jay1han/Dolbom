@@ -2,6 +2,7 @@ package name.jayhan.dolbom
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -26,6 +28,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -109,6 +112,7 @@ fun UiTimezone(
         Text(
             text = stringResource(R.string.timezone),
             fontSize = Const.titleSize,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Row (
@@ -120,14 +124,15 @@ fun UiTimezone(
                 }
         ) {
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxWidth(.5f)
+                    .background(Color(0xFFC0C0C0))
             ) {
                 BasicTextField(
                     readOnly = !editing,
                     value = if (editing) tz else tzWatch,
                     onValueChange = { tz = it },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                    modifier = Modifier.fillMaxWidth().padding(8.dp)
                         .focusRequester(focusRequester)
                         .focusProperties { canFocus = editing }
                         .onFocusChanged { editing = it.hasFocus || it.isFocused },
