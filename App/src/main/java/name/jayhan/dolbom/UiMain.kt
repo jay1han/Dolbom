@@ -5,6 +5,7 @@ package name.jayhan.dolbom
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -170,7 +172,6 @@ fun MainTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp)
             ) {
                 Icon(
                     painterResource(
@@ -200,13 +201,14 @@ fun MainTopBar(
                 Text(
                     text = "${watchInfo.battery}%",
                     fontSize = Const.titleSize,
-                    modifier = Modifier.clickable { onHistory() }
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                        .clickable { onHistory() }
                 )
             } else {
                 Icon(
                     painterResource(R.drawable.outline_refresh_24),
                     contentDescription = "Refresh",
-                    modifier = Modifier.scale(1.5f)
+                    modifier = Modifier.scale(1.5f).padding(horizontal = 12.dp)
                 )
             }
         }
@@ -290,7 +292,8 @@ fun WatchDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedButton(
-                        onClick = onStats
+                        onClick = onStats,
+                        border = BorderStroke(width = 1.dp, color = LocalContentColor.current)
                     ){
                         Text("%d:%d"
                             .format(PebbleStats.packetsSent, PebbleStats.packetsReceived),

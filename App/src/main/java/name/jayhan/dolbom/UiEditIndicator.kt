@@ -156,10 +156,8 @@ fun EditIndicator(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                            modifier = Modifier.padding(0.dp)
                         ) {
                             Checkbox(
-                                modifier = Modifier.padding(0.dp),
                                 checked = ignore,
                                 onCheckedChange = { state ->
                                     ignore = state
@@ -170,7 +168,6 @@ fun EditIndicator(
                                 }
                             )
                             Text(
-                                modifier = Modifier.padding(0.dp),
                                 text = stringResource(R.string.ignore_indication),
                                 fontSize = Const.smallSize,
                                 fontFamily = Const.condensedFont,
@@ -181,17 +178,14 @@ fun EditIndicator(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                            modifier = Modifier.padding(0.dp)
                         ) {
                             Checkbox(
-                                modifier = Modifier.padding(0.dp),
                                 checked = ongoing,
                                 onCheckedChange = { state ->
                                     ongoing = state
                                 }
                             )
                             Text(
-                                modifier = Modifier.padding(0.dp),
                                 text = stringResource(R.string.ongoing_indication),
                                 fontSize = Const.smallSize,
                                 fontFamily = Const.condensedFont,
@@ -202,15 +196,12 @@ fun EditIndicator(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                            modifier = Modifier.padding(0.dp)
                         ) {
                             Checkbox(
-                                modifier = Modifier.padding(0.dp),
                                 checked = local,
                                 onCheckedChange = { local = it },
                             )
                             Text(
-                                modifier = Modifier.padding(0.dp),
                                 text = "Local",
                                 fontSize = Const.smallSize,
                                 fontFamily = Const.condensedFont,
@@ -251,10 +242,8 @@ fun EditIndicator(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                        modifier = Modifier.padding(0.dp)
                     ) {
                         Checkbox(
-                            modifier = Modifier.padding(0.dp),
                             checked = sticky,
                             onCheckedChange = { state ->
                                 sticky = state
@@ -273,10 +262,8 @@ fun EditIndicator(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(-8.dp),
-                        modifier = Modifier.padding(0.dp)
                     ) {
                         Checkbox(
-                            modifier = Modifier.padding(0.dp),
                             checked = relay,
                             onCheckedChange = {
                                 relay = it
@@ -284,7 +271,6 @@ fun EditIndicator(
                             }
                         )
                         Text(
-                            modifier = Modifier.padding(0.dp),
                             text ="Relay",
                             fontSize = Const.smallSize,
                             fontFamily = Const.condensedFont,
@@ -300,11 +286,9 @@ fun EditIndicator(
                         Checkbox(
                             enabled = relay,
                             checked = repeat,
-                            modifier = Modifier.padding(0.dp),
                             onCheckedChange = { repeat = it },
                         )
                         Text(
-                            modifier = Modifier.padding(0.dp),
                             text ="Repeat",
                             fontSize = Const.smallSize,
                             fontFamily = Const.condensedFont,
@@ -469,7 +453,6 @@ fun IndicatorError(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(0.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -105,7 +106,7 @@ fun IndicatorList(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).padding(horizontal = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
         ) {
             Button(
                 onClick = { dataDialog = true },
@@ -134,6 +135,17 @@ fun IndicatorList(
                 }
             }
             
+            Icon(
+                painterResource(R.drawable.outline_check_circle_24),
+                contentDescription = "Sticky",
+                tint = if (hasSticky) LocalContentColor.current else Color.Transparent,
+                modifier = Modifier.padding(horizontal = 24.dp)
+                    .scale(1.5f)
+                    .clickable {
+                    if (hasSticky) showSticky = true
+                }
+            )
+            
             Button(
                 onClick = {
                     editIndicator = SingleIndicator()
@@ -145,22 +157,11 @@ fun IndicatorList(
                     fontSize = Const.textSize
                 )
             }
-        
-            Icon(
-                painterResource(R.drawable.outline_check_circle_24),
-                contentDescription = "Sticky",
-                tint = if (hasSticky) LocalContentColor.current else Color.Transparent,
-                modifier = Modifier.padding(start = 12.dp)
-                    .scale(1.5f)
-                    .clickable {
-                    if (hasSticky) showSticky = true
-                }
-            )
         }
 
         if (indicators.isNotEmpty()) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(0.dp)
+                modifier = Modifier.fillMaxWidth()
                     .verticalScroll(scrollState),
             ) {
                 HorizontalDivider(thickness = 1.dp)
@@ -192,7 +193,7 @@ fun IndicatorItem(
             .clickable { onClick() }
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth(.1f).padding(4.dp)
+            modifier = Modifier.fillMaxWidth(.1f).padding(horizontal = 4.dp)
         ) {
             val icon = getApplicationIcon(LocalContext.current, indicator.packageName)
             if (icon != null) {
@@ -254,22 +255,9 @@ fun IndicatorItem(
             }
         }
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.background(color = Const.colorIndicatorBack)
-                .width(32.dp)
+        if (withFlags &&
+            (indicator.sticky || indicator.relay)
         ) {
-            Text(
-                text = if (indicator.ignore) "" else indicator.letter.toString(),
-                fontSize = Const.titleSize,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier,
-                textAlign = TextAlign.Center,
-                color = Const.colorIndicatorLetter,
-            )
-        }
-
-        if (withFlags) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.padding(start = 4.dp)
@@ -286,6 +274,22 @@ fun IndicatorItem(
                         IndicatorFlagIcon(R.drawable.outline_keyboard_arrow_right_24)
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.width(4.dp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.background(color = Const.colorIndicatorBack)
+                .width(32.dp)
+        ) {
+            Text(
+                text = if (indicator.ignore) "" else indicator.letter.toString(),
+                fontSize = Const.titleSize,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier,
+                textAlign = TextAlign.Center,
+                color = Const.colorIndicatorLetter,
+            )
         }
     }
 }

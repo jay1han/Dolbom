@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,9 +44,7 @@ fun SelectPackage(
             onClose()
         }
     ) {
-        Card(
-            modifier = Modifier.fillMaxSize().padding(0.dp)
-        ) {
+        Card {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
             ) {
@@ -74,7 +71,7 @@ fun SelectPackage(
                         items = listShown,
                     ) { packageName ->
                         ListItem(
-                            modifier = Modifier.padding(0.dp).fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                                 .clickable {
                                     onSelect(packageName)
                                     onClose()
@@ -85,7 +82,7 @@ fun SelectPackage(
                                     Image(
                                         bitmap = appIcon,
                                         contentDescription = packageName,
-                                        modifier = Modifier.fillMaxWidth(.15f).padding(0.dp)
+                                        modifier = Modifier.fillMaxWidth(.15f)
                                     )
                                 }
                             },
@@ -102,7 +99,7 @@ fun SelectPackage(
                                 Text(
                                     text = packageName,
                                     fontSize = Const.subSize,
-                                    modifier = Modifier.fillMaxWidth().padding(0.dp),
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
                         )

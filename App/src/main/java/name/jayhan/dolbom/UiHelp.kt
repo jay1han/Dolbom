@@ -86,7 +86,7 @@ fun DumpDialog(
         }
     ) {
         Card(
-            modifier = Modifier.fillMaxSize().padding(0.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().padding(4.dp)
@@ -193,7 +193,7 @@ fun StatsDialog(
                 
                 Button(
                     onClick = onReset,
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier.padding(top = 12.dp)
                 ) {
                     Text(
                         text ="Reset data",
