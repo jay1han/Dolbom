@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.drawable.Icon
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -52,25 +53,22 @@ class NotificationListener:
             val indicator = Indicators.findIndicator(sbn)
             if (indicator?.relay?:false) {
                 val notification = sbn.notification
-                val extras = notification.extras
-                val relayNotification = Notification.Builder(
-                    context,
-                    Const.CHANNEL_RELAY
-                ).apply {
-                    setContentTitle(extras.getCharSequence(Notification.EXTRA_TITLE))
-                    setContentText(extras.getCharSequence(Notification.EXTRA_TEXT))
-                    setSmallIcon(notification.smallIcon)
-                }.build()
                 
                 if (indicator.repeat) {
                     RelayAlarm.new(
                         indicator.packageName,
                         alarmMan,
-                        callback = {
+                        callback = { index ->
                             notiMan.notify(
                                 indicator.packageName,
                                 Const.NOTI_RELAY,
-                                relayNotification
+                                buildRelayNotification(
+                                    context,
+                                    notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString(),
+                                    notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString(),
+                                    notification.smallIcon,
+                                    index
+                                )
                             )
                         }
                     )
@@ -108,18 +106,46 @@ class NotificationListener:
 
 }
 
+fun buildRelayNotification(
+    context: Context,
+    title: String,
+    text: String,
+    icon: Icon,
+    index: Int
+): Notification {
+    return Notification.Builder(
+        context,
+        Const.CHANNEL_RELAY
+    ).apply {
+        setContentTitle(title)
+        setContentText(text + "...%d".format(index))
+        setSmallIcon(icon)
+        setOnlyAlertOnce(false)
+    }.build()
+}
+
 class RelayAlarm(
     private val tag: String,
     private val alarmMan: AlarmManager,
-    private val callback: () -> Unit
+    private val callback: (Int) -> Unit
 ): AlarmManager.OnAlarmListener
 {
+    private var active = true
+    private var index = 0
+    
     init {
-        callback()
+        onAlarm()
     }
     
     override fun onAlarm() {
-        callback()
+        if (!active) {
+            cancel()
+            return
+        }
+        
+        callback(index)
+        index += 1
+        
         alarmMan.set(
             AlarmManager.RTC_WAKEUP,
             System.currentTimeMillis() + Const.RELAY_INTERVAL_S * 1000,
@@ -131,6 +157,7 @@ class RelayAlarm(
     
     fun cancel() {
         alarmMan.cancel(this)
+        active = false
     }
     
     companion object {
@@ -139,7 +166,7 @@ class RelayAlarm(
         fun new(
             tag: String,
             alarmMan: AlarmManager,
-            callback: () -> Unit
+            callback: (Int) -> Unit
         ): RelayAlarm {
             val alarm = RelayAlarm(tag, alarmMan, callback)
             alarms[tag] = alarm
