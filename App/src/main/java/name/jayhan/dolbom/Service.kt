@@ -68,6 +68,7 @@ class PebbleService:
             addAction(Const.INTENT_STOP)
             addAction(Const.INTENT_UPDATE)
             addAction(Const.INTENT_REFRESH)
+            addAction(Const.INTENT_FULLY_CHARGED)
             addAction(Const.INTENT_DND)
             addAction(Const.INTENT_CLEAR)
             addAction(Const.INTENT_SEND_PEBBLE)
@@ -75,7 +76,10 @@ class PebbleService:
         }
         context.registerReceiver(receiver, filter,RECEIVER_EXPORTED)
 
-        val channel = NotificationChannel(
+        notiMan = context.getSystemService(NOTIFICATION_SERVICE)
+                as NotificationManager
+        
+        val ongoingChannel = NotificationChannel(
             Const.CHANNEL_ID,
             getString(R.string.app_title),
             NotificationManager.IMPORTANCE_LOW
@@ -86,9 +90,20 @@ class PebbleService:
             importance = NotificationManager.IMPORTANCE_LOW
         }
         
-        notiMan = context.getSystemService(NOTIFICATION_SERVICE)
-                as NotificationManager
-        notiMan.createNotificationChannel(channel)
+        notiMan.createNotificationChannel(ongoingChannel)
+        
+        val alertChannel = NotificationChannel(
+            Const.CHANNEL_ALERT,
+            getString(R.string.app_title),
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            setShowBadge(false)
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            description = "Dolbom Alert"
+            importance = NotificationManager.IMPORTANCE_HIGH
+        }
+        
+        notiMan.createNotificationChannel(alertChannel)
         
         startForeground(Const.NOTI_SERVICE, buildNotification(),
             ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
@@ -130,12 +145,17 @@ class PebbleService:
             setContentIntent(launchIntent)
             
             if (Pebble.isConnected.value) {
+                val estimate =
+                    if (History.historyData.cycleRate > 0f)
+                        (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                    else 0f
                 setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-                setContentText("\u2590%s\u258c %s%.1f days"
-                    .format(
+                setContentText(
+                    "\u2590%s\u258c %s".format(
                         Notifications.indicators,
                         if (watchInfo.charging) "\u26a1" else "",
-                        (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                    ) + "%.1f days".format(
+                        estimate
                     )
                 )
             } else {
@@ -256,6 +276,23 @@ class PebbleService:
                     refreshService()
                 }
                 
+                Const.INTENT_FULLY_CHARGED -> {
+                    Log.v(Const.TAG, "Intent: Fully charged")
+                    notiMan.notify(
+                        Const.NOTI_FULLY_CHARGED,
+                        Notification.Builder(
+                            context,
+                            Const.CHANNEL_ALERT
+                        ).apply {
+                            setSmallIcon(R.mipmap.ic_launcher)
+                            setContentTitle("Fully charged")
+                            setContentText(Pebble.watchInfo.modelString())
+                            setVisibility(Notification.VISIBILITY_PUBLIC)
+                        }.build()
+                    )
+                    updateNotification()
+                }
+                
                 Const.INTENT_STOP -> {
                     Log.v(Const.TAG, "Intent: Stop service")
                     stopSelf()
@@ -263,7 +300,10 @@ class PebbleService:
                 
                 Const.INTENT_DND -> zenRule.toggle()
                 
-                Const.INTENT_CLEAR -> Notifications.Accumulator.clearSticky()
+                Const.INTENT_CLEAR -> {
+                    Notifications.Accumulator.clearSticky()
+                    Notifications.refresh(context)
+                }
                 
                 Const.INTENT_PEBBLE_PONG -> alarmListener.clearAlarm()
                 

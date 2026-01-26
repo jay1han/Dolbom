@@ -1,6 +1,7 @@
 package name.jayhan.dolbom
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -45,14 +48,16 @@ fun IndicatorList(
     context: Context,
     activeList: List<String>,
     allList: List<String>,
-    indicators: List<SingleIndicator>
+    indicators: List<SingleIndicator>,
 ) {
     var editDialog by remember { mutableStateOf(false) }
     var editIndicator by remember { mutableStateOf(SingleIndicator()) }
     val scrollState = rememberScrollState()
-    var resetDialog by remember { mutableStateOf(false) }
+    var dataDialog by remember { mutableStateOf(false) }
     var showDump by remember { mutableStateOf(false) }
     val dumpFlow by Notifications.dumpFlow.collectAsState(0)
+    var showSticky by remember { mutableStateOf(false) }
+    val stickyCount by Notifications.Accumulator.stickyCount.collectAsState(0)
 
     if (showDump) {
         DumpDialog(Notifications.dump) {
@@ -72,15 +77,25 @@ fun IndicatorList(
         }
     }
 
-    if (resetDialog) {
-        ResetDialog(
+    if (dataDialog) {
+        DataDialog(
             onClose = {
-                resetDialog = false
+                dataDialog = false
             },
             onConfirm = {
                 Indicators.reset()
                 Notifications.refresh(context)
             }
+        )
+    }
+    
+    if (showSticky) {
+        StickyDialog(
+            stickies = Notifications.Accumulator.listSticky(),
+            onClose = { showSticky = false },
+            onClear = {
+                context.sendBroadcast(Intent(Const.INTENT_CLEAR))
+            },
         )
     }
     
@@ -90,14 +105,14 @@ fun IndicatorList(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).padding(horizontal = 8.dp)
         ) {
             Button(
-                onClick = { resetDialog = true },
+                onClick = { dataDialog = true },
             ) {
-                Text(
-                    text = stringResource(R.string.reset),
-                    fontSize = Const.textSize
+                Icon(
+                    painterResource(R.drawable.outline_compare_arrows_24),
+                    contentDescription = "Backup"
                 )
             }
             
@@ -105,10 +120,17 @@ fun IndicatorList(
                 onClick = { if (dumpFlow > 0) showDump = true },
                 border = BorderStroke(1.dp,LocalContentColor.current),
             ) {
-                Text(
-                    text = stringResource(R.string.format_dump).format(dumpFlow),
-                    fontSize = Const.textSize
-                )
+                Row {
+                    Icon(
+                        painterResource(R.drawable.outline_lists_24),
+                        contentDescription = "Dump",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        text = dumpFlow.toString(),
+                        fontSize = Const.textSize
+                    )
+                }
             }
             
             Button(
@@ -122,16 +144,19 @@ fun IndicatorList(
                     fontSize = Const.textSize
                 )
             }
+        
+            val stickyExists = stickyCount > 0
+            Icon(
+                painterResource(R.drawable.outline_check_circle_24),
+                contentDescription = "Sticky",
+                tint = if (stickyExists) LocalContentColor.current else Color.Transparent,
+                modifier = Modifier.scale(1.5f).clickable {
+                    if (stickyExists) showSticky = true
+                }
+            )
         }
 
-        if (indicators.isEmpty()) {
-            Text(
-                text = stringResource(R.string.no_indicators),
-                textAlign = TextAlign.Center,
-                fontSize = Const.titleSize,
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
-            )
-        } else {
+        if (indicators.isNotEmpty()) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(0.dp)
                     .verticalScroll(scrollState),
@@ -141,11 +166,11 @@ fun IndicatorList(
                 for (indicator in indicators) {
                     IndicatorItem(
                         indicator,
-                        onEdit = {
-                            editIndicator = indicator
-                            editDialog = true
-                        }
-                    )
+                        true
+                    ) {
+                        editIndicator = indicator
+                        editDialog = true
+                    }
                     HorizontalDivider(thickness = 1.dp)
                 }
             }
@@ -156,12 +181,13 @@ fun IndicatorList(
 @Composable
 fun IndicatorItem(
     indicator: SingleIndicator,
-    onEdit: () -> Unit
+    withFlags: Boolean,
+    onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            .clickable { onEdit() }
+            .clickable { onClick() }
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(.1f).padding(4.dp)
@@ -229,31 +255,34 @@ fun IndicatorItem(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.background(color = Const.colorIndicatorBack)
+                .width(32.dp)
         ) {
             Text(
                 text = if (indicator.ignore) "" else indicator.letter.toString(),
                 fontSize = Const.titleSize,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(.1f).padding(horizontal = 16.dp),
+                modifier = Modifier,
                 textAlign = TextAlign.Center,
                 color = Const.colorIndicatorLetter,
             )
         }
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(start = 4.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.outline_circle_28),
-                contentDescription = "",
-                tint = if (indicator.sticky) LocalContentColor.current else Color.Transparent
-            )
-            if (indicator.relay) {
-                if (indicator.repeat)
-                    IndicatorFlagIcon(R.drawable.outline_keyboard_double_arrow_right_24)
-                else
-                    IndicatorFlagIcon(R.drawable.outline_keyboard_arrow_right_24)
+        if (withFlags) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(start = 4.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.outline_circle_28),
+                    contentDescription = "",
+                    tint = if (indicator.sticky) LocalContentColor.current else Color.Transparent
+                )
+                if (indicator.relay) {
+                    if (indicator.repeat)
+                        IndicatorFlagIcon(R.drawable.outline_keyboard_double_arrow_right_24)
+                    else
+                        IndicatorFlagIcon(R.drawable.outline_keyboard_arrow_right_24)
+                }
             }
         }
     }
@@ -268,10 +297,12 @@ fun IndicatorFlagIcon(res: Int) {
 }
 
 @Composable
-fun ResetDialog(
+fun DataDialog(
     onConfirm: () -> Unit,
     onClose: () -> Unit
 ) {
+    val backedUp = Indicators.backedUp.collectAsState(false)
+    
     Dialog(
         onDismissRequest = onClose
     ) {
@@ -314,17 +345,69 @@ fun ResetDialog(
     }
 }
 
+@Composable
+fun StickyDialog(
+    stickies: List<SingleIndicator>,
+    onClose: () -> Unit,
+    onClear: () -> Unit,
+) {
+    val scrollState = rememberScrollState()
+    
+    Dialog(
+        onDismissRequest = onClose,
+    ) {
+        Card(
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = "Sticky indicators",
+                    fontSize = Const.titleSize,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                )
+                
+                HorizontalDivider(thickness = 1.dp)
+                Column(
+                    modifier = Modifier.verticalScroll(scrollState)
+                ){
+                    stickies.forEach {
+                        IndicatorItem(indicator = it, withFlags = false, onClick = {})
+                    }
+                }
+                HorizontalDivider(thickness = 1.dp)
+                
+                Button(
+                    onClick = {
+                        onClear()
+                        onClose()
+                    },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(
+                        text = "Clear all",
+                        fontSize = Const.textSize
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun IndicatorItemPreview() {
     PebbleTheme {
         IndicatorItem(
             SingleIndicator(
-                "com.google.android.apps.messaging",
-                "jayhan.dev",
-                "text",
+                packageName = "com.google.android.apps.messaging",
+                channelId = "jayhan.dev",
+                filterText = "text",
                 letter = 'S',
             ),
+            true,
         ) { }
     }
 }
@@ -357,11 +440,17 @@ fun IndicatorListEmpty() {
 
 @Preview
 @Composable
-fun ResetDialogPreview() {
+fun DataDialogPreview() {
     PebbleTheme {
-        ResetDialog(
+        DataDialog(
             onClose = {},
             onConfirm = {}
         )
     }
+}
+
+@Preview
+@Composable
+fun StickyDialogPreview() {
+    StickyDialog(PreviewIndicators, {}) {}
 }

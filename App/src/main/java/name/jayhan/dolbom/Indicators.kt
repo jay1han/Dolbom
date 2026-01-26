@@ -97,6 +97,7 @@ object Indicators
     private var allIndicators = mutableListOf<SingleIndicator>()
     val allFlow = MutableStateFlow(mutableListOf<SingleIndicator>())
     private lateinit var savedSettings: SharedPreferences
+    val backedUp = MutableStateFlow(false)
 
     fun init(context: Context) {
         savedSettings = context.getSharedPreferences(

@@ -216,6 +216,9 @@ object Pebble
         watchInfo = watchInfo.setBattery(battery, plugged, charging)
         infoFlow.value = watchInfo
         History.event(battery, plugged)
+        if (battery == 100 && plugged) {
+            context?.sendBroadcast(Intent(Const.INTENT_FULLY_CHARGED))
+        }
         updateNotification(context)
     }
 

@@ -60,6 +60,9 @@ object Const {
     const val NOTI_RELAY = 30
     const val RELAY_INTERVAL_S = 5
     
+    const val CHANNEL_ALERT = "Dolbom Alert"
+    const val NOTI_FULLY_CHARGED = 40
+    
     const val INTENT_FIND = "name.jayhan.dolbom.FIND_PHONE"
     const val INTENT_FINDING = "name.jayhan.dolbom.FINDING"
     const val INTENT_FOUND = "name.jayhan.dolbom.FOUND"
@@ -67,6 +70,7 @@ object Const {
     
     const val INTENT_DND = "name.jayhan.dolbom.TOGGLE_DND"
     const val INTENT_CLEAR = "name.jayhan.dolbom.CLEAR_STICKY"
+    const val INTENT_FULLY_CHARGED = "name.jayhan.dolbom.FULLY_CHARGED"
     
     const val PREF_INDIC = "name.jayhan.dolbom.INDICATORS"
     const val PREF_HISTORY = "name.jayhan.dolbom.HISTORY"

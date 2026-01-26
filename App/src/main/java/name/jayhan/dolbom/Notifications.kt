@@ -221,37 +221,34 @@ object Notifications : BroadcastReceiver()
         context: Context,
         activeNotifications: Array<StatusBarNotification>
     ) {
-        if (!this::packMan.isInitialized) {
-            savedNotifications = activeNotifications
-            return
-        }
-
         savedNotifications = activeNotifications
-        process(context, activeNotifications)
+        if (!this::packMan.isInitialized) return
+        process(context)
     }
-
-    fun process(
-        context: Context,
-        activeNotifications: Array<StatusBarNotification>
+    
+    private fun process(
+        context: Context
     ) {
         val activeList = mutableListOf<String>()
         dump = mutableListOf()
         Accumulator.clear()
-
-        for (sbn in activeNotifications) {
-            if (sbn.packageName.startsWith(BuildConfig.APPLICATION_ID)) continue
-            
-            dump.add(NotificationDump.fromSBN(sbn))
-            activeList.add(sbn.packageName)
-            Accumulator.add(sbn)
-        }
-        activeFlow.value = activeList.dedup()
-        dumpFlow.value = dump.size
-
-        indicators = Accumulator.getCompact().take(Const.MAX_NOTI_INDICATORS)
-
-        Pebble.sendIntent(context, MsgType.NOTI) {
-            putExtra(Const.EXTRA_NOTI, indicators)
+        
+        if (savedNotifications != null) {
+            for (sbn in savedNotifications) {
+                if (sbn.packageName.startsWith(BuildConfig.APPLICATION_ID)) continue
+                
+                dump.add(NotificationDump.fromSBN(sbn))
+                activeList.add(sbn.packageName)
+                Accumulator.add(sbn)
+            }
+            activeFlow.value = activeList.dedup()
+            dumpFlow.value = dump.size
+    
+            indicators = Accumulator.getCompact().take(Const.MAX_NOTI_INDICATORS)
+    
+            Pebble.sendIntent(context, MsgType.NOTI) {
+                putExtra(Const.EXTRA_NOTI, indicators)
+            }
         }
         
         Pebble.updateNotification(context)
@@ -277,11 +274,7 @@ object Notifications : BroadcastReceiver()
 
         updateAllList()
         Indicators.init(context)
-
-        if (savedNotifications != null) {
-            val activeNotifications = savedNotifications!!
-            process(context, activeNotifications)
-        }
+        process(context)
     }
 
     private fun updateAllList() {
@@ -304,14 +297,7 @@ object Notifications : BroadcastReceiver()
             .map { it.first }
     }
 
-    fun refresh(
-        context: Context
-    ) {
-        if (savedNotifications != null) {
-            val activeNotifications = savedNotifications!!
-            process(context, activeNotifications)
-        }
-    }
+    fun refresh(context: Context) = process(context)
     
     fun getApplicationName(packageName: String): String {
         return mapPackageToName[packageName] ?: ""
@@ -319,15 +305,21 @@ object Notifications : BroadcastReceiver()
     
     object Accumulator {
         private var litList = mutableListOf<SingleIndicator>()
+        var stickyCount = MutableStateFlow(0)
         
         fun clear() {
             litList = litList.filter { it.sticky }.toMutableList()
         }
         
-        fun clearSticky() {
-            litList = litList.filter { !it.sticky }.toMutableList()
+        fun listSticky(): List<SingleIndicator> {
+            return litList.filter { it.sticky }.map { it }
         }
     
+        fun clearSticky() {
+            litList = litList.filter { !it.sticky }.toMutableList()
+            stickyCount.value = 0
+        }
+        
         fun add(sbn: StatusBarNotification) {
             val indicator = Indicators.findIndicator(sbn) ?: return
             
@@ -336,6 +328,7 @@ object Notifications : BroadcastReceiver()
                 indicator.timeInfo = sbn.notification.`when`
                 litList.add(indicator)
             }
+            stickyCount.value = litList.filter { !it.sticky }.size
         }
         
         fun getCompact(): String {
