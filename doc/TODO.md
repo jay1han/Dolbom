@@ -3,7 +3,6 @@
 ## Bugs
 
 - Watchface: Quiet time not working
-- Icons in dark mode
 - Relayed notification doesn't vibrate watch
   - It also doesn't repeat
 

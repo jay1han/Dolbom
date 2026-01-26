@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -228,7 +229,7 @@ fun IndicatorItem(
             Icon(
                 painter = painterResource(R.drawable.outline_circle_28),
                 contentDescription = "",
-                tint = if (indicator.sticky) Color(0xFF000000) else Color(0x00FFFFFF)
+                tint = if (indicator.sticky) LocalContentColor.current else Color.Transparent
             )
             if (indicator.relay) {
                 if (indicator.repeat)
