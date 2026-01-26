@@ -1,6 +1,7 @@
 package name.jayhan.dolbom
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,8 +18,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +51,15 @@ fun IndicatorList(
     var editIndicator by remember { mutableStateOf(SingleIndicator()) }
     val scrollState = rememberScrollState()
     var resetDialog by remember { mutableStateOf(false) }
+    var showDump by remember { mutableStateOf(false) }
+    val dumpFlow by Notifications.dumpFlow.collectAsState(0)
 
+    if (showDump) {
+        DumpDialog(Notifications.dump) {
+            showDump = false
+        }
+    }
+    
     if (editDialog) {
         EditIndicator(
             context = context,
@@ -72,7 +83,7 @@ fun IndicatorList(
             }
         )
     }
-
+    
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -89,10 +100,17 @@ fun IndicatorList(
                     fontSize = Const.textSize
                 )
             }
-            Text(
-                text = stringResource(R.string.indicators),
-                fontSize = Const.titleSize,
-            )
+            
+            OutlinedButton(
+                onClick = { if (dumpFlow > 0) showDump = true },
+                border = BorderStroke(1.dp,LocalContentColor.current),
+            ) {
+                Text(
+                    text = stringResource(R.string.format_dump).format(dumpFlow),
+                    fontSize = Const.textSize
+                )
+            }
+            
             Button(
                 onClick = {
                     editIndicator = SingleIndicator()
@@ -100,7 +118,7 @@ fun IndicatorList(
                 },
             ) {
                 Text(
-                    text = stringResource(R.string.add),
+                    text = "+",
                     fontSize = Const.textSize
                 )
             }

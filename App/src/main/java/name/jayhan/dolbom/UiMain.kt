@@ -7,6 +7,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,6 +65,7 @@ fun AppScaffold(
     var showHistory by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
     var showWatch by remember { mutableStateOf(false) }
+    var showStats by remember { mutableStateOf(false) }
 
     if (!permissionsGranted) {
         PermissionsScaffold()
@@ -80,6 +83,7 @@ fun AppScaffold(
                 )
             },
         ) { innerPadding ->
+            
             if (showHistory) {
                 HistoryDialog(
                     watchInfo = watchInfo,
@@ -104,14 +108,24 @@ fun AppScaffold(
                 )
             }
             
-            if (showWatch && isConnected) {
+            if (showWatch) {
                 WatchDialog(
                     context = context,
                     lastReceived = lastReceived,
-                    tzWatch = tzWatch
+                    isConnected = isConnected,
+                    tzWatch = tzWatch,
+                    onStats = {
+                        showStats = true
+                    },
                 ) { showWatch = false }
             }
-
+            
+            if (showStats) {
+                StatsDialog(
+                    onClose = { showStats = false }
+                ) { PebbleStats.resetStats() }
+            }
+            
             MainPage(
                 context = context,
                 activeList = activeList,
@@ -154,7 +168,6 @@ fun MainTopBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(0.dp)
-                    .clickable { onDnd() }
             ) {
                 Icon(
                     painterResource(
@@ -164,6 +177,7 @@ fun MainTopBar(
                     ),
                     contentDescription = "Do not disturb",
                     modifier = Modifier.padding(end = 12.dp).scale(1.5f)
+                        .clickable { onDnd() }
                 )
                 
                 Text(
@@ -220,7 +234,9 @@ fun MainPage(
 fun WatchDialog(
     context: Context,
     tzWatch: String,
+    isConnected: Boolean,
     lastReceived: Instant,
+    onStats: () -> Unit,
     onClose: () -> Unit
 ){
     Dialog(
@@ -231,17 +247,19 @@ fun WatchDialog(
                 modifier = Modifier.fillMaxWidth().padding(10.dp)
             ) {
                 Text(
-                    text = watchInfo.modelString(),
+                    text = if (isConnected) watchInfo.modelString() else "Disconnected",
                     fontSize = Const.titleSize,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-                Text(
-                    text = "v" + watchInfo.versionString(),
-                    fontSize = Const.textSize,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                if (isConnected) {
+                    Text(
+                        text = "v" + watchInfo.versionString(),
+                        fontSize = Const.textSize,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
 
                 var clockNow by remember { mutableStateOf(Clock.System.now()) }
                 Text (
@@ -261,11 +279,27 @@ fun WatchDialog(
                     delay(1000)
                     clockNow = Clock.System.now()
                 }
+                
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedButton(
+                        onClick = onStats
+                    ){
+                        Text("%d:%d"
+                            .format(PebbleStats.packetsSent, PebbleStats.packetsReceived),
+                            fontSize = Const.textSize
+                        )
+                    }
+                }
 
-                UiTimezone(
-                    tzWatch = tzWatch
-                ) { tz ->
-                    Timezone.fromString(context, tz)
+                if (isConnected) {
+                    UiTimezone(
+                        tzWatch = tzWatch
+                    ) { tz ->
+                        Timezone.fromString(context, tz)
+                    }
                 }
             }
         }
@@ -330,6 +364,20 @@ fun ShowWatchPreview() {
     WatchDialog(
         context = LocalContext.current,
         lastReceived = Clock.System.now(),
-        tzWatch = "+8.0"
+        isConnected = true,
+        tzWatch = "+8.0",
+        onStats = {}
+    ) {}
+}
+
+@Preview
+@Composable
+fun ShowWatchDisconnected() {
+    WatchDialog(
+        context = LocalContext.current,
+        lastReceived = Clock.System.now(),
+        isConnected = false,
+        tzWatch = "+8.0",
+        onStats = {}
     ) {}
 }

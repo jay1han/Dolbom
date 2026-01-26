@@ -20,6 +20,7 @@ private object FaceDataReceiver:
 {
     override fun receiveData(context: Context?, transactionId: Int, data: PebbleDictionary?) {
         PebbleKit.sendAckToPebble(context, transactionId)
+        PebbleStats.packetsReceived += 1
 
         if (data != null) {
             val msgType = data.getInteger(DictKey.MSG_TYPE.ordinal)?.toInt() ?: 0
@@ -193,6 +194,7 @@ object Pebble
         context: Context,
         data: PebbleDictionary
     ) {
+        PebbleStats.packetsSent += 1
         PebbleKit.sendDataToPebble(context, FACE_UUID, data)
         lastSent = clock.now()
     }
@@ -245,5 +247,26 @@ object Pebble
         context: Context?
     ) {
         context?.sendBroadcast(Intent(Const.INTENT_REFRESH))
+    }
+}
+
+object PebbleStats
+{
+    var packetsSent = 0
+    var packetsReceived = 0
+    var statsSince = Clock.System.now()
+
+    fun resetStats() {
+        packetsSent = 0
+        packetsReceived = 0
+        statsSince = Clock.System.now()
+    }
+
+    fun getAverage(): Float {
+        val interval = (Clock.System.now() - statsSince).inWholeSeconds.toFloat() / 3600f
+        return (
+                if (interval > 0f) (packetsReceived + packetsSent).toFloat() / interval
+                else 0f
+                )
     }
 }
