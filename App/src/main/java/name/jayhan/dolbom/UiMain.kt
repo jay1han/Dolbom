@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -252,7 +251,7 @@ fun WatchDialog(
     ) {
         Card {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 Text(
                     text = if (isConnected) watchInfo.modelString() else "Disconnected",
@@ -311,7 +310,6 @@ fun WatchDialog(
                     }
                 }
                 
-                Spacer(Modifier.height(12.dp))
                 if (isConnected) {
                     UiTimezone(
                         tzWatch = tzWatch

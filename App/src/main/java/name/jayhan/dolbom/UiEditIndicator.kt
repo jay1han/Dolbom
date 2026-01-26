@@ -451,21 +451,16 @@ fun IndicatorError(
         onDismissRequest = { onExit() }
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
+                modifier = Modifier.fillMaxWidth().padding(20.dp),
             ) {
                 Text(
                     text = "Indicator must be a visible letter",
                     fontSize = Const.textSize,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Button(
                     onClick = onExit

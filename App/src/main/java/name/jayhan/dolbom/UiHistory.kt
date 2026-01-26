@@ -47,9 +47,7 @@ fun HistoryDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 val batteryText =
                     if (watchInfo.plugged) {
@@ -111,7 +109,6 @@ fun HistoryDialog(
                 } else {
                     Button(
                         onClick = { confirmClear = true },
-                        modifier = Modifier.padding(4.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.clear_history),
@@ -140,7 +137,7 @@ fun ClearBatteryDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
+                    .padding(20.dp),
             ) {
                 val duration = Clock.System.now() - historyData.historyDate
                 val historyText = stringResource(R.string.format_data_since)

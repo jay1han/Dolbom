@@ -43,7 +43,7 @@ fun HelpDialog(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 Image(
                     painterResource(R.drawable.dolbom),
@@ -170,7 +170,7 @@ fun StatsDialog(
         Card {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
             ) {
                 Text(
                     text = "Stats since\n" +
