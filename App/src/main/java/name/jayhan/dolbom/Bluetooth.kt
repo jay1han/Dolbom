@@ -1,6 +1,6 @@
 package name.jayhan.dolbom
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -11,13 +11,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.annotation.RequiresPermission
+
+@SuppressLint("MissingPermission")
 
 class BluetoothReceiver(
     private val context: Context,
 ) : BroadcastReceiver() {
-    private var blueMan = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    private val blueMan = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     private val proxy = BluetoothProxy()
+    private var displayDevice = ConnectedDevice()
+    private var isA2dpActive = false
+    private var isHeadsetActive = false
     
     init {
         try {
@@ -42,37 +46,25 @@ class BluetoothReceiver(
         context.unregisterReceiver(this)
     }
     
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onReceive(context: Context, intent: Intent) {
         proxy.rescan()
     }
     
     data class ConnectedDevice(
         val name: String = "",
-        var battery: Int = 0,
-        var active: Boolean = false,
-    ) {
-        fun isValid() = name.isNotEmpty() && battery > 0
-        fun isSameAs(other: ConnectedDevice) =
-                name == other.name &&
-                active == other.active &&
-                battery == other.battery
-    }
-
-    var lastDevice = ConnectedDevice(battery = 200)
-    private fun send(
-        device: ConnectedDevice,
-    ) {
-        if (!lastDevice.isSameAs(device))
-            lastDevice = device
-        refresh()
-    }
-
+        val battery: Int = 0,
+        val active: Boolean = false,
+    )
+    
     fun refresh() {
+        val activeByte =
+            if (isHeadsetActive) BluetoothActive.HEADSET.code else {
+                if (isA2dpActive) BluetoothActive.A2DP.code else 0
+            }
         Pebble.sendIntent(context, MsgType.BT) {
-            putExtra(Const.EXTRA_BTID, lastDevice.name)
-            putExtra(Const.EXTRA_BTC, lastDevice.battery)
-            putExtra(Const.EXTRA_BTON, lastDevice.active)
+            putExtra(Const.EXTRA_BTID, displayDevice.name)
+            putExtra(Const.EXTRA_BTC, displayDevice.battery)
+            putExtra(Const.EXTRA_BTON, activeByte)
         }
     }
     
@@ -81,21 +73,18 @@ class BluetoothReceiver(
         var a2dpProxy: BluetoothA2dp? = null
         var headsetProxy: BluetoothHeadset? = null
         
-        @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
         override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
             if (profile == BluetoothProfile.A2DP) a2dpProxy = proxy as BluetoothA2dp
             else headsetProxy = proxy as BluetoothHeadset
             rescan()
         }
         
-        @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
         override fun onServiceDisconnected(profile: Int) {
             if (profile == BluetoothProfile.A2DP) a2dpProxy = null
             else headsetProxy = null
             rescan()
         }
         
-        @RequiresPermission("android.permission.BLUETOOTH_CONNECT")
         fun rescan() {
             var headsetDevice = ConnectedDevice()
             headsetProxy?.connectedDevices?.forEach {
@@ -116,17 +105,18 @@ class BluetoothReceiver(
             }
 
             // In order of priority
-            send(
-                device = when {
-                    headsetDevice.active -> headsetDevice
-                    a2dpDevice.active -> a2dpDevice
-                    headsetDevice.isValid() -> headsetDevice
-                    a2dpDevice.isValid() -> a2dpDevice
-                    headsetDevice.name.isNotEmpty() -> headsetDevice
-                    a2dpDevice.name.isNotEmpty() -> a2dpDevice
-                    else -> ConnectedDevice()
-                }
-            )
+            displayDevice = when {
+                headsetDevice.active -> headsetDevice
+                a2dpDevice.active -> a2dpDevice
+                headsetDevice.name.isNotEmpty() -> headsetDevice
+                a2dpDevice.name.isNotEmpty() -> a2dpDevice
+                else -> ConnectedDevice()
+            }
+            
+            isHeadsetActive = headsetDevice.active
+            isA2dpActive = a2dpDevice.active
+            
+            refresh()
         }
     }
     

@@ -152,7 +152,9 @@ void phone_wifi(char *text) {
     }
 }
 
-void phone_bt(char *id, int charge, bool active) {
+void phone_bt(char *id, int charge, int active) {
+    APP_LOG(APP_LOG_LEVEL_INFO, "BT name=%s batt=%d active=%d", id, charge, active);
+    
     if (strcmp(btid, id)) {
         strncpy(btid, id, sizeof(btid));
         btid[sizeof(btid) - 1] = 0;
@@ -171,9 +173,14 @@ void phone_bt(char *id, int charge, bool active) {
         disp_set(disp_btc, btc);
     }
 
-    if (active != (bton[0] != 0)) {
-        if (active) strcpy(bton, "B");
-        else bton[0] = 0;
+    char bton1[4];
+    char *p = bton1;
+    if (active == BT_HEADSET_ACTIVE) *(p++) = 'H';
+    else if (active == BT_A2DP_ACTIVE) *(p++) = 'A';
+    *p = 0;
+    if (strcmp(bton, bton1)) {
+        strncpy(bton, bton1, sizeof(bton));
+        bton[sizeof(bton) - 1] = 0;
         changed[STOR_BTON_4] = true;
         disp_set(disp_bton, bton);
     }

@@ -17,6 +17,11 @@ enum {
 };
 extern bool changed[STOR_END];
 
+enum {
+    BT_A2DP_ACTIVE = 1,
+    BT_HEADSET_ACTIVE = 2,
+};
+
 void dict_parse(DictionaryIterator *iter, void *context);
 void send_info();
 void send_fresh();

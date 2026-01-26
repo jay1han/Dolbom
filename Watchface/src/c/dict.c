@@ -82,7 +82,7 @@ static struct {
     char       *wifi_ssid;
     char       *bt_device;
     int8_t     bt_battery;
-    bool       bt_on;
+    int8_t     bt_on;
     char       *notifications;
     action_t   action;
 } message;
@@ -207,7 +207,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
 
         case KEY_BT_ON_I8:
             if (tuple->type == TUPLE_INT && tuple->length == 1)
-                message.bt_on = tuple->value->int8 != 0;
+                message.bt_on = tuple->value->int8;
             break;
             
         default: break;

@@ -22,21 +22,21 @@ static struct {
     GTextAlignment align;
     const char *font;
 } disp[disp_end] = {
-    {NULL, {{0, -10},   {142, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_quiet
-    {NULL, {{0, -10},   {144, 31}}, 0xFF, 4, -1, Center, FONT_28},  //  disp_date
-    {NULL, {{0, -10},   {144, 31}}, 0xFF, 4, -1, Right , FONT_28},  //  disp_dnd
-    {NULL, {{0, 14},    {144, 51}}, 0xC0, 4, -1, Center, FONT_49},  //  disp_home
-    {NULL, {{0, 65},    {144, 31}}, 0xFF, 4, -1, Center, FONT_28},  //  disp_noti
-    {NULL, {{27, 95},   {144, 29}}, 0xC0, 4, -1, Left  , FONT_24},  //  disp_btid
-    {NULL, {{27, 115},  {144, 31}}, 0xC0, 4, -1, Left  , FONT_28},  //  disp_plmn
-    {NULL, {{27, 117},  {144, 29}}, 0xC0, 4, -1, Left  , FONT_24},  //  disp_wifi
-    {NULL, {{0, 140},   {140, 31}}, 0xFF, 4, -1, Center, FONT_28},  //  disp_away
-    {NULL, {{0, 140},   {144, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_wbat
-    {NULL, {{0, 140},   {144, 31}}, 0xFF, 4, -1, Right , FONT_28},  //  disp_pbat
-    {NULL, {{0, 95},    {144, 29}}, 0xFF, 4, -1, Left  , FONT_24},  //  disp_bton
+    {NULL, {{0, -10},   {142, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_quiet
+    {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_date
+    {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_dnd
+    {NULL, {{0, 14},    {144, 51}}, 0xC0, 3, -1, Center, FONT_49},  //  disp_home
+    {NULL, {{0, 65},    {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_noti
+    {NULL, {{0, 140},   {140, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_away
+    {NULL, {{0, 140},   {144, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_wbat
+    {NULL, {{0, 140},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_pbat
+    {NULL, {{29, 95},   {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_btid
+    {NULL, {{29, 115},  {144, 31}}, 0xC0, 3, -1, Left  , FONT_28},  //  disp_plmn
+    {NULL, {{29, 117},  {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_wifi
+    {NULL, {{-14, 95},  {48,  29}}, 0xFF, 4, -1, Center, FONT_24},  //  disp_bton
     {NULL, {{0, 115},   {144, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_net 
-    {NULL, {{0, 117},   {144, 29}}, 0xFF, 5, -1, Right , FONT_24},  //  disp_sim
-    {NULL, {{0, 93},    {144, 31}}, 0xFF, 5, -1, Right , FONT_28},  //  disp_btc
+    {NULL, {{110, 117}, {48,  29}}, 0xFF, 6, -1, Center, FONT_24},  //  disp_sim
+    {NULL, {{0, 93},    {144, 31}}, 0xFF, 6, -1, Right , FONT_28},  //  disp_btc
 };
 
 static struct {
@@ -48,6 +48,7 @@ static struct {
     {NULL, {{0, 70},    {144, 29}}, 0xC0},
     {NULL, {{0, 147},   {144, 22}}, 0xC0},
     {NULL, {{0, 101},   {25,  44}}, 0xC0},
+    {NULL, {{115, 101}, {5, 44}},   0xFF},
     {NULL, {{120, 101}, {24,  44}}, 0xC0},
 };
 

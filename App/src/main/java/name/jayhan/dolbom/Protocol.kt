@@ -60,6 +60,11 @@ enum class ActionType {
     CLEAR_STICKY
 }
 
+enum class BluetoothActive(val code: Int) {
+    A2DP(0x01),
+    HEADSET(0x02)
+}
+
 class Protocol
 {
     private companion object {
@@ -143,7 +148,7 @@ class Protocol
             MsgType.BT.ordinal -> {
                 val btid = (intent.getStringExtra(Const.EXTRA_BTID) ?: "").take(Const.MAX_LEN_ID)
                 val btc = intent.getIntExtra(Const.EXTRA_BTC, 0).toByte()
-                val bton = if (intent.getBooleanExtra(Const.EXTRA_BTON, false)) 1.toByte() else 0.toByte()
+                val bton = intent.getIntExtra(Const.EXTRA_BTON, 0).toByte()
                 suppress = isSameOrUpdate(DictKey.BTID, btid) &&
                     isSameOrUpdate(DictKey.BTC, btc) &&
                     isSameOrUpdate(DictKey.BTON, bton)
