@@ -66,6 +66,8 @@ fun AppScaffold(
     var showHelp by remember { mutableStateOf(false) }
     var showWatch by remember { mutableStateOf(false) }
     var showStats by remember { mutableStateOf(false) }
+    val stickyCount by Notifications.Accumulator.stickyCount.collectAsState(0)
+    val hasSticky = stickyCount > 0
 
     if (!permissionsGranted) {
         PermissionsScaffold()
@@ -131,6 +133,7 @@ fun AppScaffold(
                 activeList = activeList,
                 allList = allList,
                 indicators = indicators,
+                hasSticky = hasSticky,
                 modifier = Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding)
@@ -216,6 +219,7 @@ fun MainPage(
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
+    hasSticky: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -226,6 +230,7 @@ fun MainPage(
             activeList = activeList,
             allList = allList,
             indicators = indicators,
+            hasSticky = hasSticky,
         )
     }
 }
@@ -354,6 +359,7 @@ fun MainPagePreview() {
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,
+            hasSticky = true,
         )
     }
 }

@@ -49,6 +49,7 @@ fun IndicatorList(
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
+    hasSticky: Boolean,
 ) {
     var editDialog by remember { mutableStateOf(false) }
     var editIndicator by remember { mutableStateOf(SingleIndicator()) }
@@ -57,7 +58,6 @@ fun IndicatorList(
     var showDump by remember { mutableStateOf(false) }
     val dumpFlow by Notifications.dumpFlow.collectAsState(0)
     var showSticky by remember { mutableStateOf(false) }
-    val stickyCount by Notifications.Accumulator.stickyCount.collectAsState(0)
 
     if (showDump) {
         DumpDialog(Notifications.dump) {
@@ -119,6 +119,7 @@ fun IndicatorList(
             OutlinedButton(
                 onClick = { if (dumpFlow > 0) showDump = true },
                 border = BorderStroke(1.dp,LocalContentColor.current),
+                modifier = Modifier.padding(horizontal = 20.dp).weight(1f)
             ) {
                 Row {
                     Icon(
@@ -145,13 +146,14 @@ fun IndicatorList(
                 )
             }
         
-            val stickyExists = stickyCount > 0
             Icon(
                 painterResource(R.drawable.outline_check_circle_24),
                 contentDescription = "Sticky",
-                tint = if (stickyExists) LocalContentColor.current else Color.Transparent,
-                modifier = Modifier.scale(1.5f).clickable {
-                    if (stickyExists) showSticky = true
+                tint = if (hasSticky) LocalContentColor.current else Color.Transparent,
+                modifier = Modifier.padding(start = 12.dp)
+                    .scale(1.5f)
+                    .clickable {
+                    if (hasSticky) showSticky = true
                 }
             )
         }
@@ -420,7 +422,8 @@ fun IndicatorListPreview() {
             context = LocalContext.current,
             activeList = PreviewActiveList,
             allList = PreviewAllList,
-            indicators = PreviewIndicators
+            indicators = PreviewIndicators,
+            hasSticky = true,
         )
     }
 }
@@ -434,6 +437,7 @@ fun IndicatorListEmpty() {
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = listOf(),
+            hasSticky = false,
         )
     }
 }
