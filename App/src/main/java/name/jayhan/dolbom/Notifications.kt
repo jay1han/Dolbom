@@ -328,7 +328,7 @@ object Notifications : BroadcastReceiver()
                 indicator.timeInfo = sbn.notification.`when`
                 litList.add(indicator)
             }
-            stickyCount.value = litList.filter { !it.sticky }.size
+            stickyCount.value = litList.filter { it.sticky }.size
         }
         
         fun getCompact(): String {
