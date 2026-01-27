@@ -14,7 +14,6 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.IBinder
 import android.util.Log
-import name.jayhan.dolbom.Pebble.watchInfo
 
 class PebbleService:
     Service()
@@ -70,7 +69,7 @@ class PebbleService:
             addAction(Const.INTENT_REFRESH)
             addAction(Const.INTENT_FULLY_CHARGED)
             addAction(Const.INTENT_DND)
-            addAction(Const.INTENT_CLEAR)
+            addAction(Const.INTENT_CLEAR_STICKY)
             addAction(Const.INTENT_SEND_PEBBLE)
             addAction(Const.INTENT_PEBBLE_PONG)
         }
@@ -147,13 +146,13 @@ class PebbleService:
             if (Pebble.isConnected.value) {
                 val estimate =
                     if (History.historyData.cycleRate > 0f)
-                        (watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                        (Pebble.watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
                     else 0f
                 setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
                 setContentText(
                     "\u2590%s\u258c %s".format(
                         Notifications.indicators,
-                        if (watchInfo.charging) "\u26a1" else "",
+                        if (Pebble.watchInfo.charging) "\u26a1" else "",
                     ) + "%.1f days".format(
                         estimate
                     )
@@ -218,7 +217,7 @@ class PebbleService:
     inner class AlarmListener:
         AlarmManager.OnAlarmListener
     {
-        private var isAlarmed = false
+        private var countAlarmed = 0
         
         fun startTimer() {
             alarmMan.set(
@@ -231,9 +230,9 @@ class PebbleService:
         }
         
         fun clearAlarm() {
-            if (isAlarmed) {
-                isAlarmed = false
-                refreshService()
+            if (countAlarmed > 0) {
+                if (countAlarmed > 1) refreshService()
+                countAlarmed = 0
             }
             if (!Pebble.isConnected.value) {
                 Pebble.isConnected.value = true
@@ -244,10 +243,12 @@ class PebbleService:
         
         override fun onAlarm() {
             Pebble.sendIntent(context, MsgType.PING) {}
-            if (isAlarmed) {
+            if (countAlarmed < 10) countAlarmed += 1
+            if (countAlarmed >= 2) {
                 Pebble.isConnected.value = false
                 updateNotification()
-            } else isAlarmed = true
+            }
+            startTimer()
         }
     }
 
@@ -300,7 +301,7 @@ class PebbleService:
                 
                 Const.INTENT_DND -> zenRule.toggle()
                 
-                Const.INTENT_CLEAR -> {
+                Const.INTENT_CLEAR_STICKY -> {
                     Notifications.Accumulator.clearSticky()
                     Notifications.refresh(context)
                 }

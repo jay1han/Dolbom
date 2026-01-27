@@ -131,7 +131,7 @@ private object AppDataReceiver:
                         }
                         
                         ActionType.CLEAR_STICKY.ordinal -> {
-                            context?.sendBroadcast(Intent(Const.INTENT_CLEAR))
+                            context?.sendBroadcast(Intent(Const.INTENT_CLEAR_STICKY))
                         }
                     }
                 }

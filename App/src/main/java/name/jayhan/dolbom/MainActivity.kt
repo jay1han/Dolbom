@@ -43,6 +43,8 @@ class AppStart:
 class MainActivity :
     ComponentActivity() {
 
+    private lateinit var fileMan: FileManager
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(Const.TAG, "Start activity")
@@ -58,11 +60,13 @@ class MainActivity :
                 }
             },
         )
+        
+        fileMan = FileManager(applicationContext, this)
 
         enableEdgeToEdge()
         setContent {
             PebbleTheme {
-                AppScaffold(context)
+                AppScaffold(context, fileMan)
             }
         }
     }

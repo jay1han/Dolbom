@@ -69,7 +69,7 @@ object Const {
     const val INTENT_REPEAT = "name.jayhan.dolbom.REPEAT"
     
     const val INTENT_DND = "name.jayhan.dolbom.TOGGLE_DND"
-    const val INTENT_CLEAR = "name.jayhan.dolbom.CLEAR_STICKY"
+    const val INTENT_CLEAR_STICKY = "name.jayhan.dolbom.CLEAR_STICKY"
     const val INTENT_FULLY_CHARGED = "name.jayhan.dolbom.FULLY_CHARGED"
     
     const val PREF_INDIC = "name.jayhan.dolbom.INDICATORS"

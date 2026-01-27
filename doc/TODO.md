@@ -8,8 +8,6 @@
 
 ## Features
 
-- Backup/Restore
-
 ## Sub-functional
 
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -30,3 +28,4 @@
 - Remove hard-coded dimensions
 - Move shared data to companion objects
 - Review all names
+- Need to carry context across Composable?

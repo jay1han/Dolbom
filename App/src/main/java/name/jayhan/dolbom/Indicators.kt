@@ -75,6 +75,7 @@ class SingleIndicator(
     
     companion object {
         val Other = SingleIndicator(letter = '+')
+        
         fun fromKeyValue(
             key: String,
             value: String
@@ -89,15 +90,41 @@ class SingleIndicator(
                 flags = value
             )
         }
+        
+        fun fromString(
+            string: String,
+        ): SingleIndicator? {
+            val lines = string.split('\n', limit = 8)
+            val elements = mutableMapOf<String, String>()
+            lines.forEach {
+                val key_value = it.split("=", limit = 2)
+                if (key_value.size == 2) {
+                    val (key, value) = key_value
+                    elements[key] = value
+                }
+            }
+            return if (elements.size > 1)
+                SingleIndicator(
+                    packageName = elements["package"] ?: "",
+                    channelId = elements["channel"] ?: "",
+                    filterText = elements["filter"] ?: "",
+                    filterType = FilterType.valueOf(elements["type"] ?: ""),
+                    letter = elements["letter"]?.get(0) ?: ' ',
+                    flags = elements["flags"] ?: "",
+                )
+            else null
+        }
     }
 }
 
 object Indicators
 {
+    // TODO: Should be unmutable
     private var allIndicators = mutableListOf<SingleIndicator>()
     val allFlow = MutableStateFlow(mutableListOf<SingleIndicator>())
     private lateinit var savedSettings: SharedPreferences
     val backedUp = MutableStateFlow(false)
+    val count = MutableStateFlow(0)
 
     fun init(context: Context) {
         savedSettings = context.getSharedPreferences(
@@ -194,7 +221,36 @@ object Indicators
             commit()
         }
 
+        count.value = allIndicators.size
+        backedUp.value = false
         allFlow.value = allIndicators
+    }
+    
+    fun toText(): String {
+        val stringBuilder = StringBuilder().apply {
+            allIndicators.forEachIndexed { index, indicator ->
+                append("[$index]\n")
+                with(indicator) {
+                    append("letter=$letter\n")
+                    append("package=$packageName\n")
+                    append("channel=$channelId\n")
+                    append("filter=$filterText\n")
+                    append("type=${filterType.name}\n")
+                    append("flags=${flags()}\n")
+                    append("END\n")
+                }
+            }
+        }
+        return stringBuilder.toString()
+    }
+    
+    fun fromText(text: String) {
+        val newList = mutableListOf<SingleIndicator>()
+        for (multiline in text.split("END\n")) {
+            val indicator = SingleIndicator.fromString(multiline)
+            if (indicator != null) newList.add(indicator)
+        }
+        saveList(newList)
     }
 
     fun remove(

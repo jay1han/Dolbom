@@ -51,7 +51,8 @@ import kotlin.time.Instant
 
 @Composable
 fun AppScaffold(
-    context: Context
+    context: Context,
+    fileMan: FileManager
 ) {
     val watchInfo by Pebble.infoFlow.collectAsState(WatchInfo())
     val isConnected by Pebble.isConnected.collectAsState(false)
@@ -79,11 +80,16 @@ fun AppScaffold(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                MainTopBar(isConnected, watchInfo, dndEnabled,
-                    dndActive, onHelp = { showHelp = true },
+                MainTopBar(
+                    isConnected = isConnected,
+                    watchInfo = watchInfo,
+                    dndEnabled = dndEnabled,
+                    dndActive = dndActive,
+                    onHelp = { showHelp = true },
                     onHistory = { showHistory = true },
-                    onDnd = { showDnd = true }
-                ) { showWatch = true }
+                    onDnd = { showDnd = true },
+                    onWatch = { showWatch = true }
+                )
             },
         ) { innerPadding ->
             
@@ -132,6 +138,7 @@ fun AppScaffold(
             
             MainPage(
                 context = context,
+                fileMan = fileMan,
                 activeList = activeList,
                 allList = allList,
                 indicators = indicators,
@@ -217,6 +224,7 @@ fun MainTopBar(
 @Composable
 fun MainPage(
     context: Context,
+    fileMan: FileManager,
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
@@ -228,6 +236,7 @@ fun MainPage(
     ){
         IndicatorList(
             context = context,
+            fileMan = fileMan,
             activeList = activeList,
             allList = allList,
             indicators = indicators,
@@ -365,6 +374,7 @@ fun MainPagePreview() {
     PebbleTheme {
         MainPage(
             context = LocalContext.current,
+            fileMan = FileManager(LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,

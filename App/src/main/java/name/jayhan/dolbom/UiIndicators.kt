@@ -47,18 +47,21 @@ import name.jayhan.dolbom.ui.theme.PebbleTheme
 @Composable
 fun IndicatorList(
     context: Context,
+    fileMan: FileManager,
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
     hasSticky: Boolean,
 ) {
-    var editDialog by remember { mutableStateOf(false) }
-    var editIndicator by remember { mutableStateOf(SingleIndicator()) }
+    var editIndicator by remember { mutableStateOf(false) }
+    var editedIndicator by remember { mutableStateOf(SingleIndicator()) }
     val scrollState = rememberScrollState()
     var dataDialog by remember { mutableStateOf(false) }
     var showDump by remember { mutableStateOf(false) }
     val dumpFlow by Notifications.dumpFlow.collectAsState(0)
     var showSticky by remember { mutableStateOf(false) }
+    val backedUp by Indicators.backedUp.collectAsState(false)
+    val indicatorCount by Indicators.count.collectAsState(0)
 
     if (showDump) {
         DumpDialog(Notifications.dump) {
@@ -66,28 +69,28 @@ fun IndicatorList(
         }
     }
     
-    if (editDialog) {
+    if (editIndicator) {
         EditIndicator(
             context = context,
-            indicator = editIndicator,
+            indicator = editedIndicator,
             activeList = activeList,
             allList = allList
         ) {
-            editDialog = false
-            editIndicator = SingleIndicator()
+            editIndicator = false
+            editedIndicator = SingleIndicator()
         }
     }
 
     if (dataDialog) {
         DataDialog(
-            onClose = {
-                dataDialog = false
-            },
-            onConfirm = {
-                Indicators.reset()
-                Notifications.refresh(context)
-            }
-        )
+            indicatorCount = indicatorCount,
+            backedUp = backedUp,
+            onLoad = { fileMan.loadIndicators() },
+            onSave = { fileMan.saveIndicators() },
+            onClear = { Indicators.reset() },
+        ) {
+            dataDialog = false
+        }
     }
     
     if (showSticky) {
@@ -95,7 +98,7 @@ fun IndicatorList(
             stickies = Notifications.Accumulator.listSticky(),
             onClose = { showSticky = false },
             onClear = {
-                context.sendBroadcast(Intent(Const.INTENT_CLEAR))
+                context.sendBroadcast(Intent(Const.INTENT_CLEAR_STICKY))
             },
         )
     }
@@ -148,8 +151,8 @@ fun IndicatorList(
             
             Button(
                 onClick = {
-                    editIndicator = SingleIndicator()
-                    editDialog = true
+                    editedIndicator = SingleIndicator()
+                    editIndicator = true
                 },
             ) {
                 Text(
@@ -171,8 +174,8 @@ fun IndicatorList(
                         indicator,
                         true
                     ) {
-                        editIndicator = indicator
-                        editDialog = true
+                        editedIndicator = indicator
+                        editIndicator = true
                     }
                     HorizontalDivider(thickness = 1.dp)
                 }
@@ -303,55 +306,6 @@ fun IndicatorFlagIcon(res: Int) {
 }
 
 @Composable
-fun DataDialog(
-    onConfirm: () -> Unit,
-    onClose: () -> Unit
-) {
-    val backedUp = Indicators.backedUp.collectAsState(false)
-    
-    Dialog(
-        onDismissRequest = onClose
-    ) {
-        Card {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.reset_question),
-                    fontSize = Const.titleSize,
-                    lineHeight = Const.titleSize * 1.2f,
-                    modifier = Modifier.padding(10.dp)
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = onClose
-                    ) {
-                        Text(
-                            text = stringResource(R.string.reset_no),
-                            fontSize = Const.textSize,
-                        )
-                    }
-                    Button(
-                        onClick = {
-                            onConfirm()
-                            onClose()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.reset_yes),
-                            fontSize = Const.textSize,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun StickyDialog(
     stickies: List<SingleIndicator>,
     onClose: () -> Unit,
@@ -424,6 +378,7 @@ fun IndicatorListPreview() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
+            fileMan = FileManager(LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,
@@ -438,21 +393,11 @@ fun IndicatorListEmpty() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
+            fileMan = FileManager(LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = listOf(),
             hasSticky = false,
-        )
-    }
-}
-
-@Preview
-@Composable
-fun DataDialogPreview() {
-    PebbleTheme {
-        DataDialog(
-            onClose = {},
-            onConfirm = {}
         )
     }
 }

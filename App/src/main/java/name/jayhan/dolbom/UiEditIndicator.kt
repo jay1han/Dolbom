@@ -128,7 +128,7 @@ fun EditIndicator(
                     ) {
                         val icon: ImageBitmap? =
                             if (activeList == PreviewActiveList) null
-                            else getApplicationIcon(LocalContext.current, newPackage)
+                            else getApplicationIcon(context, newPackage)
                         if (icon != null) {
                             Image(
                                 bitmap = icon,

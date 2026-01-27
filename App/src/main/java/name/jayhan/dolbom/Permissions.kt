@@ -202,7 +202,7 @@ class SinglePermission(
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 NotificationManager.ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED -> {
-                
+                // TODO
                 }
             }
         }
