@@ -12,7 +12,6 @@
 
 ## Sub-functional
 
-- Watch sends all info with FRESH
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
 - Replace some Dialogs with full screen and BackHandler
 
@@ -22,6 +21,7 @@
   - Use timer on Watch side before declaring connection closed
   - Send FRESH on timeout
 - How deep in UI to push Context
+  - [Callback-drilling](https://medium.com/proandroiddev/stop-event-drilling-in-jetpack-compose-with-composition-locals-e15004258ec5)
 
 ## Non-functional
 

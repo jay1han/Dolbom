@@ -119,7 +119,7 @@ fun AppScaffold(
                     tzWatch = tzWatch,
                     onStats = { showStats = true },
                     onRefresh = {
-                        Pebble.sendIntent(context, MsgType.INFO) {}
+                        Pebble.sendIntent(context, MsgType.FRESH) {}
                     }
                 ) { showWatch = false }
             }

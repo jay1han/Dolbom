@@ -26,8 +26,26 @@ private object FaceDataReceiver:
             val msgType = data.getInteger(DictKey.MSG_TYPE.ordinal)?.toInt() ?: 0
             when (msgType) {
                 MsgType.FRESH.ordinal -> {
-                    Log.v(Const.TAG, "in Fresh")
                     Pebble.refreshInformation(context)
+                    
+                    val watchModel = data.getInteger(DictKey.MODEL.ordinal)?.toInt() ?: 0
+                    val watchFwVersion = data.getUnsignedIntegerAsLong(DictKey.FW_VERSION.ordinal)?.toInt() ?: 0
+                    val tzMinutes = data.getInteger(DictKey.TZ_MIN.ordinal)
+                    Log.v(Const.TAG, "in FRESH $watchModel $watchFwVersion $tzMinutes")
+                    if (watchModel != 0 && watchFwVersion != 0)
+                        Pebble.setWatchInfo(watchModel, watchFwVersion)
+                    if (tzMinutes != null)
+                        Timezone.fromMinutes(tzMinutes.toInt())
+                    
+                    val watchBattery = data.getInteger(DictKey.WATCH_BATT.ordinal)?.toInt() ?: 0
+                    if (watchBattery != 0) {
+                        val watchPlugged = data.getInteger(DictKey.WATCH_PLUG.ordinal)?.toInt() ?: 0
+                        val watchCharging = data.getInteger(DictKey.WATCH_CHG.ordinal)?.toInt() ?: 0
+                        Log.v(Const.TAG, "with WBATT $watchBattery% plugged $watchPlugged charging $watchCharging")
+                        Pebble.setBattery(context, watchBattery, watchPlugged != 0, watchCharging != 0)
+                    }
+                    
+                    Pebble.updateNotification(context)
                 }
                 
                 MsgType.INFO.ordinal -> {
@@ -162,7 +180,7 @@ object Pebble
             context.registerReceiver(it.value, filter, Context.RECEIVER_EXPORTED)
         }
 
-        sendIntent(context, MsgType.INFO) {}
+        sendIntent(context, MsgType.FRESH) {}
     }
 
     fun deinit(
@@ -269,7 +287,7 @@ object PebbleStats
     }
     
     private fun updateAverage() {
-        if (since.value < Clock.System.now()) {
+        if ((Clock.System.now() - since.value).inWholeSeconds > 2) {
             average.value = 3600f * (sent.value + received.value) /
                     (Clock.System.now() - since.value).inWholeSeconds
         }

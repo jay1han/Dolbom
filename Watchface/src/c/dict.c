@@ -90,7 +90,19 @@ static struct {
 void send_fresh() {
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
+    
     dict_write_int8(iter, KEY_MSG_TYPE_I8, MSG_FRESH);
+    
+    dict_write_int8(iter, KEY_MODEL_I8, watch_info_get_model());
+    WatchInfoVersion version = watch_info_get_firmware_version();
+    uint32_t version_u32 = ((uint32_t)version.major << 16) | ((uint32_t)version.minor << 8) | (uint32_t)version.patch;
+    dict_write_uint32(iter, KEY_VERSION_U32, version_u32);
+    dict_write_int16(iter, KEY_TZ_MINS_I16, tz_get());
+    
+    dict_write_int8(iter, KEY_WBATT_I8, watch_battery.charge_percent);
+    dict_write_int8(iter, KEY_WPLUG_I8, watch_battery.is_plugged);
+    dict_write_int8(iter, KEY_WCHG_I8, watch_battery.is_charging);
+    
     app_message_outbox_send();
     APP_LOG(APP_LOG_LEVEL_INFO, "FRESH out");
 }
@@ -231,6 +243,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
     case MSG_WBATT: send_batt(); break;
     case MSG_ACTION: break;
     case MSG_PING: send_pong(); break;
+    case MSG_FRESH: send_fresh(); break;
         
     default: break;
     }

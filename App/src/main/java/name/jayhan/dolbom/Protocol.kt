@@ -94,6 +94,7 @@ class Protocol
     
         when(msgType) {
             MsgType.INFO.ordinal,
+            MsgType.FRESH.ordinal,
             MsgType.WBATT.ordinal -> {
             }
     
