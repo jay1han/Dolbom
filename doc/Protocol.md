@@ -15,24 +15,24 @@ class.
 
 ### Dictionary keys
 
-| Id | Android(`DictKey`) | Type    | Pebble(`enum`)      | Type(bytes) | Meaning                                       |
-|----|--------------------|---------|---------------------|-------------|-----------------------------------------------|
-| 1  | `MSG_TYPE`         | Byte    | `KEY_MSG_TYPE_I8`   | Signed(1)   | See below                                     |
-| 2  | `TZ_MIN`           | Short   | `KEY_TZ_MINS_I16`   | Signed(2)   | Number of minutes difference of Away timezone |
-| 3  | `PHONE_DND`        |         | `KEY_PHONE_DND_I8`  | Signed(1)   |                                               |
-| 4  | `PHONE_BATT`       | Byte    | `KEY_PHONE_BATT_I8` | Signed(1)   | Phone battery level (%)                       |
-| 5  | `PHONE_CHG`        | Boolean | `KEY_PHONE_CHG_I8`  | Signed(1)   | Phone plugged?                                |
-| 6  | `NET`              | Byte    | `KEY_NET_I8`        | Signed(1)   | Cell network type                             |
-| 7  | `WIFI`             | String  | `KEY_WIFI_S20`      | String(20)  | SSID                                          |
-| 8  | `BTID`             | String  | `KEY_BTID_S20`      | String(20)  | Connected Bluetooth device name               |
-| 9  | `BTC`              | Byte    | `KEY_BTC_I8`        | Signed(1)   | Bluetooth device's battery level              |
-| 10 | `NOTI`             | String  | `KEY_NOTI_S16`      | String(16)  | Indicators                                    |
-| 11 | `ACTION`           | Byte    | `KEY_ACTION_I8`     | Signed(1)   |                                               |
-| 12 | `MODEL`            | Byte    | `KEY_MODEL_I8`      | Signed(1)   | Watch model                                   |
-| 13 | `FW_VERSION`       | ULong   | `KEY_VERSION_U32`   | Unsigned(4) | Watch firmware version                        |
-| 14 | `WATCH_BATT`       | Byte    | `KEY_WBATT_I8`      | Signed(1)   | Watch battery level (%)                       |
-| 15 | `WATCH_PLUG`       | Boolean | `KEY_WPLUG_I8`      | Signed(1)   | Watch plugged?                                |
-| 16 | `WATCH_CHG`        | Boolean | `KEY_WCHG_I8`       | Signed(1)   | Watch charging?                               |
+| Id | Android(`DictKey`) | Type    | Pebble(`enum`)      | Type(bytes) | Actual range        | Meaning                                       |
+|----|--------------------|---------|---------------------|-------------|---------------------|-----------------------------------------------|
+| 1  | `MSG_TYPE`         | Byte    | `KEY_MSG_TYPE_I8`   | Signed(1)   |                     | See below                                     |
+| 2  | `TZ_MIN`           | Short   | `KEY_TZ_MINS_I16`   | Signed(2)   | -1439 to +1439      | Number of minutes difference of Away timezone |
+| 3  | `PHONE_DND`        |         | `KEY_PHONE_DND_I8`  | Signed(1)   | 0 or 1              |                                               |
+| 4  | `PHONE_BATT`       | Byte    | `KEY_PHONE_BATT_I8` | Signed(1)   | 0 to 100            | Phone battery level (%)                       |
+| 5  | `PHONE_CHG`        | Boolean | `KEY_PHONE_CHG_I8`  | Signed(1)   | 0 or 1              | Phone plugged?                                |
+| 6  | `NET`              | Byte    | `KEY_NET_I8`        | Signed(1)   | 0, 2, 3, 4, 5       | Cell network type                             |
+| 7  | `WIFI`             | String  | `KEY_WIFI_S20`      | String(20)  | up to 20 bytes      | SSID                                          |
+| 8  | `BTID`             | String  | `KEY_BTID_S20`      | String(20)  | up to 20 bytes      | Connected Bluetooth device name               |
+| 9  | `BTC`              | Byte    | `KEY_BTC_I8`        | Signed(1)   | 0 to 100            | Bluetooth device's battery level              |
+| 10 | `NOTI`             | String  | `KEY_NOTI_S16`      | String(16)  | up to 15 characters | Indicators                                    |
+| 11 | `ACTION`           | Byte    | `KEY_ACTION_I8`     | Signed(1)   |                     | See below                                     |
+| 12 | `MODEL`            | Byte    | `KEY_MODEL_I8`      | Signed(1)   |                     | Watch model                                   |
+| 13 | `FW_VERSION`       | ULong   | `KEY_VERSION_U32`   | Unsigned(4) |                     | Watch firmware version                        |
+| 14 | `WATCH_BATT`       | Byte    | `KEY_WBATT_I8`      | Signed(1)   | 0 to 100            | Watch battery level (%)                       |
+| 15 | `WATCH_PLUG`       | Boolean | `KEY_WPLUG_I8`      | Signed(1)   | 0 or 1              | Watch plugged?                                |
+| 16 | `WATCH_CHG`        | Boolean | `KEY_WCHG_I8`       | Signed(1)   | 0 or 1              | Watch charging?                               |
 
 ### Message types
 
@@ -51,6 +51,14 @@ class.
 |    | W to P    |                    |                      | 14, 15, 16 | Response                     |
 | 10 | W to P    | `ACTION`           | `MSG_ACTION`         | 11         | Trigger Phone action         |
 | 11 | W to P    | `FRESH`            | `MSG_FRESH`          | 2, 12, 13  | Watch restarted              |
+
+### Action types
+
+| ID | Meaning                 |
+|----|-------------------------|
+| 1  | Toggle DND              |
+| 2  | Find my phone           |
+| 3  | Clear sticky indicators |
 
 ## Lifecycle
 

@@ -52,81 +52,73 @@ at any speed, so the battery level may go down while plugged.
 - Connected Wifi SSID and Internet access indicator
 - Connected Bluetooth device name and battery level (if available)
 - Indicator when the BT device is actually producing audio (A2DP or Headset)
-
-When Wifi is connected to an access point (SSID shown),
-policy may prevent the phone from having access to the Internet.
-In such a case, the SSID is prefixed with a `-` indicator[^3].
-
-[^3]: The `-` indicator is yet to be implemented.
+- Indicator when Internet is unreachable
 
 ## Notifications
 
 - Summary of active notifications
 
-The watch shows a one-letter indicator for any active (not cleared) notification on the phone.
+The watch shows a one-letter **indicator** for any active (not cleared) notification on the phone.
 This is useful when you forget there was a notification.
 You can assign a letter to each app you care about, so you know at a glance that 
 there's a pending notification for that app.
 Some filtering can be done according to the channel ID, as well as text fields of the notification.
 
-Any additional notification that's not in the indicator list is displayed as a `-`.
+Any additional notification that's not in the indicator list is displayed as a `+`.
 This can further be filtered out by selectively ignoring apps.
 
-There's no limit to the number of apps (Android packages) you can register for this feature.
+Normally, local-only and ongoing notifications are ignored. This can be reverted
+as a per-indicator switch.
+
+Some apps remove their notification even when the user hasn't read and cleared it.
+To keep a reminder in such a case, an indicator can be made "sticky".
+Later removing a sticky indicator can be done with the Watchapp or in the Phone app.
+
+Some notifications aren't properly shown on the Watch through the Pebble app.
+A notification can be "relayed", i.e. an additional notification is generated
+by Dolbom that is shown on the Watch. That notification can be set to repeat
+continuously, until the original app's notification is cleared[^3].
+
+[^3]: This feature was prompted by voice calls in Kakaotalk, which aren't
+shown by the Pebble app, causing me to miss them sometimes.
+Setting a repeating relay, I'm sure that my Watch will notify me continuously
+until I either accept or decline the call.
+
+There's no limit to the number of apps (Android packages) you can register.
 Note that the watch face does have a limit of 15 simultaneous indicators,
 which would probably overflow the width of the display anyway.
 If there are more than 15 indicators to show, the app clips the list arbitrarily.
 
-## Watch-app features[^4]
+A "dump" features lets you look at the raw notification,
+to decide which fields of a notification you'd like to use as a filter.
+Please read [Notifications.md](Notifications.md) for more detail.
 
-[^4]: Watch-app is under development.
+## Watch-app features
 
 - Phone's Do-not-disturb state and control
 - Find my phone
+- Clear sticky indicators
 
-Due to the recent changes in Android's DND functionality[^5],
-it's no longer possible to enable or disable a "Quiet mode".
+Due to the recent changes in Android's DND functionality,
+it's no longer possible to enable or disable a system-wide "Quiet mode".
 Instead, the app registers a normal, time-based, "Zen rule"
 that can be toggled from the watch-app.
 The enabled state of that mode is shown on the watch.
 This feature is independent of the watch's Quiet time.
 
-[^5]: This is the reason the app requires Android version 15 at least.
-
 *Find my phone* does everything it can to help you locate the phone:
 
 - Ring a melody at maximum volume
-- Activate the screen and the flashlight
-- Vibrate at maximum strength
+- Activate the flashlight
 
 The obnoxious ringing can be disabled from the phone's notification screen
 or from the watch.
 
-Note: the watch-app can be invoked on the watch by assigning it to a Quick Launch button.
+Note: the Watchapp can be invoked on the watch by assigning it to a Quick Launch button.
 
 ## Permissions
 
 Several Android permissions are required.
 For simplicity, the permissions are requested at the app's first startup,
 in a batch, and the app refuses to continue until all the permissions are granted.
-
-# App code critique
-
-This is my first "useful" Android app written from scratch.
-While the coding style is relatively clean and Kotlin-idiomatic,
-some usages of the Android SDK seem a bit clunky.
-
-## Permissions
-
-## Composition and state
-
-## UI and Graphics
-
-## The `Pebble` object
-
-## The `Notifications` object
-
-## Other tricks and kludges
-
-### `UiNotifications.getApplicationIcon()` function
 
