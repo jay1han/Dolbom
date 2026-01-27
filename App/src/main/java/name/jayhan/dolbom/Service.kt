@@ -42,7 +42,7 @@ class PebbleService:
     
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.v(Const.TAG, "Service starting Id=$startId")
-        if (!Permissions.allGranted) {
+        if (!Permissions.canStartService()) {
             Log.v(Const.TAG, "Permissions missing")
             stopSelf()
             return START_NOT_STICKY

@@ -223,6 +223,7 @@ class PermissionsCallback():
 
 object Permissions
 {
+    var isServerStarted = false
     var allGranted = false
     val grantFlow = MutableStateFlow(allGranted)
     val missingFlow = MutableStateFlow(listOf<PermissionGroup>())
@@ -260,6 +261,13 @@ object Permissions
         }
     }
 
+    fun canStartService(): Boolean {
+        if (allGranted) {
+            isServerStarted = true
+            return true
+        } else return false
+    }
+    
     fun requestGroup(
         permissionGroup: PermissionGroup,
     ) {

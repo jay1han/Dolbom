@@ -20,7 +20,7 @@ private object FaceDataReceiver:
 {
     override fun receiveData(context: Context?, transactionId: Int, data: PebbleDictionary?) {
         PebbleKit.sendAckToPebble(context, transactionId)
-        PebbleStats.packetsReceived += 1
+        PebbleStats.received()
 
         if (data != null) {
             val msgType = data.getInteger(DictKey.MSG_TYPE.ordinal)?.toInt() ?: 0
@@ -194,7 +194,7 @@ object Pebble
         context: Context,
         data: PebbleDictionary
     ) {
-        PebbleStats.packetsSent += 1
+        PebbleStats.sent()
         PebbleKit.sendDataToPebble(context, FACE_UUID, data)
         lastSent = clock.now()
     }
@@ -251,25 +251,37 @@ object Pebble
     ) {
         context?.sendBroadcast(Intent(Const.INTENT_REFRESH))
     }
+    
 }
 
 object PebbleStats
 {
-    var packetsSent = 0
-    var packetsReceived = 0
-    var statsSince = Clock.System.now()
+    val sent = MutableStateFlow(0)
+    val received = MutableStateFlow(0)
+    val since = MutableStateFlow(Clock.System.now())
+    val average = MutableStateFlow(0f)
 
-    fun resetStats() {
-        packetsSent = 0
-        packetsReceived = 0
-        statsSince = Clock.System.now()
+    fun reset() {
+        sent.value = 0
+        received.value = 0
+        average.value = 0f
+        since.value = Clock.System.now()
+    }
+    
+    private fun updateAverage() {
+        if (since.value < Clock.System.now()) {
+            average.value = 3600f * (sent.value + received.value) /
+                    (Clock.System.now() - since.value).inWholeSeconds
+        }
     }
 
-    fun getAverage(): Float {
-        val interval = (Clock.System.now() - statsSince).inWholeSeconds.toFloat() / 3600f
-        return (
-                if (interval > 0f) (packetsReceived + packetsSent).toFloat() / interval
-                else 0f
-                )
+    fun sent(count: Int = 1) {
+        sent.value += count
+        updateAverage()
+    }
+    
+    fun received(count: Int = 1) {
+        received.value += count
+        updateAverage()
     }
 }

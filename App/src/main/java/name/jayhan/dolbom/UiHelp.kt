@@ -15,6 +15,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -167,6 +169,10 @@ fun StatsDialog(
     Dialog(
         onDismissRequest = onClose
     ){
+        val packetsSent by PebbleStats.sent.collectAsState(0)
+        val packetsReceived by PebbleStats.received.collectAsState(0)
+        val packetsAverage by PebbleStats.average.collectAsState(0f)
+        val packetsSince by PebbleStats.since.collectAsState(Clock.System.now())
         Card {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,25 +180,28 @@ fun StatsDialog(
             ) {
                 Text(
                     text = "Stats since\n" +
-                            PebbleStats.statsSince.formatDateTime() +
+                            packetsSince.formatDateTime() +
                             "\n(" +
-                            (Clock.System.now() - PebbleStats.statsSince).formatDuration() +
+                            (Clock.System.now() - packetsSince).formatDuration() +
                             ")",
                     fontSize = Const.textSize,
                 )
                 Text(
                     text = "%d packets sent\n%d received"
-                        .format(PebbleStats.packetsSent, PebbleStats.packetsReceived),
+                        .format(packetsSent, packetsReceived),
                     fontSize = Const.textSize,
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
                 Text(
-                    text = "%.1f packets/hour".format(PebbleStats.getAverage()),
+                    text = "%.1f packets/hour".format(packetsAverage),
                     fontSize = Const.textSize
                 )
                 
                 Button(
-                    onClick = onReset,
+                    onClick = {
+                        onReset()
+                        onClose()
+                    },
                     modifier = Modifier.padding(top = 12.dp)
                 ) {
                     Text(

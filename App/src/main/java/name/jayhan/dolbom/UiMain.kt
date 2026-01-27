@@ -127,7 +127,7 @@ fun AppScaffold(
             if (showStats) {
                 StatsDialog(
                     onClose = { showStats = false }
-                ) { PebbleStats.resetStats() }
+                ) { PebbleStats.reset() }
             }
             
             MainPage(
@@ -246,6 +246,8 @@ fun WatchDialog(
     onRefresh: ()-> Unit,
     onClose: () -> Unit
 ){
+    val packetsAverage by PebbleStats.average.collectAsState(0f)
+    
     Dialog(
         onDismissRequest = onClose
     ) {
@@ -295,7 +297,7 @@ fun WatchDialog(
                         onClick = onStats,
                         border = BorderStroke(width = 1.dp, color = LocalContentColor.current)
                     ){
-                        Text("%.1f".format(PebbleStats.getAverage()),
+                        Text("%.1f".format(packetsAverage),
                             fontSize = Const.textSize
                         )
                     }

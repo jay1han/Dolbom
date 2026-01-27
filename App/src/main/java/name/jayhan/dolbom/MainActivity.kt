@@ -43,8 +43,6 @@ class AppStart:
 class MainActivity :
     ComponentActivity() {
 
-    private lateinit var zenRule: ZenRule
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(Const.TAG, "Start activity")
@@ -54,8 +52,10 @@ class MainActivity :
             mainActivity = this,
             context = context,
             onAllGranted =  {
-                val intent = Intent(context, PebbleService::class.java)
-                context.startForegroundService(intent)
+                if (!Permissions.isServerStarted) {
+                    val intent = Intent(context, PebbleService::class.java)
+                    context.startForegroundService(intent)
+                }
             },
         )
 
