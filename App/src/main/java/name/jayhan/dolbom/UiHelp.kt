@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -77,18 +78,18 @@ fun HelpDialog(
 }
 
 @Composable
-fun DumpDialog(
+fun DumpScreen(
     dump: List<NotificationDump>,
     onClose: () -> Unit
 ) {
     Dialog(
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        onDismissRequest = {
-            onClose()
-        }
+        onDismissRequest = onClose,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        )
     ) {
-        Card(
-            modifier = Modifier.fillMaxSize()
+        Surface(
+         modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().padding(4.dp)
@@ -113,7 +114,7 @@ fun DumpDialog(
                             if (notificationDump.flags.maskAll(Notification.FLAG_LOCAL_ONLY))
                                 append("(local)")
                         }.toString()
-
+    
                         Text(
                             text = flags,
                             fontSize = Const.smallSize,
@@ -238,8 +239,8 @@ val PreviewDump = listOf(
 
 @Preview
 @Composable
-fun DumpDialogPreview() {
-    DumpDialog(PreviewDump) {}
+fun DumpScreenPreview() {
+    DumpScreen(PreviewDump) {}
 }
 
 @Preview

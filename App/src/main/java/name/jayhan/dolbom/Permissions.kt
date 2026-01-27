@@ -29,7 +29,7 @@ const val PHONE_STATE = "android.permission.READ_PHONE_STATE"
 const val QUERY_ALL_PACKAGES = "android.permission.QUERY_ALL_PACKAGES"
 const val RECEIVE_BOOT_COMPLETED = "android.permission.RECEIVE_BOOT_COMPLETED"
 const val NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY"
-const val NOTIFICATION_POLICY_ACCESS = "dolbom.permission.NOTIFICATION_POLICY_ACCESS"
+const val NOTIFICATION_POLICY_ACCESS_FAKE = "dolbom.permission.NOTIFICATION_POLICY_ACCESS"
 const val NOTIFICATION_LISTENER = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
 const val AUDIO_SETTINGS = "android.permission.MODIFY_AUDIO_SETTINGS"
 const val USE_FULLSCREEN = "android.permission.USE_FULL_SCREEN_INTENT"
@@ -92,7 +92,7 @@ val AllPermissionGroups = listOf(
         R.string.query_apps_2),
     PermissionGroup(
         R.string.pg_zen_rule,
-        listOf(NOTIFICATION_POLICY),
+        listOf(NOTIFICATION_POLICY, NOTIFICATION_POLICY_ACCESS_FAKE),
         R.string.zen_rule,
         R.string.zen_rule_2),
 )
@@ -148,7 +148,7 @@ class SinglePermission(
                             as NotificationManager
                     ).canUseFullScreenIntent()
             
-            NOTIFICATION_POLICY_ACCESS -> (
+            NOTIFICATION_POLICY_ACCESS_FAKE -> (
                     context.getSystemService(Context.NOTIFICATION_SERVICE)
                             as NotificationManager
                     ).isNotificationPolicyAccessGranted
@@ -180,7 +180,7 @@ class SinglePermission(
                 return
             }
             
-            NOTIFICATION_POLICY_ACCESS -> {
+            NOTIFICATION_POLICY_ACCESS_FAKE -> {
 //                val filter = IntentFilter().apply {
 //                    addAction(NotificationManager.ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED)
 //                }

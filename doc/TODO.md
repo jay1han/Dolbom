@@ -6,6 +6,8 @@
 
 ## Tests
 
+- Test Permissions (and Help)
+
 ## Features
 
 - Add Internet connection indicator

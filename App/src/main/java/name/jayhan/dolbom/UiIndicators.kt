@@ -64,7 +64,7 @@ fun IndicatorList(
     val indicatorCount by Indicators.count.collectAsState(0)
 
     if (showDump) {
-        DumpDialog(Notifications.dump) {
+        DumpScreen(Notifications.dump) {
             showDump = false
         }
     }

@@ -1,6 +1,5 @@
 package name.jayhan.dolbom
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,14 +54,14 @@ fun PermissionsScaffold() {
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding)
             ) { permissionHelp = false }
-        } else {
-            UiPermissions(
-                missingList = missingList,
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
-            )
         }
+        
+        UiPermissions(
+            missingList = missingList,
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
+        )
     }
 }
 
@@ -104,30 +103,37 @@ fun PermissionHelp(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
-    BackHandler(true, onBack)
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(20.dp)
+    val scrollState = rememberScrollState()
+    
+    Dialog(
+        onDismissRequest = onBack,
     ) {
-        Text(
-            text = stringResource(R.string.permissions_help),
-            fontSize = Const.textSize,
-            lineHeight = Const.titleSize,
-            textAlign = TextAlign.Justify,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.padding(10.dp))
-
-        Button(onBack,
-            modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text(
-                text = "OK",
-                fontSize = Const.titleSize,
-                textAlign = TextAlign.Center
-            )
+        Card(
+            modifier = Modifier
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp)
+                    .verticalScroll(scrollState)
+            ) {
+                Text(
+                    text = stringResource(R.string.permissions_help),
+                    fontSize = Const.textSize,
+                    lineHeight = Const.titleSize,
+                    textAlign = TextAlign.Justify,
+                    modifier = Modifier.fillMaxWidth()
+                )
+        
+                Spacer(Modifier.padding(10.dp))
+        
+                Button(onBack,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Text(
+                        text = "OK",
+                        fontSize = Const.titleSize,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
@@ -142,54 +148,54 @@ fun UiPermissions(
     if (showGroup != null) {
         Rationale(
             permissionGroup = showGroup!!,
-            onClick = {
+            onAccept = {
                 Permissions.requestGroup(showGroup!!)
-            }) {
-            showGroup = null
-        }
-    } else {
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = modifier
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Text(
-                text = stringResource(R.string.pg_title),
-                fontSize = Const.titleSize
-            )
+            },
+            onClose = { showGroup = null }
+        )
+    }
 
-            for (permissionGroup in missingList) {
-                ListItem(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            showGroup = permissionGroup
-                        },
-                    headlineContent = {
-                        Text(
-                            text = stringResource(permissionGroup.title),
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = Const.textSize
-                        )
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.Top
+    ) {
+        Text(
+            text = stringResource(R.string.pg_title),
+            fontSize = Const.titleSize
+        )
+
+        for (permissionGroup in missingList) {
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        showGroup = permissionGroup
                     },
-                    supportingContent = {
-                        Text(
-                            text = stringResource(permissionGroup.description),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp),
-                            fontSize = Const.smallSize,
-                        )
-                    },
-                    trailingContent = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_chevron_forward_24),
-                            contentDescription = "Go"
-                        )
-                    }
-                )
-            }
+                headlineContent = {
+                    Text(
+                        text = stringResource(permissionGroup.title),
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = Const.textSize
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        text = stringResource(permissionGroup.description),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        fontSize = Const.smallSize,
+                    )
+                },
+                trailingContent = {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_chevron_forward_24),
+                        contentDescription = "Go"
+                    )
+                }
+            )
         }
     }
 }
@@ -197,7 +203,7 @@ fun UiPermissions(
 @Composable
 fun Rationale(
     permissionGroup: PermissionGroup,
-    onClick: () -> Unit,
+    onAccept: () -> Unit,
     onClose: () -> Unit
 ) {
     Dialog(
@@ -233,7 +239,7 @@ fun Rationale(
                 ) {
                     Button(
                         onClick = {
-                            onClick()
+                            onAccept()
                             onClose()
                         }
                     ) {
@@ -265,7 +271,7 @@ fun RationalePreview() {
     PebbleTheme {
         Rationale(
             AllPermissionGroups[3],
-            onClick = {}
+            onAccept = {}
         ) {}
     }
 }
