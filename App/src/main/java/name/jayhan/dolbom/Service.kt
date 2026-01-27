@@ -23,6 +23,7 @@ class PebbleService:
     private lateinit var batteryReceiver: BatteryReceiver
     private lateinit var bluetoothReceiver: BluetoothReceiver
     private lateinit var wifiCallback: WifiCallback
+    private lateinit var internetCallback: InternetCallback
     private lateinit var phoneCallback: PhoneCallback
     private lateinit var zenRule: ZenRule
 
@@ -179,6 +180,7 @@ class PebbleService:
         batteryReceiver = BatteryReceiver(context)
         bluetoothReceiver = BluetoothReceiver(context)
         wifiCallback = WifiCallback(context)
+        internetCallback = InternetCallback(context)
         phoneCallback = PhoneCallback(context)
         alarmListener.startTimer()
         Log.v(Const.TAG, "Modules started")
@@ -191,6 +193,7 @@ class PebbleService:
         batteryReceiver.refresh()
         bluetoothReceiver.refresh()
         wifiCallback.refresh()
+        internetCallback.refresh()
         phoneCallback.refresh()
         Notifications.refresh(context)
     }
@@ -209,6 +212,7 @@ class PebbleService:
         if (this::batteryReceiver.isInitialized) batteryReceiver.deinit()
         if (this::bluetoothReceiver.isInitialized) bluetoothReceiver.deinit()
         if (this::wifiCallback.isInitialized) wifiCallback.deinit()
+        if (this::internetCallback.isInitialized) internetCallback.deinit()
         if (this::phoneCallback.isInitialized) phoneCallback.deinit()
         if (this::phoneFinder.isInitialized) phoneFinder.deinit()
         Log.v(Const.TAG, "Modules stopped")

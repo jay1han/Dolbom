@@ -23,6 +23,7 @@ static struct {
     const char *font;
 } disp[disp_end] = {
     {NULL, {{0, -10},   {142, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_quiet
+    {NULL, {{0, -10},   {142, 31}}, 0xFF, 3, -1, Left  , FONT_28},  //  disp_net
     {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Center, FONT_28},  //  disp_date
     {NULL, {{0, -10},   {144, 31}}, 0xFF, 3, -1, Right , FONT_28},  //  disp_dnd
     {NULL, {{0, 14},    {144, 51}}, 0xC0, 3, -1, Center, FONT_49},  //  disp_home
@@ -34,7 +35,7 @@ static struct {
     {NULL, {{29, 115},  {144, 31}}, 0xC0, 3, -1, Left  , FONT_28},  //  disp_plmn
     {NULL, {{29, 117},  {144, 29}}, 0xC0, 3, -1, Left  , FONT_24},  //  disp_wifi
     {NULL, {{-14, 95},  {48,  29}}, 0xFF, 4, -1, Center, FONT_24},  //  disp_bton
-    {NULL, {{0, 115},   {144, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_net 
+    {NULL, {{0, 115},   {144, 31}}, 0xFF, 4, -1, Left  , FONT_28},  //  disp_cell 
     {NULL, {{110, 117}, {48,  29}}, 0xFF, 6, -1, Center, FONT_24},  //  disp_sim
     {NULL, {{0, 93},    {144, 31}}, 0xFF, 6, -1, Right , FONT_28},  //  disp_btc
 };

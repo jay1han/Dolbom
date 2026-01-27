@@ -4,7 +4,7 @@ enum {
     STOR_TZ_INT = 1,
     STOR_WBAT_4,
     STOR_PBAT_4,
-    STOR_NET_4,
+    STOR_CELL_4,
     STOR_SIM_4,
     STOR_PLMN_20,
     STOR_WIFI_20,
@@ -13,6 +13,7 @@ enum {
     STOR_DND_4,
     STOR_NOTI_16,
     STOR_BTON_4,
+    STOR_NET_4,
     STOR_END
 };
 extern bool changed[STOR_END];

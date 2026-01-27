@@ -5,7 +5,7 @@
 #include "phone.h"
 
 static char pbat[4];
-static char net[4];
+static char cell[4];
 static char sim[4];
 static char plmn[20];
 static char wifi[20];
@@ -14,11 +14,13 @@ static char btc[4];
 static char bton[4];
 static char dnd[4];
 static char noti[16];
+static char net[4];
 
 void phone_init() {
     persist_read_string(STOR_PBAT_4,  pbat, sizeof(pbat));
-    persist_read_string(STOR_NET_4,   net,  sizeof(net));
+    persist_read_string(STOR_CELL_4,  cell, sizeof(cell));
     persist_read_string(STOR_SIM_4,   sim,  sizeof(sim));
+    persist_read_string(STOR_NET_4,   net,  sizeof(net));
     persist_read_string(STOR_PLMN_20, plmn, sizeof(plmn));
     persist_read_string(STOR_WIFI_20, wifi, sizeof(wifi));
     persist_read_string(STOR_BTID_20, btid, sizeof(btid));
@@ -28,13 +30,14 @@ void phone_init() {
     persist_read_string(STOR_BTON_4,  bton, sizeof(bton));
     
     disp_set(disp_pbat, pbat);
-    disp_set(disp_net , net);
+    disp_set(disp_cell , cell);
     disp_set(disp_sim , sim);
     disp_set(disp_btid, btid);
     disp_set(disp_btc,  btc);
     disp_set(disp_dnd,  dnd);
     disp_set(disp_noti, noti);
     disp_set(disp_bton, bton);
+    disp_set(disp_net,  net);
     
     if (wifi[0] != 0)
         disp_set(disp_wifi, wifi);
@@ -46,11 +49,14 @@ void phone_deinit() {
     if (changed[STOR_PBAT_4]) 
         persist_write_string(STOR_PBAT_4, pbat);
     
-    if (changed[STOR_NET_4]) 
-        persist_write_string(STOR_NET_4, net);
+    if (changed[STOR_CELL_4]) 
+        persist_write_string(STOR_CELL_4, cell);
     
     if (changed[STOR_SIM_4]) 
         persist_write_string(STOR_SIM_4, sim);
+    
+    if (changed[STOR_NET_4]) 
+        persist_write_string(STOR_NET_4, net);
     
     if (changed[STOR_PLMN_20])
         persist_write_string(STOR_PLMN_20, plmn);
@@ -94,20 +100,21 @@ void phone_charge(int batt, bool plugged, bool charging) {
     }
 }
 
-void phone_net(int network_gen, int active_sim, char *carrier) {
-    char net1[4];
+void phone_cell(int network_gen, int active_sim, char *carrier) {
+    char cell1[4];
     int has_data = network_gen & 0x10;
     int has_gen = network_gen & 0x0F;
-    if (has_gen > 0 && has_gen <= 5) net1[0] = '0' + has_gen;
-    else net1[0] = '-';
-    if (has_data) net1[1] = 'G';
-    else net1[1] = 'v';
-    net1[2] = 0;
-    if (strcmp(net, net1)) {
-        strncpy(net, net1, sizeof(net));
-        net[sizeof(net) - 1] = 0;
-        changed[STOR_NET_4] = true;
-        disp_set(disp_net, net);
+    if (has_gen > 0 && has_gen <= 5) {
+        cell1[0] = '0' + has_gen;
+        if (has_data) cell1[1] = 'G';
+        else cell1[1] = 'v';
+        cell1[2] = 0;
+    } else cell1[0] = 0;
+    if (strcmp(cell, cell1)) {
+        strncpy(cell, cell1, sizeof(cell));
+        cell[sizeof(cell) - 1] = 0;
+        changed[STOR_CELL_4] = true;
+        disp_set(disp_cell, cell);
     }
 
     char sim1[4];
@@ -201,5 +208,15 @@ void phone_noti(char *text) {
         noti[sizeof(noti) - 1] = 0;
         changed[STOR_NOTI_16] = true;
         disp_set(disp_noti, noti);
+    }
+}
+
+void phone_net(bool has_internet) {
+    APP_LOG(APP_LOG_LEVEL_INFO, "NET %d", has_internet);
+    if (has_internet == (net[0] != 0)) {
+        if (has_internet) net[0] = 0;
+        else strcpy(net, ">|");
+        changed[STOR_NET_4] = true;
+        disp_set(disp_net, net);
     }
 }

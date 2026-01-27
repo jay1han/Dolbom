@@ -37,6 +37,7 @@ object Const {
     const val EXTRA_PHONE_DND = "phone_dnd"
     const val EXTRA_TZ_MIN = "tz_min"
     const val EXTRA_WIFI = "wifi"
+    const val EXTRA_CELL = "cell"
     const val EXTRA_NET = "net"
     const val EXTRA_SIM = "sim"
     const val EXTRA_CARRIER = "carrier"

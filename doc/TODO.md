@@ -6,17 +6,11 @@
 
 ## Tests
 
-- Test Permissions (and Help)
-
 ## Features
-
-- Add Internet connection indicator
-  - [Monitoring](https://developer.android.com/training/monitoring-device-state/connectivity-status-type)
 
 ## Sub-functional
 
 - Add instruction to exclude background management (ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-- Replace some Dialogs with full screen and BackHandler: UiDump and UiSelectPackage
 
 ## Internal
 

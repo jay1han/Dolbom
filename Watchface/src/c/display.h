@@ -2,6 +2,7 @@
 
 typedef enum {
     disp_quiet = 0,
+    disp_net,
     disp_date,
     disp_dnd ,
     disp_home,
@@ -13,7 +14,7 @@ typedef enum {
     disp_plmn,
     disp_wifi,
     disp_bton,
-    disp_net,
+    disp_cell,
     disp_sim,
     disp_btc,
     disp_end

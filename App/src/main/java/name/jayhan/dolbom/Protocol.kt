@@ -23,7 +23,7 @@ enum class DictKey {
     PHONE_BATT,
     PHONE_PLUG,
     PHONE_CHG,
-    NET,
+    CELL,
     SIM,
     CARRIER,
     WIFI,
@@ -31,7 +31,9 @@ enum class DictKey {
     BTC,
     BTON,
     NOTI,
+    NET,
 }
+
 enum class MsgType {
     ZERO,
     INFO,
@@ -41,16 +43,17 @@ enum class MsgType {
     TZ,
     PHONE_DND,
     PHONE_CHG,
-    NET,
+    CELL,
     WIFI,
     BT,
     NOTI,
     PING,
-    PONG
+    PONG,
+    NET,
 }
 
 val MsgName = listOf(
-    "NONE", "INFO", "FRESH", "WBATT", "ACTION", "TZ", "PHONE_DND", "PHONE_CHG", "NET", "WIFI", "BT", "NOTI", "PING"
+    "NONE", "INFO", "FRESH", "WBATT", "ACTION", "TZ", "PHONE_DND", "PHONE_CHG", "CELL", "WIFI", "BT", "NOTI", "PING", "PONG", "NET"
 )
 
 enum class ActionType {
@@ -128,14 +131,14 @@ class Protocol
                 pebbleDict.addString(DictKey.WIFI.ordinal, ssid)
             }
     
-            MsgType.NET.ordinal -> {
-                val gen = intent.getIntExtra(Const.EXTRA_NET, 0).toByte()
+            MsgType.CELL.ordinal -> {
+                val gen = intent.getIntExtra(Const.EXTRA_CELL, 0).toByte()
                 val sim = intent.getIntExtra(Const.EXTRA_SIM, 0).toByte()
                 val carrier = (intent.getStringExtra(Const.EXTRA_CARRIER) ?: "").take(Const.MAX_LEN_ID)
-                suppress = isSameOrUpdate(DictKey.NET, gen) &&
+                suppress = isSameOrUpdate(DictKey.CELL, gen) &&
                         isSameOrUpdate(DictKey.SIM, sim) &&
                         isSameOrUpdate(DictKey.CARRIER, carrier)
-                pebbleDict.addInt8(DictKey.NET.ordinal, gen)
+                pebbleDict.addInt8(DictKey.CELL.ordinal, gen)
                 pebbleDict.addInt8(DictKey.SIM.ordinal, sim)
                 pebbleDict.addString(DictKey.CARRIER.ordinal, carrier)
             }
@@ -156,6 +159,13 @@ class Protocol
                 pebbleDict.addString(DictKey.BTID.ordinal, btid)
                 pebbleDict.addInt8(DictKey.BTC.ordinal, btc)
                 pebbleDict.addInt8(DictKey.BTON.ordinal, bton)
+            }
+            
+            MsgType.NET.ordinal -> {
+                val hasInternet = intent.getBooleanExtra(Const.EXTRA_NET, false)
+                val byteInternet = if (hasInternet) 1.toByte() else 0.toByte()
+                suppress = isSameOrUpdate(DictKey.NET, byteInternet)
+                pebbleDict.addInt8(DictKey.NET.ordinal, byteInternet)
             }
         }
 

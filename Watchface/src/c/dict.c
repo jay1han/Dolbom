@@ -19,7 +19,7 @@ enum {
     KEY_PHONE_BATT_I8,
     KEY_PHONE_PLUG_I8,
     KEY_PHONE_CHG_I8,
-    KEY_NET_I8,
+    KEY_CELL_I8,
     KEY_SIM_I8,
     KEY_CARRIER_S20,
     KEY_WIFI_S20,
@@ -27,6 +27,7 @@ enum {
     KEY_BTC_I8,
     KEY_BT_ON_I8,
     KEY_NOTI_S16,
+    KEY_NET_I8,
 };
 
 typedef enum {
@@ -37,12 +38,13 @@ typedef enum {
     MSG_TZ,
     MSG_PHONE_DND,
     MSG_PHONE_CHG,
-    MSG_NET,
+    MSG_CELL,
     MSG_WIFI,
     MSG_BT,
     MSG_NOTI,
     MSG_PING,
     MSG_PONG,
+    MSG_NET,
     MSG_TYPE
 } msg_type_t;
 
@@ -55,12 +57,13 @@ static const char MSG_NAME[MSG_TYPE][8] = {
     "TZ",
     "DND",
     "CHG",
-    "NET",
+    "CELL",
     "WIFI",
     "BT",
     "NOTI",
     "PING",
-    "PONG"
+    "PONG",
+    "NET"
 };
 
 typedef enum {
@@ -85,6 +88,7 @@ static struct {
     int8_t     bt_on;
     char       *notifications;
     action_t   action;
+    int8_t     has_internet;
 } message;
 
 void send_fresh() {
@@ -182,7 +186,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
                 message.phone_plugged = tuple->value->int8 != 0;
             break;
             
-        case KEY_NET_I8:
+        case KEY_CELL_I8:
             if (tuple->type == TUPLE_INT && tuple->length == 1)
                 message.network_gen = tuple->value->int8;
             break;
@@ -222,6 +226,11 @@ void dict_parse(DictionaryIterator *iter, void *context) {
                 message.bt_on = tuple->value->int8;
             break;
             
+        case KEY_NET_I8:
+            if (tuple->type == TUPLE_INT && tuple->length == 1)
+                message.has_internet = tuple->value->int8;
+            break;
+            
         default: break;
             
         }
@@ -236,7 +245,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
     case MSG_TZ: tz_set(message.timezone_minutes); break;
     case MSG_PHONE_DND: phone_dnd(message.phone_dnd); break;
     case MSG_PHONE_CHG: phone_charge(message.phone_battery, message.phone_plugged, message.phone_charging); break;
-    case MSG_NET: phone_net(message.network_gen, message.active_sim, message.carrier); break;
+    case MSG_CELL: phone_cell(message.network_gen, message.active_sim, message.carrier); break;
     case MSG_WIFI: phone_wifi(message.wifi_ssid); break;
     case MSG_BT: phone_bt(message.bt_device, message.bt_battery, message.bt_on); break;
     case MSG_NOTI: phone_noti(message.notifications); break;
@@ -244,6 +253,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
     case MSG_ACTION: break;
     case MSG_PING: send_pong(); break;
     case MSG_FRESH: send_fresh(); break;
+    case MSG_NET: phone_net(message.has_internet); break;
         
     default: break;
     }
