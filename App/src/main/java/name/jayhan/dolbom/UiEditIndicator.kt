@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -120,11 +119,12 @@ fun EditIndicator(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
                 ){
                     // App icon
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth(.3f)
+                        modifier = Modifier.weight(1f)
                     ) {
                         val icon: ImageBitmap? =
                             if (activeList == PreviewActiveList) null
@@ -150,7 +150,7 @@ fun EditIndicator(
                     // Filter options
                     Column(
                         verticalArrangement = Arrangement.spacedBy(-16.dp),
-                        modifier = Modifier.padding(end = 24.dp),
+                        modifier = Modifier.weight(1.5f),
                     ) {
                         // Ignore
                         Row(
@@ -210,26 +210,34 @@ fun EditIndicator(
                     }
                     
                     // Letter
-                    OutlinedTextField(
-                        enabled = !ignore,
-                        value = TextFieldValue(
-                            text = newLetter.toString(),
-                            selection = TextRange(start = 0, end = 0)
-                        ),
-                        onValueChange = {
-                            newLetter = acceptLetter(it.text)
-                        },
-                        singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = Const.titleSize,
-                            textAlign = TextAlign.Center,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Uri,
-                            autoCorrectEnabled = false,
-                        ),
-                        modifier = Modifier.fillMaxWidth().padding(8.dp)
-                    )
+                    Box(
+                        modifier = Modifier.weight(.5f)
+                            .background(
+                                if (ignore) Color.Transparent
+                                else Color(0xFFC0C0C0)
+                            )
+                    ) {
+                        BasicTextField(
+                            enabled = !ignore,
+                            value = TextFieldValue(
+                                text = newLetter.toString(),
+                                selection = TextRange(start = 0, end = 0)
+                            ),
+                            onValueChange = {
+                                newLetter = acceptLetter(it.text)
+                            },
+                            singleLine = true,
+                            textStyle = TextStyle(
+                                fontSize = Const.titleSize,
+                                textAlign = TextAlign.Center,
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Uri,
+                                autoCorrectEnabled = false,
+                            ),
+                            modifier = Modifier.fillMaxWidth().padding(8.dp)
+                        )
+                    }
                 }
 
                 // Action options
