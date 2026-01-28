@@ -60,7 +60,6 @@ fun IndicatorList(
     var showDump by remember { mutableStateOf(false) }
     val dumpFlow by Notifications.dumpFlow.collectAsState(0)
     var showSticky by remember { mutableStateOf(false) }
-    val backedUp by Indicators.backedUp.collectAsState(false)
     val indicatorCount by Indicators.count.collectAsState(0)
 
     if (showDump) {
@@ -84,7 +83,6 @@ fun IndicatorList(
     if (dataDialog) {
         DataDialog(
             indicatorCount = indicatorCount,
-            backedUp = backedUp,
             onLoad = { fileMan.loadIndicators() },
             onSave = { fileMan.saveIndicators() },
             onClear = { Indicators.reset() },
@@ -316,8 +314,8 @@ fun StickyDialog(
     Dialog(
         onDismissRequest = onClose,
     ) {
-        Card(
-        ) {
+        Card()
+        {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(8.dp)

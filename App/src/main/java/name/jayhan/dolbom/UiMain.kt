@@ -345,10 +345,10 @@ fun MainTopBarPreview() {
         MainTopBar(
             isConnected = true,
             watchInfo = PreviewWatchInfo,
-            true,
-            false, {},
-            {},
-            {}
+            dndEnabled = true,
+            dndActive = false, onHelp = {},
+            onHistory = {},
+            onDnd = {}
         ) {}
     }
 }
@@ -360,10 +360,10 @@ fun MainTopBarDisconnected() {
         MainTopBar(
             isConnected = false,
             watchInfo = WatchInfo(),
-            false,
-            false, {},
-            {},
-            {}
+            dndEnabled = false,
+            dndActive = false, onHelp = {},
+            onHistory = {},
+            onDnd = {}
         ) {}
     }
 }

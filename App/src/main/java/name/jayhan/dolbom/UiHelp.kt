@@ -246,7 +246,7 @@ fun DumpScreenPreview() {
 @Preview
 @Composable
 fun HelpDialogPreview() {
-    HelpDialog({})
+    HelpDialog {}
 }
 
 @Preview

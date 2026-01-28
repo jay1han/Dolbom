@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,7 +24,6 @@ import androidx.compose.ui.window.Dialog
 @Composable
 fun DataDialog(
     indicatorCount: Int,
-    backedUp: Boolean,
     onSave: () -> Unit,
     onLoad: () -> Unit,
     onClear: () -> Unit,
@@ -37,7 +35,6 @@ fun DataDialog(
     if (doClear) {
         DataClearConfirmDialog(
             indicatorCount = indicatorCount,
-            backedUp = backedUp,
             onConfirm = {
                 onClear()
                 doClear = false
@@ -49,7 +46,6 @@ fun DataDialog(
     if (doLoad) {
         DataClearConfirmDialog(
             indicatorCount = indicatorCount,
-            backedUp = backedUp,
             onConfirm = {
                 onLoad()
                 doLoad = false
@@ -70,15 +66,6 @@ fun DataDialog(
                     fontSize = Const.textSize,
                     modifier = Modifier.padding(bottom = 10.dp)
                 )
-                
-                if (indicatorCount > 0 && !backedUp) {
-                    Text(
-                        text = "They are NOT backed up!",
-                        fontSize = Const.textSize,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
-                }
                 
                 if (indicatorCount > 0) {
                     Button(
@@ -122,7 +109,6 @@ fun DataDialog(
 @Composable
 fun DataClearConfirmDialog(
     indicatorCount: Int,
-    backedUp: Boolean,
     onConfirm: () -> Unit,
     onClose: () -> Unit
 ) {
@@ -145,15 +131,6 @@ fun DataClearConfirmDialog(
                         fontSize = Const.textSize,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
-                
-                    if (!backedUp) {
-                        Text(
-                            text = "They are NOT backed up!",
-                            fontSize = Const.textSize,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 10.dp)
-                        )
-                    }
                 }
                 
                 Text(
@@ -197,7 +174,6 @@ fun DataClearConfirmDialog(
 fun DataDialogPreview() {
     DataDialog(
         10,
-        false,
         {},
         {},
         {}
@@ -209,7 +185,6 @@ fun DataDialogPreview() {
 fun DataDialogEmpty() {
     DataDialog(
         0,
-        false,
         {},
         {},
         {}
@@ -219,5 +194,5 @@ fun DataDialogEmpty() {
 @Preview
 @Composable
 fun DataClearConfirmDialogPreview() {
-    DataClearConfirmDialog(10, false, {}, {})
+    DataClearConfirmDialog(10, {}, {})
 }

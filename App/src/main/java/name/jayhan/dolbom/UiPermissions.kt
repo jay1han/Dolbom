@@ -49,11 +49,7 @@ fun PermissionsScaffold() {
         },
     ) { innerPadding ->
         if (permissionHelp) {
-            PermissionHelp(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-            ) { permissionHelp = false }
+            PermissionHelp { permissionHelp = false }
         }
         
         UiPermissions(
@@ -100,7 +96,6 @@ fun PermissionsTopBar(
 
 @Composable
 fun PermissionHelp(
-    modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -288,6 +283,6 @@ fun PermissionsTopBarPreview() {
 @Composable
 fun PermissionHelpPreview() {
     PebbleTheme {
-        PermissionHelp(Modifier) { }
+        PermissionHelp { }
     }
 }

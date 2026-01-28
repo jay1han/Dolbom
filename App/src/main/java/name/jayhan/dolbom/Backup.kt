@@ -13,7 +13,7 @@ import java.io.OutputStreamWriter
 
 class FileManager(
     private val context: Context,
-    private val mainActivity: ComponentActivity
+    mainActivity: ComponentActivity
 ) {
     constructor(context: Context) : this(context, ComponentActivity())
 
@@ -45,8 +45,6 @@ class FileManager(
                     }
                 }
             }
-            
-            Indicators.backedUp.value = true
         }
     }
 
@@ -63,8 +61,6 @@ class FileManager(
                     }
                 }
             }
-            
-            Indicators.backedUp.value = true
         }
     }
 }

@@ -149,13 +149,13 @@ fun EditIndicator(
                     
                     // Filter options
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(-16.dp),
+                        verticalArrangement = Arrangement.spacedBy((-16).dp),
                         modifier = Modifier.weight(1.5f),
                     ) {
                         // Ignore
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            horizontalArrangement = Arrangement.spacedBy((-8).dp),
                         ) {
                             Checkbox(
                                 checked = ignore,
@@ -177,7 +177,7 @@ fun EditIndicator(
                         // Ongoing
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            horizontalArrangement = Arrangement.spacedBy((-8).dp),
                         ) {
                             Checkbox(
                                 checked = ongoing,
@@ -195,7 +195,7 @@ fun EditIndicator(
                         // Local
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                            horizontalArrangement = Arrangement.spacedBy((-8).dp),
                         ) {
                             Checkbox(
                                 checked = local,
@@ -249,7 +249,7 @@ fun EditIndicator(
                     // Sticky
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp),
                     ) {
                         Checkbox(
                             checked = sticky,
@@ -269,7 +269,7 @@ fun EditIndicator(
                     // Relay
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp),
                     ) {
                         Checkbox(
                             checked = relay,
@@ -288,7 +288,7 @@ fun EditIndicator(
                     // Repeat
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(-8.dp),
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp),
                         modifier = Modifier.padding(end = 12.dp),
                     ) {
                         Checkbox(

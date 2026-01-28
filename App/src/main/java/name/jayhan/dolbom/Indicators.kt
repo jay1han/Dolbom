@@ -97,9 +97,9 @@ class SingleIndicator(
             val lines = string.split('\n', limit = 8)
             val elements = mutableMapOf<String, String>()
             lines.forEach {
-                val key_value = it.split("=", limit = 2)
-                if (key_value.size == 2) {
-                    val (key, value) = key_value
+                val keyvalue = it.split("=", limit = 2)
+                if (keyvalue.size == 2) {
+                    val (key, value) = keyvalue
                     elements[key] = value
                 }
             }
@@ -123,7 +123,6 @@ object Indicators
     private var allIndicators = mutableListOf<SingleIndicator>()
     val allFlow = MutableStateFlow(mutableListOf<SingleIndicator>())
     private lateinit var savedSettings: SharedPreferences
-    val backedUp = MutableStateFlow(false)
     val count = MutableStateFlow(0)
 
     fun init(context: Context) {
@@ -222,7 +221,6 @@ object Indicators
         }
 
         count.value = allIndicators.size
-        backedUp.value = false
         allFlow.value = allIndicators
     }
     
