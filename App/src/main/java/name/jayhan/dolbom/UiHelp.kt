@@ -162,59 +162,6 @@ fun DumpScreen(
     }
 }
 
-@Composable
-fun StatsDialog(
-    onClose: () -> Unit,
-    onReset: () -> Unit
-) {
-    Dialog(
-        onDismissRequest = onClose
-    ){
-        val packetsSent by PebbleStats.sent.collectAsState(0)
-        val packetsReceived by PebbleStats.received.collectAsState(0)
-        val packetsAverage by PebbleStats.average.collectAsState(0f)
-        val packetsSince by PebbleStats.since.collectAsState(Clock.System.now())
-        Card {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
-            ) {
-                Text(
-                    text = "Stats since\n" +
-                            packetsSince.formatDateTime() +
-                            "\n(" +
-                            (Clock.System.now() - packetsSince).formatDuration() +
-                            ")",
-                    fontSize = Const.textSize,
-                )
-                Text(
-                    text = "%d packets sent\n%d received"
-                        .format(packetsSent, packetsReceived),
-                    fontSize = Const.textSize,
-                    modifier = Modifier.padding(vertical = 10.dp)
-                )
-                Text(
-                    text = "%.1f packets/hour".format(packetsAverage),
-                    fontSize = Const.textSize
-                )
-                
-                Button(
-                    onClick = {
-                        onReset()
-                        onClose()
-                    },
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-                    Text(
-                        text ="Reset data",
-                        fontSize = Const.textSize
-                    )
-                }
-            }
-        }
-    }
-}
-
 val PreviewDump = listOf(
     NotificationDump(
         "com.google",
@@ -247,12 +194,4 @@ fun DumpScreenPreview() {
 @Composable
 fun HelpDialogPreview() {
     HelpDialog {}
-}
-
-@Preview
-@Composable
-fun StatsDialogPreview() {
-    PebbleTheme {
-        StatsDialog({}, {})
-    }
 }

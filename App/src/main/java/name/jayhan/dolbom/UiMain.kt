@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedButton
@@ -69,7 +70,6 @@ fun AppScaffold(
     var showHistory by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
     var showWatch by remember { mutableStateOf(false) }
-    var showStats by remember { mutableStateOf(false) }
     val stickyCount by Notifications.Accumulator.stickyCount.collectAsState(0)
     val hasSticky = stickyCount > 0
 
@@ -123,17 +123,12 @@ fun AppScaffold(
                     lastReceived = lastReceived,
                     isConnected = isConnected,
                     tzWatch = tzWatch,
-                    onStats = { showStats = true },
+                    onReset = { PebbleStats.reset() },
                     onRefresh = {
                         Pebble.sendIntent(context, MsgType.FRESH) {}
-                    }
-                ) { showWatch = false }
-            }
-            
-            if (showStats) {
-                StatsDialog(
-                    onClose = { showStats = false }
-                ) { PebbleStats.reset() }
+                    },
+                    onClose = { showWatch = false }
+                )
             }
             
             MainPage(
@@ -251,7 +246,7 @@ fun WatchDialog(
     tzWatch: String,
     isConnected: Boolean,
     lastReceived: Instant,
-    onStats: () -> Unit,
+    onReset: () -> Unit,
     onRefresh: ()-> Unit,
     onClose: () -> Unit
 ){
@@ -278,54 +273,85 @@ fun WatchDialog(
                         textAlign = TextAlign.Center
                     )
                 }
+                if (isConnected) {
+                    UiTimezone(
+                        tzWatch = tzWatch
+                    ) { tz ->
+                        Timezone.fromString(context, tz)
+                    }
+                }
 
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(8.dp)
+                )
                 var clockNow by remember { mutableStateOf(Clock.System.now()) }
                 Text (
                     text = stringResource(R.string.format_last_contact)
                         .format(lastReceived.formatTimeSecond()),
                     fontSize = Const.textSize,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Text (
                     text = stringResource(R.string.format_last_ago)
                         .format((clockNow - lastReceived).formatDurationSeconds()),
                     fontSize = Const.textSize,
                     textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 LaunchedEffect(clockNow) {
                     delay(1000)
                     clockNow = Clock.System.now()
                 }
                 
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                Button(
+                    onClick = onRefresh,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(
+                        text = "Refresh",
+                        fontSize = Const.textSize
+                    )
+                }
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(8.dp)
+                )
+                val packetsSent by PebbleStats.sent.collectAsState(0)
+                val packetsReceived by PebbleStats.received.collectAsState(0)
+                val packetsAverage by PebbleStats.average.collectAsState(0f)
+                val packetsSince by PebbleStats.since.collectAsState(Clock.System.now())
+                Column(
+                    horizontalAlignment = Alignment.Start,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    OutlinedButton(
-                        onClick = onStats,
-                        border = BorderStroke(width = 1.dp, color = LocalContentColor.current)
-                    ){
-                        Text("%.1f".format(packetsAverage),
-                            fontSize = Const.textSize
-                        )
-                    }
-                    
+                    val packetStatsText = StringBuilder().apply {
+                        append("Past ")
+                        append((Clock.System.now() - packetsSince).formatDuration())
+                        append("\n")
+                        append("%.1f/hour".format(packetsAverage))
+                        append("\n")
+                        append("%d sent %d received"
+                            .format(packetsSent, packetsReceived))
+                    }.toString()
+                    Text(
+                        text = packetStatsText,
+                        fontSize = Const.textSize,
+                    )
+
                     Button(
-                        onClick = onRefresh
+                        onClick = {
+                            onReset()
+                            onClose()
+                        },
+                        modifier = Modifier.padding(top = 12.dp)
+                            .align(Alignment.End)
                     ) {
                         Text(
-                            text = "Refresh",
+                            text = "Reset data",
                             fontSize = Const.textSize
                         )
-                    }
-                }
-                
-                if (isConnected) {
-                    UiTimezone(
-                        tzWatch = tzWatch
-                    ) { tz ->
-                        Timezone.fromString(context, tz)
                     }
                 }
             }
@@ -391,7 +417,7 @@ fun ShowWatchPreview() {
         lastReceived = Clock.System.now(),
         isConnected = true,
         tzWatch = "+8.0",
-        onStats = {},
+        onReset = {},
         onRefresh = {},
     ) {}
 }
@@ -404,7 +430,7 @@ fun ShowWatchDisconnected() {
         lastReceived = Clock.System.now(),
         isConnected = false,
         tzWatch = "+8.0",
-        onStats = {},
+        onReset = {},
         onRefresh = {},
     ) {}
 }

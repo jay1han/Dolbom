@@ -80,6 +80,7 @@ fun SelectPackage(
                                 modifier = Modifier.fillMaxWidth()
                                     .clickable {
                                         onSelect(packageName)
+                                        onClose()
                                     },
                                 leadingContent = {
                                     val appIcon = getApplicationIcon(LocalContext.current, packageName)
