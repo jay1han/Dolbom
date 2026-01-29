@@ -44,10 +44,8 @@ static void init() {
     charge_update(battery_state_service_peek());
     battery_state_service_subscribe(charge_update);
 
-    // Unreliable
-//    connection_update(connection_service_peek_pebble_app_connection());
-//    pebblekit_update(connection_service_peek_pebblekit_connection());
-//    connection_service_subscribe((ConnectionHandlers){connection_update, pebblekit_update});
+    connection_update(connection_service_peek_pebble_app_connection());
+    connection_service_subscribe((ConnectionHandlers){connection_update, connection_update});
 
     app_message_register_inbox_received(dict_parse);
     app_message_register_inbox_dropped(inbox_dropped);

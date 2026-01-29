@@ -2,6 +2,7 @@
 
 #include "display.h"
 #include "watch.h"
+#include "phone.h"
 #include "dict.h"
 
 static char home[8];
@@ -9,15 +10,22 @@ static char away[8];
 static char date[12];
 static int tz = 8 * 60;
 static char wbat[4];
+static bool connected = false;
 
 void watch_init() {
     persist_read_string(STOR_WBAT_4, wbat, sizeof(wbat));
     disp_set(disp_wbat, wbat);
+    if(!persist_read_bool(STOR_CONN_1))
+	disp_connected(false);
 }
 
 void watch_deinit() {
     if (changed[STOR_WBAT_4]) {
         persist_write_string(STOR_WBAT_4, wbat);
+    }
+    
+    if (changed[STOR_CONN_1]) {
+	persist_write_bool(STOR_CONN_1, connected);
     }
 }
 
@@ -100,23 +108,24 @@ void charge_update(BatteryChargeState charge_state) {
     update_quiet_time();
 }
 
-static bool conn_app = false;
-static bool conn_kit = false;
-
-static void connection_disp() {
+void connection_update(bool current) {
     update_quiet_time();
-    disp_connected(conn_app && conn_kit);
-    // Timeout then send FRESH
-}
-
-void connection_update(bool connected) {
-    conn_app = connected;
-    connection_disp();
-}
-
-void pebblekit_update(bool connected) {
-    conn_kit = connected;
-    connection_disp();
+    if (connected != current) {
+	connected = current;
+	if (connected) {
+	    send_fresh();
+	} else {
+	    phone_charge(0, false, false);
+	    phone_dnd(false);
+	    phone_noti("");
+	    phone_wifi("");
+	    phone_cell(0, 0, "");
+	    phone_bt("", 0, 0);
+	    phone_net(true);
+	}
+	changed[STOR_CONN_1] = true;
+	disp_connected(connected);
+    }
 }
 
 void outbox_failed(DictionaryIterator *iter, AppMessageResult reason, void *context) {

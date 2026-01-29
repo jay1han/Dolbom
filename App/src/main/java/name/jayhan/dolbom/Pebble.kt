@@ -1,5 +1,6 @@
 package name.jayhan.dolbom
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -156,7 +157,12 @@ private object AppNackReceiver:
     }
 }
 
-object Pebble
+private val PebbleIntents = listOf(
+    com.getpebble.android.kit.Constants.INTENT_PEBBLE_CONNECTED,
+    com.getpebble.android.kit.Constants.INTENT_PEBBLE_DISCONNECTED,
+)
+
+object Pebble: BroadcastReceiver()
 {
     var watchInfo = WatchInfo()
     val infoFlow = MutableStateFlow(WatchInfo())
@@ -179,6 +185,10 @@ object Pebble
             val filter = IntentFilter(it.key)
             context.registerReceiver(it.value, filter, Context.RECEIVER_EXPORTED)
         }
+
+        val filter = IntentFilter()
+        PebbleIntents.forEach { filter.addAction(it) }
+        context.registerReceiver(this, filter, Context.RECEIVER_EXPORTED)
 
         sendIntent(context, MsgType.FRESH) {}
     }
@@ -269,7 +279,20 @@ object Pebble
     ) {
         context?.sendBroadcast(Intent(Const.INTENT_REFRESH))
     }
-    
+
+    // This is known not to work
+    override fun onReceive(context: Context?, intent: Intent?) {
+        if (intent != null) {
+            when (intent.action) {
+                com.getpebble.android.kit.Constants.INTENT_PEBBLE_CONNECTED ->
+                    isConnected.value = true
+
+                com.getpebble.android.kit.Constants.INTENT_PEBBLE_DISCONNECTED ->
+                    isConnected.value = false
+            }
+        }
+    }
+
 }
 
 object PebbleStats

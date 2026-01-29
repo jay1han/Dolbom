@@ -283,7 +283,7 @@ fun WatchDialog(
 
                 HorizontalDivider(
                     thickness = 1.dp,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(16.dp)
                 )
                 var clockNow by remember { mutableStateOf(Clock.System.now()) }
                 Text (
@@ -306,7 +306,7 @@ fun WatchDialog(
                 
                 Button(
                     onClick = onRefresh,
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.End).padding(top=8.dp)
                 ) {
                     Text(
                         text = "Refresh",

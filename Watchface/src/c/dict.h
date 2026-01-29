@@ -14,6 +14,7 @@ enum {
     STOR_NOTI_16,
     STOR_BTON_4,
     STOR_NET_4,
+    STOR_CONN_1,
     STOR_END
 };
 extern bool changed[STOR_END];

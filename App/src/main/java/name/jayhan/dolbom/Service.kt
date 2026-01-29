@@ -182,7 +182,7 @@ class PebbleService:
         wifiCallback = WifiCallback(context)
         internetCallback = InternetCallback(context)
         phoneCallback = PhoneCallback(context)
-        alarmListener.startTimer()
+        alarmListener.startTimer(Const.INTERVAL_DISCONNECTED)
         Log.v(Const.TAG, "Modules started")
     }
     
@@ -223,10 +223,10 @@ class PebbleService:
     {
         private var countAlarmed = 0
         
-        fun startTimer() {
+        fun startTimer(timeoutSecs: Int) {
             alarmMan.set(
                 AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + Const.PING_INTERVAL_S * 1000,
+                System.currentTimeMillis() + timeoutSecs * 1000,
                 null,
                 this,
                 null
@@ -235,14 +235,14 @@ class PebbleService:
         
         fun clearAlarm() {
             if (countAlarmed > 0) {
-                if (countAlarmed > 1) refreshService()
                 countAlarmed = 0
+                refreshService()
             }
             if (!Pebble.isConnected.value) {
                 Pebble.isConnected.value = true
                 updateNotification()
             }
-            startTimer()
+            startTimer(Const.INTERVAL_CONNECTED)
         }
         
         override fun onAlarm() {
@@ -252,7 +252,7 @@ class PebbleService:
                 Pebble.isConnected.value = false
                 updateNotification()
             }
-            startTimer()
+            startTimer(Const.INTERVAL_DISCONNECTED)
         }
     }
 

@@ -10,8 +10,7 @@ int tz_get();
 void tz_set(int minutes);
 extern BatteryChargeState watch_battery;
 void charge_update(BatteryChargeState charge_state);
-void connection_update(bool connected);
-void pebblekit_update(bool connected);
+void connection_update(bool current);
 
 void outbox_failed(DictionaryIterator *iter, AppMessageResult reason, void *context);
 void outbox_sent(DictionaryIterator *iter, void *context);

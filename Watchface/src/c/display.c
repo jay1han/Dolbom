@@ -100,9 +100,6 @@ void disp_create(Layer *window_layer) {
 
 void disp_connected(bool connected) {
     if (!connected) {
-        phone_charge(0, false, false);
-        phone_dnd(false);
-        phone_noti("");
         if (s_window_layer != NULL) {
             BitmapLayer *layer = bitmap_layer_create(disc_layer.rect);
             bitmap_layer_set_background_color(layer, (GColor8){.argb=disc_layer.color});

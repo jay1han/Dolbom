@@ -85,7 +85,8 @@ object Const {
 
     const val MAX_NOTI_INDICATORS = 15
     const val MAX_LEN_ID = 19
-    const val PING_INTERVAL_S = 120
+    const val INTERVAL_DISCONNECTED = 15
+    const val INTERVAL_CONNECTED = 120
 }
 
 fun Int.maskAny(mask: Int) = (this and mask) != 0
