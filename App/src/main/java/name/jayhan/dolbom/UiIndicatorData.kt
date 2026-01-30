@@ -59,12 +59,14 @@ fun DataDialog(
     ) {
         Card {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
                 Text(
-                    text = "%d indicators configured".format(indicatorCount),
+                    text = stringResource(R.string.indicators_configured).format(indicatorCount),
                     fontSize = Const.textSize,
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    modifier = Modifier.padding(bottom = 10.dp),
                 )
                 
                 if (indicatorCount > 0) {
@@ -72,7 +74,7 @@ fun DataDialog(
                         onClick = onSave,
                     ) {
                         Text(
-                            text = "Save to file",
+                            text = stringResource(R.string.save_to_file),
                             fontSize = Const.textSize,
                         )
                     }
@@ -85,18 +87,20 @@ fun DataDialog(
                     }
                 ) {
                     Text(
-                        text = "Load from file",
+                        text = stringResource(R.string.load_from_file),
                         fontSize = Const.textSize,
                     )
                 }
 
                 if (indicatorCount > 0) {
                     Button(
-                        modifier = Modifier.padding(top = 8.dp).align(Alignment.End),
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .align(Alignment.End),
                         onClick = { doClear = true }
                     ) {
                         Text(
-                            text = "Clear all",
+                            text = stringResource(R.string.clear_all),
                             fontSize = Const.textSize,
                         )
                     }
@@ -117,17 +121,19 @@ fun DataClearConfirmDialog(
     ) {
         Card {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
                 Text(
-                    text = "This operation will overwrite your current configuration.",
+                    text = stringResource(R.string.will_overwrite),
                     fontSize = Const.textSize,
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    modifier = Modifier.padding(bottom = 10.dp),
                 )
                 
                 if (indicatorCount > 0) {
                     Text(
-                        text = "%d indicators configured".format(indicatorCount),
+                        text = stringResource(R.string.indicators_configured).format(indicatorCount),
                         fontSize = Const.textSize,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
@@ -137,7 +143,9 @@ fun DataClearConfirmDialog(
                     text = stringResource(R.string.data_clear_confirm),
                     fontSize = Const.titleSize,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(10.dp).align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
                 
                 Row(
@@ -148,7 +156,7 @@ fun DataClearConfirmDialog(
                         onClick = onClose
                     ) {
                         Text(
-                            text = "No",
+                            text = stringResource(R.string.overwrite_no),
                             fontSize = Const.textSize,
                         )
                     }
@@ -159,7 +167,7 @@ fun DataClearConfirmDialog(
                         }
                     ) {
                         Text(
-                            text = "Continue",
+                            text = stringResource(R.string.overwrite_yes),
                             fontSize = Const.textSize,
                         )
                     }

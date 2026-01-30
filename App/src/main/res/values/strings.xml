@@ -134,5 +134,16 @@
     You can see the \"Dolbom\" rule in the settings.</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="show_history">Show history</string>
+    <string name="restore_history">Restore history</string>
+    <string name="save_to_file">Save to file</string>
+    <string name="load_from_file">Load from file</string>
+    <string name="indicators_configured">%d indicators configured</string>
+    <string name="clear_all">Clear all</string>
+    <string name="will_overwrite">This operation will overwrite your current configuration.</string>
+    <string name="overwrite_yes">Continue</string>
+    <string name="overwrite_no">No</string>
+    <string name="history_backup">Backup</string>
+    <string name="history_restore">Restore</string>
+    <string name="history_clear_all">Clear all</string>
 
 </resources>

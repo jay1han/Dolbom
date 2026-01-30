@@ -67,7 +67,9 @@ fun BatteryDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
                 val batteryText =
                     if (watchInfo.plugged) {
@@ -129,7 +131,7 @@ fun BatteryDialog(
                         },
                     ) {
                         Text(
-                            text = "Load history",
+                            text = stringResource(R.string.restore_history),
                             fontSize = Const.textSize,
                         )
                     }
@@ -192,29 +194,32 @@ fun HistoryDialog(
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
                         onClick = onSave,
                     ) {
                         Text(
-                            text = "Backup",
-                            fontSize = Const.textSize
+                            text = stringResource(R.string.history_backup),
+                            fontSize = Const.textSize,
                         )
                     }
                     Button(
                         onClick = onLoad,
                     ) {
                         Text(
-                            text = "Restore",
-                            fontSize = Const.textSize
+                            text = stringResource(R.string.history_restore),
+                            fontSize = Const.textSize,
                         )
                     }
                 }
 
                 Button(
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier
+                        .padding(top = 10.dp)
                         .align(Alignment.CenterHorizontally),
                     onClick = {
                         onClear()
@@ -222,8 +227,8 @@ fun HistoryDialog(
                     }
                 ) {
                     Text(
-                        text = "Clear all",
-                        fontSize = Const.textSize
+                        text = stringResource(R.string.history_clear_all),
+                        fontSize = Const.textSize,
                     )
                 }
             }
