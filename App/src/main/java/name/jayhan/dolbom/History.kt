@@ -202,10 +202,6 @@ object History: Backupable {
             append("historyDate=${historyData.historyDate.formatDateTime()}\n")
             append("historyCycles=${historyData.historyCycles}\n")
             append("historyRate=${historyData.historyRate}\n")
-            append("cycleDate=${historyData.cycleDate.formatDateTime()}\n")
-            append("cycleLevel=${historyData.cycleLevel}\n")
-            append("cycleRate=${historyData.cycleRate}\n")
-            append("nowPlugged=${historyData.nowPlugged}\n")
         }.toString()
     }
 
@@ -218,10 +214,6 @@ object History: Backupable {
                     "historyDate" -> historyData = historyData.set(historyDate = parseDateTime(keyvalue[1]))
                     "historyCycles" -> historyData = historyData.set(historyCycles = keyvalue[1].toInt())
                     "historyRate" -> historyData = historyData.set(historyRate = keyvalue[1].toFloat())
-                    "cycleDate" -> historyData = historyData.set(cycleDate = parseDateTime(keyvalue[1]))
-                    "cycleLevel" -> historyData = historyData.set(cycleLevel = keyvalue[1].toInt())
-                    "cycleRate" -> historyData = historyData.set(cycleRate = keyvalue[1].toFloat())
-                    "nowPlugged" -> historyData = historyData.set(nowPlugged = keyvalue[1].toBoolean())
                 }
             }
         }
