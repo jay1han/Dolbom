@@ -149,7 +149,7 @@ fun DumpScreen(
                                         }
                                         append(value)
                                     },
-                                    //lineHeight = Const.subSize * 1.2,
+                                    lineHeight = Const.subSize * 1.2,
                                     fontSize = Const.subSize,
                                     fontFamily = Const.condensedFont
                                 )
@@ -177,7 +177,9 @@ val PreviewDump = listOf(
                 "Info" to "Now"
             ),
             FilterType.Long to mapOf(
-                "Text" to "World"
+                "Text" to "World World World World World World World World World World World World" +
+                        " World World World World World World World World World World World World " +
+                        "World World World World World "
             ),
         ),
         Notification.FLAG_ONGOING_EVENT or Notification.FLAG_LOCAL_ONLY
