@@ -14,31 +14,15 @@ import java.io.OutputStreamWriter
 class Backup(
     private val origin: Backupable,
     private val context: Context,
-    mainActivity: ComponentActivity
+    mainActivity: ComponentActivity,
 ) {
-    constructor(
-        origin: Backupable,
-        context: Context,
-    ) : this(
-        origin,
-        context,
-        ComponentActivity()
-    )
-
-    private val saverLauncher = mainActivity.registerForActivityResult(
+    val saverLauncher = mainActivity.registerForActivityResult(
         CreateDocument("text/plain"),
         SaveCallback()
     )
+
     fun save() {
         saverLauncher.launch("Dolbom_${origin.filenamePart}_${nowDateTimeFilename()}.txt")
-    }
-
-    private val loaderLauncher = mainActivity.registerForActivityResult(
-        ActivityResultContracts.OpenDocument(),
-        LoadCallback()
-    )
-    fun load() {
-        loaderLauncher.launch(arrayOf("text/plain"))
     }
 
     inner class SaveCallback():
@@ -56,25 +40,41 @@ class Backup(
         }
     }
 
+    val loaderLauncher = mainActivity.registerForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+        LoadCallback()
+    )
+
+    fun load(
+        onSuccess: (Boolean) -> Unit
+    ) {
+        this.onSuccess = onSuccess
+        loaderLauncher.launch(arrayOf("text/plain"))
+    }
+
+    private var onSuccess: (Boolean) -> Unit = { _ -> {} }
+
     inner class LoadCallback():
         ActivityResultCallback<Uri?>
     {
         override fun onActivityResult(result: Uri?) {
             val contentResolver = context.contentResolver
+            var success = false
             if (result != null) {
                 contentResolver.openInputStream(result).use { inputStream ->
                     BufferedReader(InputStreamReader(inputStream)).use { reader ->
                         val text = reader.readText()
-                        origin.fromText(text)
+                        success = origin.fromText(text)
                     }
                 }
             }
+            onSuccess(success)
         }
     }
 }
 
 interface Backupable {
     fun toText(): String
-    fun fromText(text: String)
+    fun fromText(text: String): Boolean
     val filenamePart: String
 }

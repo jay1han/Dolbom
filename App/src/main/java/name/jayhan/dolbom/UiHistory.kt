@@ -1,5 +1,7 @@
 package name.jayhan.dolbom
 
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,14 +32,28 @@ fun BatteryDialog(
     watchInfo: WatchInfo,
     historyData: HistoryData,
     historyBackup: Backup,
+    showToast: (String, Int) -> Unit,
     onClose: () -> Unit
 ) {
+
     var showHistory by remember { mutableStateOf(false) }
+    fun toastSuccess(success: Boolean) {
+        if (success) {
+            showHistory = false
+            showToast("History loaded", Toast.LENGTH_SHORT)
+        } else showToast("Load failed", Toast.LENGTH_LONG)
+    }
 
     if (showHistory) {
         HistoryDialog(
             historyData = historyData,
-            onLoad = { historyBackup.load() },
+            onLoad = {
+                historyBackup.load(
+                    onSuccess = { result ->
+                        toastSuccess(result)
+                    }
+                )
+            },
             onSave = { historyBackup.save() },
             onClear = { History.clear() }
         ) { showHistory = false }
@@ -105,7 +121,13 @@ fun BatteryDialog(
 
                 if (historyData.historyCycles == 0) {
                     Button(
-                        onClick = { historyBackup.load() }
+                        onClick = {
+                            historyBackup.load(
+                                onSuccess = { result ->
+                                    toastSuccess(result)
+                                }
+                            )
+                        },
                     ) {
                         Text(
                             text = "Load history",
@@ -235,7 +257,8 @@ fun BatteryDialogPreview() {
         BatteryDialog(
             watchInfo = PreviewWatchInfo,
             historyData = PreviewHistoryData,
-            historyBackup = Backup(History, LocalContext.current),
+            historyBackup = Backup(History, LocalContext.current, ComponentActivity()),
+            { _, _ -> {} }
         ) {}
     }
 }
@@ -247,7 +270,8 @@ fun BatteryDialogEmpty() {
         BatteryDialog(
             watchInfo = PreviewWatchInfo,
             historyData = EmptyHistoryData,
-            historyBackup = Backup(History, LocalContext.current),
+            historyBackup = Backup(History, LocalContext.current, ComponentActivity()),
+            { _, _ -> {} }
         ) {}
     }
 }

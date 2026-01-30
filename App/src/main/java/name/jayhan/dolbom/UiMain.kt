@@ -5,6 +5,8 @@ package name.jayhan.dolbom
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -64,7 +66,7 @@ fun AppScaffold(
     val dndActive by Pebble.dndStateFlow.collectAsState(false)
     val dndEnabled by Pebble.dndEnabledFlow.collectAsState(true)
     var showDnd by remember { mutableStateOf(false) }
-    var showHistory by remember { mutableStateOf(false) }
+    var showBattery by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
     var showWatch by remember { mutableStateOf(false) }
     val stickyCount by Notifications.Accumulator.stickyCount.collectAsState(0)
@@ -83,19 +85,22 @@ fun AppScaffold(
                     dndEnabled = dndEnabled,
                     dndActive = dndActive,
                     onHelp = { showHelp = true },
-                    onHistory = { showHistory = true },
+                    onHistory = { showBattery = true },
                     onDnd = { showDnd = true },
                     onWatch = { showWatch = true }
                 )
             },
         ) { innerPadding ->
             
-            if (showHistory) {
+            if (showBattery) {
                 BatteryDialog(
                     watchInfo = watchInfo,
                     historyData = historyData,
                     historyBackup = historyBackup,
-                ) { showHistory = false }
+                    showToast = { text, duration ->
+                        Toast.makeText(context, text, duration).show()
+                    }
+                ) { showBattery = false }
             }
             
             if (showHelp) {
@@ -398,7 +403,7 @@ fun MainPagePreview() {
     PebbleTheme {
         MainPage(
             context = LocalContext.current,
-            indicatorsBackup = Backup(Indicators, LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current, ComponentActivity()),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,

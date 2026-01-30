@@ -2,6 +2,8 @@ package name.jayhan.dolbom
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -83,7 +85,15 @@ fun IndicatorList(
     if (dataDialog) {
         DataDialog(
             indicatorCount = indicatorCount,
-            onLoad = { indicatorsBackup.load() },
+            onLoad = { indicatorsBackup.load(
+                onSuccess = { result ->
+                    if (result) {
+                        dataDialog = false
+                        Toast.makeText(context, "Indicators loaded", Toast.LENGTH_SHORT).show()
+                    }
+                    else Toast.makeText(context, "Load failed", Toast.LENGTH_LONG).show()
+                }
+            ) },
             onSave = { indicatorsBackup.save() },
             onClear = { Indicators.reset() },
         ) {
@@ -376,7 +386,7 @@ fun IndicatorListPreview() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
-            indicatorsBackup = Backup(Indicators, LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current, ComponentActivity()),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,
@@ -391,7 +401,7 @@ fun IndicatorListEmpty() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
-            indicatorsBackup = Backup(Indicators, LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current, ComponentActivity()),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = listOf(),

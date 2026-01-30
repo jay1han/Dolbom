@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.time.Instant
 
 data class SingleIndicator(
     val packageName: String = "",
@@ -241,6 +240,7 @@ object Indicators: Backupable
     
     override fun toText(): String {
         val stringBuilder = StringBuilder().apply {
+            append(Const.BACKUP_INDICATORS + "\n")
             allIndicators.forEach {
                 append(it.toText())
                 append(Const.BACKUP_SEPARATOR + "\n")
@@ -249,13 +249,17 @@ object Indicators: Backupable
         return stringBuilder.toString()
     }
     
-    override fun fromText(text: String) {
+    override fun fromText(text: String): Boolean {
+        if (!text.startsWith(Const.BACKUP_INDICATORS)) return false
+
         val newList = mutableListOf<SingleIndicator>()
-        for (multiline in text.split(Const.BACKUP_SEPARATOR)) {
+        for (multiline in text.removePrefix(Const.BACKUP_INDICATORS)
+            .split(Const.BACKUP_SEPARATOR)) {
             val indicator = SingleIndicator.fromText(multiline)
             if (indicator != null) newList.add(indicator)
         }
         saveList(newList)
+        return true
     }
 
     override val filenamePart = "Indicators"

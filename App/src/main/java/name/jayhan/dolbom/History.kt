@@ -179,14 +179,18 @@ object History: Backupable {
 
     override fun toText(): String {
         return StringBuilder().apply {
+            append(Const.BACKUP_HISTORY + "\n")
             append("historyDate=${historyData.historyDate.formatDateTime()}\n")
             append("historyCycles=${historyData.historyCycles}\n")
             append("historyRate=${historyData.historyRate}\n")
         }.toString()
     }
 
-    override fun fromText(text: String) {
-        val elements = text.split("\n")
+    override fun fromText(text: String): Boolean {
+        if (!text.startsWith(Const.BACKUP_HISTORY)) return false
+
+        val elements = text.removePrefix(Const.BACKUP_HISTORY)
+            .split("\n")
         elements.forEach {
             val keyvalue = it.split("=")
             if (keyvalue.size == 2) {
@@ -198,6 +202,7 @@ object History: Backupable {
             }
         }
         historyFlow.value = historyData
+        return true
     }
 
     override val filenamePart = "History"

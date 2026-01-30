@@ -89,6 +89,8 @@ object Const {
     const val INTERVAL_CONNECTED = 120
 
     const val BACKUP_SEPARATOR = "[Dolbom Separator]"
+    const val BACKUP_HISTORY = "[Dolbom History]"
+    const val BACKUP_INDICATORS = "[Dolbom Indicators]"
 }
 
 fun Int.maskAny(mask: Int) = (this and mask) != 0
