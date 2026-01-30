@@ -204,7 +204,7 @@ object Indicators
         newList: List<SingleIndicator>
     ) {
         allIndicators = newList.sortedBy {
-            Notifications.getApplicationName(it.packageName) + ":${it.channelId}:${it.filterText}"
+            Notifications.getApplicationName(it.packageName) + ":${it.packageName}:${it.channelId}:${it.filterText}"
         }.toMutableList()
 
         savedSettings.edit {

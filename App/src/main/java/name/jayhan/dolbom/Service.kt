@@ -104,10 +104,14 @@ class PebbleService:
         }
         
         notiMan.createNotificationChannel(alertChannel)
-        
-        startForeground(Const.NOTI_SERVICE, buildNotification(),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-        )
+
+        val notification = buildNotification()
+        if (notification != null) {
+            startForeground(
+                Const.NOTI_SERVICE, notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+            )
+        }
 
         alarmMan = context.getSystemService(ALARM_SERVICE)
                 as AlarmManager
@@ -130,41 +134,53 @@ class PebbleService:
     }
     
     fun updateNotification() {
-        Log.v(Const.TAG, "Update Notification")
-        notiMan.notify(Const.NOTI_SERVICE, buildNotification())
+        val notification = buildNotification()
+        if (notification != null) {
+            Log.v(Const.TAG, "Update Notification")
+            notiMan.notify(Const.NOTI_SERVICE, notification)
+        }
     }
-    
-    fun buildNotification(): Notification {
-        return Notification.Builder(
-            context,
-            Const.CHANNEL_ID
-        ).apply {
-            setFlag(Notification.FLAG_FOREGROUND_SERVICE, true)
-            setOngoing(true)
-            setDeleteIntent(reviveIntent)
-            setContentIntent(launchIntent)
-            
-            if (Pebble.isConnected.value) {
-                val estimate =
-                    if (History.historyData.cycleRate > 0f)
+
+    var notificationTitle = ""
+    var notificationText = ""
+    fun buildNotification(): Notification? {
+        var title = ""
+        var text = ""
+        if (Pebble.isConnected.value) {
+            title = "${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%"
+            val estimate =
+                if (History.historyData.cycleRate > 0f)
+                    "%.1f days".format(
                         (Pebble.watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
-                    else 0f
-                setContentTitle("${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%")
-                setContentText(
-                    "\u2590%s\u258c %s".format(
-                        Notifications.indicators,
-                        if (Pebble.watchInfo.charging) "\u26a1" else "",
-                    ) + "%.1f days".format(
-                        estimate
                     )
-                )
-            } else {
-                setContentTitle("Disconnected")
-                setContentText("")
-            }
-            setSmallIcon(R.mipmap.ic_launcher)
-            setVisibility(Notification.VISIBILITY_SECRET)
-        }.build()
+                else ""
+            text = "\u2590%s\u258c %s".format(
+                Notifications.indicators,
+                if (Pebble.watchInfo.charging) "\u26a1" else "",
+            ) + estimate
+        } else {
+            title = "Disconnected"
+            text = ""
+        }
+
+        if (title != notificationTitle || text != notificationText) {
+            notificationTitle = title
+            notificationText = text
+
+            return Notification.Builder(
+                context,
+                Const.CHANNEL_ID
+            ).apply {
+                setFlag(Notification.FLAG_FOREGROUND_SERVICE, true)
+                setOngoing(true)
+                setDeleteIntent(reviveIntent)
+                setContentIntent(launchIntent)
+                setContentTitle(notificationTitle)
+                setContentText(notificationText)
+                setSmallIcon(R.mipmap.ic_launcher)
+                setVisibility(Notification.VISIBILITY_SECRET)
+            }.build()
+        } else return null
     }
     
     fun restartService() {
