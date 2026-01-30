@@ -5,10 +5,8 @@ package name.jayhan.dolbom
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -21,8 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,7 +49,8 @@ import kotlin.time.Instant
 @Composable
 fun AppScaffold(
     context: Context,
-    fileMan: FileManager
+    indicatorsBackup: Backup,
+    historyBackup: Backup
 ) {
     val watchInfo by Pebble.infoFlow.collectAsState(WatchInfo())
     val isConnected by Pebble.isConnected.collectAsState(false)
@@ -94,9 +91,10 @@ fun AppScaffold(
         ) { innerPadding ->
             
             if (showHistory) {
-                HistoryDialog(
+                BatteryDialog(
                     watchInfo = watchInfo,
                     historyData = historyData,
+                    historyBackup = historyBackup,
                 ) { showHistory = false }
             }
             
@@ -133,7 +131,7 @@ fun AppScaffold(
             
             MainPage(
                 context = context,
-                fileMan = fileMan,
+                indicatorsBackup = indicatorsBackup,
                 activeList = activeList,
                 allList = allList,
                 indicators = indicators,
@@ -219,7 +217,7 @@ fun MainTopBar(
 @Composable
 fun MainPage(
     context: Context,
-    fileMan: FileManager,
+    indicatorsBackup: Backup,
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
@@ -231,7 +229,7 @@ fun MainPage(
     ){
         IndicatorList(
             context = context,
-            fileMan = fileMan,
+            indicatorsBackup = indicatorsBackup,
             activeList = activeList,
             allList = allList,
             indicators = indicators,
@@ -400,7 +398,7 @@ fun MainPagePreview() {
     PebbleTheme {
         MainPage(
             context = LocalContext.current,
-            fileMan = FileManager(LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,

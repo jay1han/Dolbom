@@ -87,6 +87,8 @@ object Const {
     const val MAX_LEN_ID = 19
     const val INTERVAL_DISCONNECTED = 15
     const val INTERVAL_CONNECTED = 120
+
+    const val BACKUP_SEPARATOR = "[Dolbom Separator]"
 }
 
 fun Int.maskAny(mask: Int) = (this and mask) != 0

@@ -11,29 +11,37 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class FileManager(
+class Backup(
+    private val origin: Backupable,
     private val context: Context,
     mainActivity: ComponentActivity
 ) {
-    constructor(context: Context) : this(context, ComponentActivity())
+    constructor(
+        origin: Backupable,
+        context: Context,
+    ) : this(
+        origin,
+        context,
+        ComponentActivity()
+    )
 
     private val saverLauncher = mainActivity.registerForActivityResult(
-            CreateDocument("text/plain"),
-            SaveIndicatorsCallback()
-        )
-    fun saveIndicators() {
-        saverLauncher.launch("DolbomBackup.txt")
+        CreateDocument("text/plain"),
+        SaveCallback()
+    )
+    fun save() {
+        saverLauncher.launch("Dolbom_${origin.filenamePart}_${nowDateTimeFilename()}.txt")
     }
-    
+
     private val loaderLauncher = mainActivity.registerForActivityResult(
         ActivityResultContracts.OpenDocument(),
-        LoadIndicatorsCallback()
-        )
-    fun loadIndicators() {
+        LoadCallback()
+    )
+    fun load() {
         loaderLauncher.launch(arrayOf("text/plain"))
     }
-    
-    inner class SaveIndicatorsCallback():
+
+    inner class SaveCallback():
         ActivityResultCallback<Uri?>
     {
         override fun onActivityResult(result: Uri?) {
@@ -41,14 +49,14 @@ class FileManager(
             if (result != null) {
                 contentResolver.openOutputStream(result).use { outputStream ->
                     BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
-                        writer.write(Indicators.toText())
+                        writer.write(origin.toText())
                     }
                 }
             }
         }
     }
 
-    inner class LoadIndicatorsCallback():
+    inner class LoadCallback():
         ActivityResultCallback<Uri?>
     {
         override fun onActivityResult(result: Uri?) {
@@ -57,10 +65,16 @@ class FileManager(
                 contentResolver.openInputStream(result).use { inputStream ->
                     BufferedReader(InputStreamReader(inputStream)).use { reader ->
                         val text = reader.readText()
-                        Indicators.fromText(text)
+                        origin.fromText(text)
                     }
                 }
             }
         }
     }
+}
+
+interface Backupable {
+    fun toText(): String
+    fun fromText(text: String)
+    val filenamePart: String
 }

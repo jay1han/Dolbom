@@ -133,6 +133,6 @@
     It can only register its own rule and toggle that.
     You can see the \"Dolbom\" rule in the settings.</string>
     <string name="go_to_settings">Go to Settings</string>
-    <string name="clear_history">Clear history</string>
+    <string name="show_history">Show history</string>
 
 </resources>

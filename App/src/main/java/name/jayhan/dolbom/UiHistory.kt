@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,18 +26,21 @@ import kotlin.time.Clock
 import kotlin.time.isDistantPast
 
 @Composable
-fun HistoryDialog(
+fun BatteryDialog(
     watchInfo: WatchInfo,
     historyData: HistoryData,
+    historyBackup: Backup,
     onClose: () -> Unit
 ) {
-    var confirmClear by remember { mutableStateOf(false) }
+    var showHistory by remember { mutableStateOf(false) }
 
-    if (confirmClear) {
-        ClearBatteryDialog(
+    if (showHistory) {
+        HistoryDialog(
             historyData = historyData,
-            onConfirm = { History.clear() }
-        ) { confirmClear = false }
+            onLoad = { historyBackup.load() },
+            onSave = { historyBackup.save() },
+            onClear = { History.clear() }
+        ) { showHistory = false }
     }
 
     Dialog(
@@ -99,19 +103,21 @@ fun HistoryDialog(
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
 
-                if (historyData.historyDate.isDistantPast) {
-                    Text(
-                        text = stringResource(R.string.no_history),
-                        textAlign = TextAlign.Center,
-                        fontSize = Const.textSize,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                } else {
+                if (historyData.historyCycles == 0) {
                     Button(
-                        onClick = { confirmClear = true },
+                        onClick = { historyBackup.load() }
                     ) {
                         Text(
-                            text = stringResource(R.string.clear_history),
+                            text = "Load history",
+                            fontSize = Const.textSize,
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = { showHistory = true },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.show_history),
                             fontSize = Const.textSize,
                         )
                     }
@@ -122,9 +128,11 @@ fun HistoryDialog(
 }
 
 @Composable
-fun ClearBatteryDialog(
+fun HistoryDialog(
     historyData: HistoryData,
-    onConfirm: () -> Unit,
+    onLoad: () -> Unit,
+    onSave: () -> Unit,
+    onClear: () -> Unit,
     onExit: () -> Unit,
 ) {
     Dialog(
@@ -162,37 +170,40 @@ fun ClearBatteryDialog(
                     )
                 }
 
-                Text(
-                    text = stringResource(R.string.clear_battery_history),
-                    fontSize = Const.titleSize,
-                    lineHeight = Const.titleSize * 1.2,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(10.dp)
-                )
-
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
-                        onClick = {
-                            onConfirm()
-                            onExit()
-                        }
+                        onClick = onSave,
                     ) {
                         Text(
-                            text = "Yes",
+                            text = "Backup",
                             fontSize = Const.textSize
                         )
                     }
                     Button(
-                        onClick = { onExit() }
+                        onClick = onLoad,
                     ) {
                         Text(
-                            text = "No",
+                            text = "Restore",
                             fontSize = Const.textSize
                         )
                     }
+                }
+
+                Button(
+                    modifier = Modifier.padding(top = 10.dp)
+                        .align(Alignment.CenterHorizontally),
+                    onClick = {
+                        onClear()
+                        onExit()
+                    }
+                ) {
+                    Text(
+                        text = "Clear all",
+                        fontSize = Const.textSize
+                    )
                 }
             }
         }
@@ -208,24 +219,48 @@ val PreviewHistoryData = HistoryData(
     cycleRate =7.5f,
 )
 
+val EmptyHistoryData = HistoryData(
+    historyDate = Clock.System.now(),
+    historyCycles = 0,
+    historyRate = 0f,
+    cycleDate = Clock.System.now(),
+    cycleLevel = 80,
+    cycleRate =7.5f,
+)
+
 @Preview
 @Composable
-fun HistoryDialogPreview() {
+fun BatteryDialogPreview() {
     PebbleTheme {
-        HistoryDialog(
+        BatteryDialog(
             watchInfo = PreviewWatchInfo,
             historyData = PreviewHistoryData,
+            historyBackup = Backup(History, LocalContext.current),
         ) {}
     }
 }
 
 @Preview
 @Composable
-fun ConfirmClearPreview() {
+fun BatteryDialogEmpty() {
     PebbleTheme {
-        ClearBatteryDialog(
+        BatteryDialog(
+            watchInfo = PreviewWatchInfo,
+            historyData = EmptyHistoryData,
+            historyBackup = Backup(History, LocalContext.current),
+        ) {}
+    }
+}
+
+@Preview
+@Composable
+fun HistoryDialogPreview() {
+    PebbleTheme {
+        HistoryDialog(
             historyData = PreviewHistoryData,
-            onConfirm = {}
+            {},
+            {},
+            onClear = {}
         ) { }
     }
 }

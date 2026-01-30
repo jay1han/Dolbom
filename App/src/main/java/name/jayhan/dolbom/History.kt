@@ -60,7 +60,7 @@ private fun longToDate(dateLong: Long): Instant {
             )
 }
 
-object History {
+object History: Backupable {
     var historyData = HistoryData()
     val historyFlow = MutableStateFlow(HistoryData())
     private lateinit var savedHistory: SharedPreferences
@@ -86,7 +86,6 @@ object History {
         level: Int,
         plugged: Boolean
     ) {
-//        historyData = HistoryData.read(savedHistory)
         Log.v(Const.TAG, "History event ($level,$plugged)" +
                 " now (${historyData.cycleLevel},${historyData.nowPlugged},${historyData.cycleDate.formatDateTime()})")
 
@@ -197,4 +196,37 @@ object History {
             historyRate = 0f,
         )
     }
+
+    override fun toText(): String {
+        return StringBuilder().apply {
+            append("historyDate=${historyData.historyDate.formatDateTime()}\n")
+            append("historyCycles=${historyData.historyCycles}\n")
+            append("historyRate=${historyData.historyRate}\n")
+            append("cycleDate=${historyData.cycleDate.formatDateTime()}\n")
+            append("cycleLevel=${historyData.cycleLevel}\n")
+            append("cycleRate=${historyData.cycleRate}\n")
+            append("nowPlugged=${historyData.nowPlugged}\n")
+        }.toString()
+    }
+
+    override fun fromText(text: String) {
+        val elements = text.split("\n")
+        elements.forEach {
+            val keyvalue = it.split("=")
+            if (keyvalue.size == 2) {
+                when (keyvalue[0]) {
+                    "historyDate" -> historyData = historyData.set(historyDate = parseDateTime(keyvalue[1]))
+                    "historyCycles" -> historyData = historyData.set(historyCycles = keyvalue[1].toInt())
+                    "historyRate" -> historyData = historyData.set(historyRate = keyvalue[1].toFloat())
+                    "cycleDate" -> historyData = historyData.set(cycleDate = parseDateTime(keyvalue[1]))
+                    "cycleLevel" -> historyData = historyData.set(cycleLevel = keyvalue[1].toInt())
+                    "cycleRate" -> historyData = historyData.set(cycleRate = keyvalue[1].toFloat())
+                    "nowPlugged" -> historyData = historyData.set(nowPlugged = keyvalue[1].toBoolean())
+                }
+            }
+        }
+        historyFlow.value = historyData
+    }
+
+    override val filenamePart = "History"
 }

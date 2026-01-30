@@ -47,7 +47,7 @@ import name.jayhan.dolbom.ui.theme.PebbleTheme
 @Composable
 fun IndicatorList(
     context: Context,
-    fileMan: FileManager,
+    indicatorsBackup: Backup,
     activeList: List<String>,
     allList: List<String>,
     indicators: List<SingleIndicator>,
@@ -83,8 +83,8 @@ fun IndicatorList(
     if (dataDialog) {
         DataDialog(
             indicatorCount = indicatorCount,
-            onLoad = { fileMan.loadIndicators() },
-            onSave = { fileMan.saveIndicators() },
+            onLoad = { indicatorsBackup.load() },
+            onSave = { indicatorsBackup.save() },
             onClear = { Indicators.reset() },
         ) {
             dataDialog = false
@@ -376,7 +376,7 @@ fun IndicatorListPreview() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
-            fileMan = FileManager(LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = PreviewIndicators,
@@ -391,7 +391,7 @@ fun IndicatorListEmpty() {
     PebbleTheme {
         IndicatorList(
             context = LocalContext.current,
-            fileMan = FileManager(LocalContext.current),
+            indicatorsBackup = Backup(Indicators, LocalContext.current),
             activeList = PreviewActiveList,
             allList = PreviewAllList,
             indicators = listOf(),

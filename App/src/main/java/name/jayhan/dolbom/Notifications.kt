@@ -191,7 +191,7 @@ class NotificationDump(
         ): NotificationDump {
             val notification = sbn.notification
             val extraMap = FilterType.entries.toList().associateWith {
-                it.listExtrasOf(notification)
+                it.listNonEmptyExtrasOf(notification.extras)
             }
             
             return NotificationDump(

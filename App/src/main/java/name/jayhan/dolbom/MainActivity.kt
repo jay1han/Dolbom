@@ -20,9 +20,11 @@ import androidx.core.graphics.createBitmap
 import name.jayhan.dolbom.ui.theme.PebbleTheme
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 class AppStart:
     BroadcastReceiver() {
@@ -43,8 +45,9 @@ class AppStart:
 class MainActivity :
     ComponentActivity() {
 
-    private lateinit var fileMan: FileManager
-    
+    private lateinit var indicatorsBackup: Backup
+    private lateinit var historyBackup: Backup
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(Const.TAG, "Start activity")
@@ -61,12 +64,13 @@ class MainActivity :
             },
         )
         
-        fileMan = FileManager(applicationContext, this)
+        indicatorsBackup = Backup(Indicators, applicationContext, this)
+        historyBackup = Backup(History, applicationContext, this)
 
         enableEdgeToEdge()
         setContent {
             PebbleTheme {
-                AppScaffold(context, fileMan)
+                AppScaffold(context, indicatorsBackup, historyBackup)
             }
         }
     }
@@ -82,9 +86,19 @@ class MainActivity :
     }
 }
 
+fun nowDateTimeFilename(): String {
+    return SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+        .format(Date.from(Clock.System.now().toJavaInstant()))
+}
+
 fun Instant.formatDateTime(): String {
     return SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
         .format(Date.from(this.toJavaInstant()))
+}
+
+fun parseDateTime(source: String): Instant {
+    return SimpleDateFormat("yyyy.MM.dd HH:mm:ss")
+        .parse(source).toInstant().toKotlinInstant()
 }
 
 fun Instant.formatDate(): String {

@@ -3,6 +3,7 @@ package name.jayhan.dolbom
 import android.app.Notification
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +69,7 @@ class SingleIndicator(
         notification: Notification
     ): Boolean {
         return this.filterText.isNotEmpty() &&
-                this.filterType.listExtrasOf(notification).any { (_, value) ->
+                this.filterType.listNonEmptyExtrasOf(notification.extras).any { (_, value) ->
                     value.contains(this.filterText)
                 }
     }
@@ -91,7 +92,7 @@ class SingleIndicator(
             )
         }
         
-        fun fromString(
+        fun fromText(
             string: String,
         ): SingleIndicator? {
             val lines = string.split('\n', limit = 8)
@@ -115,9 +116,21 @@ class SingleIndicator(
             else null
         }
     }
+
+    fun toText(): String {
+        return StringBuilder().apply {
+            append("letter=$letter\n")
+            append("package=$packageName\n")
+            append("channel=$channelId\n")
+            append("filter=$filterText\n")
+            append("type=${filterType.name}\n")
+            append("flags=${flags()}\n")
+        }.toString()
+    }
+
 }
 
-object Indicators
+object Indicators: Backupable
 {
     // TODO: Should be unmutable
     private var allIndicators = mutableListOf<SingleIndicator>()
@@ -224,32 +237,26 @@ object Indicators
         allFlow.value = allIndicators
     }
     
-    fun toText(): String {
+    override fun toText(): String {
         val stringBuilder = StringBuilder().apply {
-            allIndicators.forEachIndexed { index, indicator ->
-                append("[$index]\n")
-                with(indicator) {
-                    append("letter=$letter\n")
-                    append("package=$packageName\n")
-                    append("channel=$channelId\n")
-                    append("filter=$filterText\n")
-                    append("type=${filterType.name}\n")
-                    append("flags=${flags()}\n")
-                    append("END\n")
-                }
+            allIndicators.forEach {
+                append(it.toText())
+                append(Const.BACKUP_SEPARATOR + "\n")
             }
         }
         return stringBuilder.toString()
     }
     
-    fun fromText(text: String) {
+    override fun fromText(text: String) {
         val newList = mutableListOf<SingleIndicator>()
-        for (multiline in text.split("END\n")) {
-            val indicator = SingleIndicator.fromString(multiline)
+        for (multiline in text.split(Const.BACKUP_SEPARATOR)) {
+            val indicator = SingleIndicator.fromText(multiline)
             if (indicator != null) newList.add(indicator)
         }
         saveList(newList)
     }
+
+    override val filenamePart = "Indicators"
 
     fun remove(
         indicator: SingleIndicator
@@ -271,53 +278,44 @@ enum class FilterType {
     Text { override val r = R.string.filter_text },
     Long { override val r = R.string.filter_long };
     abstract val r: Int
-    
-    fun listExtrasOf(
-        notification: Notification,
+
+    fun listNonEmptyExtrasOf(
+        extras: Bundle
     ): Map<String, String> {
-        when (this) {
-            Title -> return listExtrasOf(notification, listOf(
-                Notification.EXTRA_TITLE,
-                Notification.EXTRA_CONVERSATION_TITLE,
-                Notification.EXTRA_TITLE_BIG,
-            ))
-            
-            Subtitle -> return listExtrasOf(notification, listOf(
-                Notification.EXTRA_PEOPLE_LIST,
-                Notification.EXTRA_SUB_TEXT,
-            ))
-            
-            Text -> return listExtrasOf(notification, listOf(
-                Notification.EXTRA_SUMMARY_TEXT,
-                Notification.EXTRA_INFO_TEXT,
-                Notification.EXTRA_TEXT,
-            ))
-            
-            Long -> return listExtrasOf(notification, listOf(
-                Notification.EXTRA_TEXT_LINES,
-                Notification.EXTRA_BIG_TEXT,
-            ))
-        }
+        return extrasMap[this]!!.associateWith {
+            extras.getCharSequence(it, "").toString()
+        }.filter { it.value.isNotEmpty() }
     }
 
     companion object {
         val Strings = FilterType.entries.map { it.r }
-        
+        private val extrasMap = mapOf(
+            Title to listOf(
+                Notification.EXTRA_TITLE,
+                Notification.EXTRA_CONVERSATION_TITLE,
+                Notification.EXTRA_TITLE_BIG,
+            ),
+            Subtitle to listOf(
+                Notification.EXTRA_PEOPLE_LIST,
+                Notification.EXTRA_SUB_TEXT,
+            ),
+            Text to listOf(
+                Notification.EXTRA_SUMMARY_TEXT,
+                Notification.EXTRA_INFO_TEXT,
+                Notification.EXTRA_TEXT,
+            ),
+            Long to listOf(
+                Notification.EXTRA_TEXT_LINES,
+                Notification.EXTRA_BIG_TEXT,
+            )
+        )
+
+
         fun index(index: Int): FilterType {
             for (filterType in FilterType.entries) {
                 if (index == filterType.ordinal) return filterType
             }
             return Text
-        }
-        
-        private fun listExtrasOf(
-            notification: Notification,
-            extraList: List<String>
-        ): Map<String, String> {
-            // Kotlin's very sweet syntactic sugar
-            return extraList.associateWith {
-                notification.extras.getCharSequence(it, "").toString()
-            }.filter { it.value.isNotEmpty() }
         }
     }
 }
