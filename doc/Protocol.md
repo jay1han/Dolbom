@@ -62,7 +62,7 @@ class.
 
 ## Lifecycle
 
-On startup, the Phone initiates the following exchange:
+When the app starts, the Phone sends a `FRESH` message
 
 ```mermaid
 sequenceDiagram

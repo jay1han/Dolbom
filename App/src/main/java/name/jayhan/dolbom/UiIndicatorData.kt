@@ -92,7 +92,7 @@ fun DataDialog(
 
                 if (indicatorCount > 0) {
                     Button(
-                        modifier = Modifier.align(Alignment.End),
+                        modifier = Modifier.padding(top = 8.dp).align(Alignment.End),
                         onClick = { doClear = true }
                     ) {
                         Text(
@@ -148,7 +148,7 @@ fun DataClearConfirmDialog(
                         onClick = onClose
                     ) {
                         Text(
-                            text = "Go back",
+                            text = "No",
                             fontSize = Const.textSize,
                         )
                     }

@@ -1,6 +1,6 @@
 # Notification fields
 
-We want to filter the notification at a very high grain, while making the UI simple to use.
+We want to filter the notification at a very small granularity, while making the UI simple to use.
 There are 3 levels of filtering.
 
 1. By package name
@@ -48,3 +48,8 @@ on a specific account:
 
 You can also do the opposite, to ignore specific configurations
 while allowing the general one to activate in other cases.
+
+Additional filters:
+
+- Ongoing
+- Local

@@ -9,7 +9,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.time.isDistantPast
 
-class HistoryData(
+data class HistoryData(
     val historyDate: Instant = Instant.DISTANT_PAST,
     val historyCycles: Int = 0,
     val historyRate: Float = 0f,
@@ -18,26 +18,6 @@ class HistoryData(
     val cycleRate: Float = 0f,
     val nowPlugged: Boolean = false,
 ) {
-    fun set(
-        historyDate: Instant? = null,
-        historyCycles: Int? = null,
-        historyRate: Float? = null,
-        cycleDate: Instant? = null,
-        cycleLevel: Int? = null,
-        cycleRate: Float? = null,
-        nowPlugged: Boolean? = null,
-    ): HistoryData {
-        return HistoryData(
-            historyDate = historyDate ?: this.historyDate,
-            historyCycles = historyCycles ?: this.historyCycles,
-            historyRate = historyRate ?: this.historyRate,
-            cycleDate = cycleDate ?:this.cycleDate,
-            cycleLevel = cycleLevel ?: this.cycleLevel,
-            cycleRate = cycleRate ?: this.cycleRate,
-            nowPlugged = nowPlugged ?: this.nowPlugged,
-        )
-    }
-    
     companion object {
         fun read(prefs: SharedPreferences): HistoryData {
             return HistoryData(
@@ -105,7 +85,7 @@ object History: Backupable {
                             else (historyData.historyRate * historyData.historyCycles + dischargeRate) /
                                     (historyData.historyCycles + 1)
                         
-                        historyData = historyData.set(
+                        historyData = historyData.copy(
                             historyCycles = historyData.historyCycles + 1,
                             historyRate = newRate,
                             cycleRate = newRate,
@@ -113,7 +93,7 @@ object History: Backupable {
                         
                         savedHistory.edit {
                             if (historyData.historyDate.isDistantPast) {
-                                historyData = historyData.set(historyDate = historyData.cycleDate)
+                                historyData = historyData.copy(historyDate = historyData.cycleDate)
                                 putLong(Const.HIST_INIT_DATE, historyData.cycleDate.epochSeconds)
                             }
                             putInt(Const.HIST_CYCLES, historyData.historyCycles)
@@ -132,7 +112,7 @@ object History: Backupable {
                 if (historyData.nowPlugged || level > historyData.cycleLevel) {
                     Log.v(Const.TAG, "History unplugged at $level > ${historyData.cycleLevel}")
                     
-                    historyData = historyData.set(
+                    historyData = historyData.copy(
                         cycleDate = now,
                         cycleLevel = level,
                     )
@@ -154,7 +134,7 @@ object History: Backupable {
                         val inDays = duration.inWholeSeconds.toFloat() / (3600 * 24)
                         val dischargeRate = discharge.toFloat() / inDays
                         
-                        historyData = historyData.set(
+                        historyData = historyData.copy(
                             cycleRate =
                                 if (historyFlow.value.historyCycles > 0)
                                     (historyFlow.value.historyRate + dischargeRate) / 2f
@@ -174,7 +154,7 @@ object History: Backupable {
         // Changed plugged state
         if (historyData.nowPlugged != plugged) {
             Log.v(Const.TAG, "History plugged=$plugged")
-            historyData = historyData.set(nowPlugged = plugged)
+            historyData = historyData.copy(nowPlugged = plugged)
             savedHistory.edit {
                 putBoolean(Const.HIST_PLUG_STATE, historyData.nowPlugged)
                 commit()
@@ -190,7 +170,7 @@ object History: Backupable {
             putLong(Const.HIST_INIT_DATE, Instant.DISTANT_PAST.epochSeconds)
             commit()
         }
-        historyFlow.value = historyFlow.value.set(
+        historyFlow.value = historyFlow.value.copy(
             historyDate = Instant.DISTANT_PAST,
             historyCycles = 0,
             historyRate = 0f,
@@ -211,9 +191,9 @@ object History: Backupable {
             val keyvalue = it.split("=")
             if (keyvalue.size == 2) {
                 when (keyvalue[0]) {
-                    "historyDate" -> historyData = historyData.set(historyDate = parseDateTime(keyvalue[1]))
-                    "historyCycles" -> historyData = historyData.set(historyCycles = keyvalue[1].toInt())
-                    "historyRate" -> historyData = historyData.set(historyRate = keyvalue[1].toFloat())
+                    "historyDate" -> historyData = historyData.copy(historyDate = parseDateTime(keyvalue[1]))
+                    "historyCycles" -> historyData = historyData.copy(historyCycles = keyvalue[1].toInt())
+                    "historyRate" -> historyData = historyData.copy(historyRate = keyvalue[1].toFloat())
                 }
             }
         }

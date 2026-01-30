@@ -7,8 +7,9 @@ import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.time.Instant
 
-class SingleIndicator(
+data class SingleIndicator(
     val packageName: String = "",
     val channelId: String = "",
     val filterText: String = "",
@@ -20,7 +21,7 @@ class SingleIndicator(
     val relay: Boolean = false,
     val repeat: Boolean = false,
     val local: Boolean = false,
-    var timeInfo: Long = 0L,
+    val timeInfo: Long = 0L,
 ) {
     constructor(
         packageName: String = "",
@@ -44,7 +45,7 @@ class SingleIndicator(
         local = flags.contains("L"),
         timeInfo = timeInfo,
     )
-    
+
     fun flags(): String {
         return listOf(
             if (ignore) "I" else "",
@@ -76,7 +77,7 @@ class SingleIndicator(
     
     companion object {
         val Other = SingleIndicator(letter = '+')
-        
+
         fun fromKeyValue(
             key: String,
             value: String
@@ -161,35 +162,35 @@ object Indicators: Backupable
         val notification = sbn.notification
         val channelId = notification.channelId
 
-        var found: SingleIndicator? = null
-        var match = 0
+        var match: SingleIndicator? = null
+        var score = 0
 
         for (indicator in allIndicators) {
             if (indicator.packageName == packageName) {
                 if (indicator.channelId.isEmpty()) {
                     if (indicator.filterText.isEmpty()) {
-                        if (match < 10) {
-                            found = indicator
-                            match = 10
+                        if (score < 10) {
+                            match = indicator
+                            score = 10
                         }
                     } else {
                         if (indicator.matches(notification)) {
-                            if (match < 20) {
-                                found = indicator
-                                match = 20
+                            if (score < 20) {
+                                match = indicator
+                                score = 20
                             }
                         }
                     }
                 } else {
                     if (channelId.contains(indicator.channelId)) {
                         if (indicator.filterText.isEmpty()) {
-                            if (match < 50) {
-                                found = indicator
-                                match = 50
+                            if (score < 50) {
+                                match = indicator
+                                score = 50
                             }
                         } else {
                             if (indicator.matches(notification)) {
-                                found = indicator
+                                match = indicator
                                 break
                             }
                         }
@@ -198,12 +199,13 @@ object Indicators: Backupable
             }
         }
 
-        if (found == null) return SingleIndicator.Other
-        if (found.ignore ||
-            (found.local && !notification.flags.maskAll(Notification.FLAG_LOCAL_ONLY))
-            )
-            return null
-        return found
+        if (match == null) return SingleIndicator.Other
+        if (match.ignore) return null
+        if (notification.flags.maskAll(Notification.FLAG_LOCAL_ONLY)
+            && !match.local) return null
+        if (notification.flags.maskAll(Notification.FLAG_ONGOING_EVENT)
+            && !match.ongoing) return null
+        return match
     }
 
     fun add(

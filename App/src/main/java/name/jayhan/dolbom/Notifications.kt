@@ -321,13 +321,13 @@ object Notifications : BroadcastReceiver()
         }
         
         fun add(sbn: StatusBarNotification) {
-            val indicator = Indicators.findIndicator(sbn) ?: return
+            val indicator = Indicators.findIndicator(sbn)?.copy(
+                timeInfo = sbn.postTime
+            )
+                ?: return
             
             litList = litList.filter { !indicator.equals(it) }.toMutableList()
-            if (!sbn.isOngoing || indicator.ongoing) {
-                indicator.timeInfo = sbn.notification.`when`
-                litList.add(indicator)
-            }
+            litList.add(indicator)
             stickyCount.value = litList.filter { it.sticky }.size
         }
         
@@ -337,7 +337,6 @@ object Notifications : BroadcastReceiver()
                 .reversed()
                 .map { it.letter }
                 .distinct()
-                .toMutableList()
             return letters.joinToString("")
         }
     }

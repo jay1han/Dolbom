@@ -45,11 +45,13 @@ The "plugged" status means something is plugged that's capable of charging the p
 Depending on the phone's charging policy, it may or may not be actually charging the battery,
 at any speed, so the battery level may go down while plugged.
 
+The app maintains a summarized history of charging cycles, which can be backed up to a text file.
+
 ## Phone status
 
 - Telephony mode (4G, 5G, no service)
 - SIM card (slot 1 or 2) and whether we're roaming
-- Connected Wifi SSID and Internet access indicator
+- Connected Wifi SSID
 - Connected Bluetooth device name and battery level (if available)
 - Indicator when the BT device is actually producing audio (A2DP or Headset)
 - Indicator when Internet is unreachable
@@ -89,6 +91,8 @@ Note that the watch face does have a limit of 15 simultaneous indicators,
 which would probably overflow the width of the display anyway.
 If there are more than 15 indicators to show, the app clips the list arbitrarily.
 
+The indicator settings can be backed up and restored through an external text file.
+
 A "dump" features lets you look at the raw notification,
 to decide which fields of a notification you'd like to use as a filter.
 Please read [Notifications.md](Notifications.md) for more detail.
@@ -112,7 +116,7 @@ This feature is independent of the watch's Quiet time.
 - Activate the flashlight
 
 The obnoxious ringing can be disabled from the phone's notification screen
-or from the watch.
+or from the watch by dismissing the notification.
 
 Note: the Watchapp can be invoked on the watch by assigning it to a Quick Launch button.
 
