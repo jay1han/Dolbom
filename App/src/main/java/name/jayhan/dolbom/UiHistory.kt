@@ -75,8 +75,7 @@ fun BatteryDialog(
                                 if (watchInfo.charging)
                                     stringResource(R.string.and_charging)
                                 else ""
-                    }
-                    else stringResource(R.string.unplugged)
+                    } else stringResource(R.string.unplugged)
 
                 Text(
                     text = batteryText,

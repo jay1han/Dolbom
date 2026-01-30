@@ -30,7 +30,7 @@ class NotificationListener:
         
         val channel = NotificationChannel(
             Const.CHANNEL_RELAY,
-            "Dolbom relay",
+            "Dolbom Relay",
             NotificationManager.IMPORTANCE_DEFAULT,
             ).apply {
                 setShowBadge(false)
@@ -323,8 +323,7 @@ object Notifications : BroadcastReceiver()
         fun add(sbn: StatusBarNotification) {
             val indicator = Indicators.findIndicator(sbn)?.copy(
                 timeInfo = sbn.postTime
-            )
-                ?: return
+            ) ?: return
             
             litList = litList.filter { !indicator.equals(it) }.toMutableList()
             litList.add(indicator)

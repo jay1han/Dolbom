@@ -85,7 +85,7 @@ fun AppScaffold(
                     dndEnabled = dndEnabled,
                     dndActive = dndActive,
                     onHelp = { showHelp = true },
-                    onHistory = { showBattery = true },
+                    onBattery = { showBattery = true },
                     onDnd = { showDnd = true },
                     onWatch = { showWatch = true }
                 )
@@ -156,7 +156,7 @@ fun MainTopBar(
     dndEnabled: Boolean,
     dndActive: Boolean,
     onHelp: () -> Unit,
-    onHistory: () -> Unit,
+    onBattery: () -> Unit,
     onDnd: () -> Unit,
     onWatch: () -> Unit
 ) {
@@ -194,9 +194,7 @@ fun MainTopBar(
                         else stringResource(R.string.disconnected),
                     fontSize = Const.titleSize,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
-                        .clickable {
-                            if(isConnected) onWatch()
-                        }
+                        .clickable { onWatch() }
                 )
             }
         },
@@ -206,13 +204,7 @@ fun MainTopBar(
                     text = "${watchInfo.battery}%",
                     fontSize = Const.titleSize,
                     modifier = Modifier.padding(horizontal = 8.dp)
-                        .clickable { onHistory() }
-                )
-            } else {
-                Icon(
-                    painterResource(R.drawable.outline_refresh_24),
-                    contentDescription = "Refresh",
-                    modifier = Modifier.scale(1.5f).padding(horizontal = 12.dp)
+                        .clickable { onBattery() }
                 )
             }
         }
@@ -376,7 +368,7 @@ fun MainTopBarPreview() {
             watchInfo = PreviewWatchInfo,
             dndEnabled = true,
             dndActive = false, onHelp = {},
-            onHistory = {},
+            onBattery = {},
             onDnd = {}
         ) {}
     }
@@ -391,7 +383,7 @@ fun MainTopBarDisconnected() {
             watchInfo = WatchInfo(),
             dndEnabled = false,
             dndActive = false, onHelp = {},
-            onHistory = {},
+            onBattery = {},
             onDnd = {}
         ) {}
     }

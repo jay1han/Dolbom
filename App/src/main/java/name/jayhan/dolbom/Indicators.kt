@@ -198,12 +198,26 @@ object Indicators: Backupable
             }
         }
 
-        if (match == null) return SingleIndicator.Other
+        if (notification.flags.maskAny(Notification.FLAG_FOREGROUND_SERVICE))
+            return null
+        if (match == null) {
+            if (notification.flags.maskAny(
+                    Notification.FLAG_ONGOING_EVENT or
+                            Notification.FLAG_LOCAL_ONLY or
+                            Notification.FLAG_FOREGROUND_SERVICE or
+                            Notification.FLAG_NO_CLEAR
+                )
+            ) return null
+            else return SingleIndicator.Other
+        }
+
         if (match.ignore) return null
         if (notification.flags.maskAll(Notification.FLAG_LOCAL_ONLY)
             && !match.local) return null
-        if (notification.flags.maskAll(Notification.FLAG_ONGOING_EVENT)
-            && !match.ongoing) return null
+        if (notification.flags.maskAny(
+                Notification.FLAG_ONGOING_EVENT or
+                        Notification.FLAG_NO_CLEAR
+            ) && !match.ongoing) return null
         return match
     }
 

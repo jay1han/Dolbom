@@ -113,6 +113,10 @@ fun DumpScreen(
                                 append("(ongoing)")
                             if (notificationDump.flags.maskAll(Notification.FLAG_LOCAL_ONLY))
                                 append("(local)")
+                            if (notificationDump.flags.maskAll(Notification.FLAG_FOREGROUND_SERVICE))
+                                append("(service)")
+                            if (notificationDump.flags.maskAll(Notification.FLAG_NO_CLEAR))
+                                append("(noclear)")
                         }.toString()
     
                         Text(

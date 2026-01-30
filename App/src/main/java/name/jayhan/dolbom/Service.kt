@@ -94,7 +94,7 @@ class PebbleService:
         
         val alertChannel = NotificationChannel(
             Const.CHANNEL_ALERT,
-            getString(R.string.app_title),
+            "Dolbom Alert",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             setShowBadge(false)
