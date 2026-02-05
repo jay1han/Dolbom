@@ -404,28 +404,27 @@ fun EditIndicator(
                     Button(
                         onClick = {
                             if (newLetter == ' ' && !ignore) indicatorError = true
+                            else if (newPackage.isEmpty()) indicatorError = true
                             else {
-                                if (newPackage.isNotEmpty()) {
-                                    Indicators.remove(indicator)
-                                    Indicators.add(
-                                        SingleIndicator(
-                                            packageName = newPackage,
-                                            channelId = newChannel,
-                                            filterText = newText,
-                                            filterType = newType,
-                                            letter = if (ignore) ' ' else newLetter,
-                                            ignore = ignore,
-                                            sticky = sticky,
-                                            ongoing = ongoing,
-                                            relay = relay,
-                                            repeat = repeat,
-                                            local = local,
-                                        )
+                                Indicators.remove(indicator)
+                                Indicators.add(
+                                    SingleIndicator(
+                                        packageName = newPackage,
+                                        channelId = newChannel,
+                                        filterText = newText,
+                                        filterType = newType,
+                                        letter = if (ignore) ' ' else newLetter,
+                                        ignore = ignore,
+                                        sticky = sticky,
+                                        ongoing = ongoing,
+                                        relay = relay,
+                                        repeat = repeat,
+                                        local = local,
                                     )
-                                    Notifications.refresh(context)
-                                }
-                                onClose()
+                                )
+                                Notifications.refresh(context)
                             }
+                            onClose()
                         },
                     ) {
                         Text(

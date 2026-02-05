@@ -14,6 +14,8 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.Locale
+import java.util.Locale.getDefault
 
 class NotificationListener:
     NotificationListenerService() {
@@ -293,7 +295,7 @@ object Notifications : BroadcastReceiver()
         }
 
         allFlow.value = mapPackageToName.toList()
-            .sortedBy { it.second }
+            .sortedBy { it.second.lowercase() }
             .map { it.first }
     }
 

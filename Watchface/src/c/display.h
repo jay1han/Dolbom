@@ -2,7 +2,7 @@
 
 typedef enum {
     disp_quiet = 0,
-    disp_net,
+    //    disp_net,
     disp_date,
     disp_dnd ,
     disp_home,
