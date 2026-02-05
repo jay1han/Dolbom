@@ -109,13 +109,13 @@ class Protocol
     
             MsgType.PHONE_CHG.ordinal -> {
                 val isCharging = intent.getIntExtra(Const.EXTRA_PHONE_CHG, 0).toByte()
-                val isPlugged = intent.getIntExtra(Const.EXTRA_PHONE_PLUG, 0).toByte()
+                val pluggedTo = intent.getIntExtra(Const.EXTRA_PHONE_PLUG, 0).toByte()
                 val percent = intent.getIntExtra(Const.EXTRA_PHONE_BATT, 0).toByte()
                 suppress = isSameOrUpdate(DictKey.PHONE_CHG, isCharging) &&
-                        isSameOrUpdate(DictKey.PHONE_PLUG, isPlugged) &&
+                        isSameOrUpdate(DictKey.PHONE_PLUG, pluggedTo) &&
                         isSameOrUpdate(DictKey.PHONE_BATT, percent)
                 pebbleDict.addInt8(DictKey.PHONE_CHG.ordinal, isCharging)
-                pebbleDict.addInt8(DictKey.PHONE_PLUG.ordinal, isPlugged)
+                pebbleDict.addInt8(DictKey.PHONE_PLUG.ordinal, pluggedTo)
                 pebbleDict.addInt8(DictKey.PHONE_BATT.ordinal, percent)
             }
             

@@ -124,10 +124,9 @@ class BluetoothReceiver(
         try {
             val method = this.javaClass.getMethod("getBatteryLevel")
             var result = method.invoke(this) as Int
-            if (result < 0) result = 0
+            if (result !in 1..100) result = 0
             return result
-        } catch (e: Exception) {
-            println(e)
+        } catch (_: Exception) {
             return 0
         }
     }

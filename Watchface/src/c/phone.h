@@ -3,7 +3,7 @@
 void phone_init();
 void phone_deinit();
 
-void phone_charge(int batt, bool plugged, bool charging);
+void phone_charge(int batt, int plugged, bool charging);
 void phone_cell(int network_gen, int active_sim, char *carrier);
 void phone_wifi(char *text);
 void phone_bt(char *id, int charge, int active);

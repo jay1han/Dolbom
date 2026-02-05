@@ -78,7 +78,7 @@ static struct {
     bool       phone_dnd;
     int8_t     phone_battery;
     bool       phone_charging;
-    bool       phone_plugged;
+    int8_t     phone_plugged;
     int8_t     network_gen;
     int8_t     active_sim;
     char       *carrier;
@@ -183,7 +183,7 @@ void dict_parse(DictionaryIterator *iter, void *context) {
             
         case KEY_PHONE_PLUG_I8:
             if (tuple->type == TUPLE_INT && tuple->length == 1)
-                message.phone_plugged = tuple->value->int8 != 0;
+                message.phone_plugged = tuple->value->int8;
             break;
             
         case KEY_CELL_I8:

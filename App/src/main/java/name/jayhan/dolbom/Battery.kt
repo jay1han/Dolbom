@@ -11,7 +11,7 @@ class BatteryReceiver(
 ):
     BroadcastReceiver()
 {
-    private var isPlugged = false
+    private var pluggedTo = 0
     private var percent = 0
     private var isCharging = false
 
@@ -37,14 +37,18 @@ class BatteryReceiver(
             Intent.ACTION_BATTERY_CHANGED -> {
                 val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                 isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING
-                isPlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
+                pluggedTo = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
                 val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                 val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 1)
                 percent = (100.0 * level.toFloat() / scale).toInt()
             }
-            Intent.ACTION_POWER_CONNECTED -> isPlugged = true
+
+            Intent.ACTION_POWER_CONNECTED -> {
+                pluggedTo = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+            }
+
             Intent.ACTION_POWER_DISCONNECTED -> {
-                isPlugged = false
+                pluggedTo = 0
                 isCharging = false
             }
             BatteryManager.ACTION_CHARGING -> isCharging = true
@@ -57,7 +61,7 @@ class BatteryReceiver(
         Pebble.sendIntent(context, MsgType.PHONE_CHG) {
             putExtra(Const.EXTRA_PHONE_BATT, percent)
             putExtra(Const.EXTRA_PHONE_CHG, if (isCharging) 1 else 0)
-            putExtra(Const.EXTRA_PHONE_PLUG, if (isPlugged) 1 else 0)
+            putExtra(Const.EXTRA_PHONE_PLUG, pluggedTo)
         }
     }
 }
