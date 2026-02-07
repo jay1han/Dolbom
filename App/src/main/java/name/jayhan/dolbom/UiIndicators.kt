@@ -94,8 +94,17 @@ fun IndicatorList(
                     else Toast.makeText(context, "Load failed", Toast.LENGTH_LONG).show()
                 }
             ) },
-            onSave = { indicatorsBackup.save() },
-            onClear = { Indicators.reset() },
+            onSave = { indicatorsBackup.save(
+                onSuccess = { result ->
+                    if (result) {
+                        Toast.makeText(context, "Indicators saved", Toast.LENGTH_SHORT).show()
+                    }
+                    else Toast.makeText(context, "Error saving indicators", Toast.LENGTH_LONG).show()
+                 }
+            ) },
+            onClear = {
+                Indicators.reset()
+            },
         ) {
             dataDialog = false
         }

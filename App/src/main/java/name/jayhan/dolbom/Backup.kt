@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import okio.IOException
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -16,12 +17,16 @@ class Backup(
     private val context: Context,
     mainActivity: ComponentActivity,
 ) {
+    private var onSuccess: ((Boolean) -> Unit)? = null
+
     val saverLauncher = mainActivity.registerForActivityResult(
         CreateDocument("text/plain"),
         SaveCallback()
     )
-
-    fun save() {
+    fun save(
+        onSuccess: ((Boolean) -> Unit)?
+    ) {
+        this.onSuccess = onSuccess
         saverLauncher.launch("Dolbom_${origin.filenamePart}_${nowDateTimeFilename()}.txt")
     }
 
@@ -29,14 +34,20 @@ class Backup(
         ActivityResultCallback<Uri?>
     {
         override fun onActivityResult(result: Uri?) {
-            val contentResolver = context.contentResolver
-            if (result != null) {
-                contentResolver.openOutputStream(result).use { outputStream ->
-                    BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
-                        writer.write(origin.toText())
+            var success = false
+            try {
+                val contentResolver = context.contentResolver
+                if (result != null) {
+                    contentResolver.openOutputStream(result).use { outputStream ->
+                        BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+                            writer.write(origin.toText())
+                        }
                     }
+                    success = true
                 }
-            }
+            } catch(_: IOException) {}
+            onSuccess?.invoke(success)
+            onSuccess = null
         }
     }
 
@@ -46,29 +57,30 @@ class Backup(
     )
 
     fun load(
-        onSuccess: (Boolean) -> Unit
+        onSuccess: ((Boolean) -> Unit)?
     ) {
         this.onSuccess = onSuccess
         loaderLauncher.launch(arrayOf("text/plain"))
     }
 
-    private var onSuccess: (Boolean) -> Unit = { _ -> {} }
-
     inner class LoadCallback():
         ActivityResultCallback<Uri?>
     {
         override fun onActivityResult(result: Uri?) {
-            val contentResolver = context.contentResolver
             var success = false
             if (result != null) {
-                contentResolver.openInputStream(result).use { inputStream ->
-                    BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                        val text = reader.readText()
-                        success = origin.fromText(text)
+                val contentResolver = context.contentResolver
+                try {
+                    contentResolver.openInputStream(result).use { inputStream ->
+                        BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                            val text = reader.readText()
+                            success = origin.fromText(text)
+                        }
                     }
-                }
+                } catch (_: java.io.IOException) { }
             }
-            onSuccess(success)
+            onSuccess?.invoke(success)
+            onSuccess = null
         }
     }
 }

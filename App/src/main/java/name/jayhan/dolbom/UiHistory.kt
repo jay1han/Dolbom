@@ -35,28 +35,16 @@ fun BatteryDialog(
     showToast: (String, Int) -> Unit,
     onClose: () -> Unit
 ) {
-
-    var showHistory by remember { mutableStateOf(false) }
-    fun toastSuccess(success: Boolean) {
+    fun loadSuccess(success: Boolean) {
         if (success) {
-            showHistory = false
             showToast("History loaded", Toast.LENGTH_SHORT)
         } else showToast("Load failed", Toast.LENGTH_LONG)
     }
 
-    if (showHistory) {
-        HistoryDialog(
-            historyData = historyData,
-            onLoad = {
-                historyBackup.load(
-                    onSuccess = { result ->
-                        toastSuccess(result)
-                    }
-                )
-            },
-            onSave = { historyBackup.save() },
-            onClear = { History.clear() }
-        ) { showHistory = false }
+    fun saveSuccess(success: Boolean) {
+        if (success) {
+            showToast("History saved", Toast.LENGTH_SHORT)
+        } else showToast("Error saving history", Toast.LENGTH_LONG)
     }
 
     Dialog(
@@ -125,7 +113,7 @@ fun BatteryDialog(
                         onClick = {
                             historyBackup.load(
                                 onSuccess = { result ->
-                                    toastSuccess(result)
+                                    loadSuccess(result)
                                 }
                             )
                         },
@@ -136,100 +124,74 @@ fun BatteryDialog(
                         )
                     }
                 } else {
-                    Button(
-                        onClick = { showHistory = true },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.show_history),
-                            fontSize = Const.textSize,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HistoryDialog(
-    historyData: HistoryData,
-    onLoad: () -> Unit,
-    onSave: () -> Unit,
-    onClear: () -> Unit,
-    onExit: () -> Unit,
-) {
-    Dialog(
-        onDismissRequest = { onExit() }
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-            ) {
-                val duration = Clock.System.now() - historyData.historyDate
-                val historyText = stringResource(R.string.format_data_since)
-                    .format(
-                        historyData.historyCycles,
-                        historyData.historyDate.formatDate(),
-                        duration.formatDuration()
-                    )
-                Text(
-                    text = historyText,
-                    fontSize = Const.textSize,
-                    textAlign = TextAlign.Center,
-                )
-                if (historyData.historyRate > 0f) {
                     Text(
-                        text = "Historical rate\n%.1f%%/day\n%.1f days/charge"
-                            .format(historyData.historyRate,
-                                90f/historyData.historyRate),
+                        text = "History",
                         fontSize = Const.textSize,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 10.dp)
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
-                }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = onSave,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.history_backup),
-                            fontSize = Const.textSize,
-                        )
-                    }
-                    Button(
-                        onClick = onLoad,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.history_restore),
-                            fontSize = Const.textSize,
-                        )
-                    }
-                }
-
-                Button(
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                        .align(Alignment.CenterHorizontally),
-                    onClick = {
-                        onClear()
-                        onExit()
-                    }
-                ) {
+                    val duration = Clock.System.now() - historyData.historyDate
+                    val historyText = stringResource(R.string.format_data_since)
+                        .format(
+                            historyData.historyCycles,
+                            historyData.historyDate.formatDate(),
+                            duration.formatDuration()
+                        ) +
+                            if (historyData.historyRate > 0f)
+                                "\n%.1f%%/day\n%.1f days/charge"
+                                    .format(historyData.historyRate,
+                                        90f/historyData.historyRate)
+                            else ""
                     Text(
-                        text = stringResource(R.string.history_clear_all),
-                        fontSize = Const.textSize,
+                        text = historyText,
+                        fontSize = Const.smallSize,
                     )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = { historyBackup.save(
+                                onSuccess = { result ->
+                                    saveSuccess(result)
+                                }
+                            ) },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.history_backup),
+                                fontSize = Const.textSize,
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                historyBackup.load(
+                                    onSuccess = { result ->
+                                        loadSuccess(result)
+                                    }
+                                )
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.history_restore),
+                                fontSize = Const.textSize,
+                            )
+                        }
+                    }
+
+                    Button(
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .align(Alignment.CenterHorizontally),
+                        onClick = { History.clear() }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.history_clear_all),
+                            fontSize = Const.textSize,
+                        )
+                    }
                 }
             }
         }
@@ -277,18 +239,5 @@ fun BatteryDialogEmpty() {
             historyBackup = Backup(History, LocalContext.current, ComponentActivity()),
             { _, _ -> {} }
         ) {}
-    }
-}
-
-@Preview
-@Composable
-fun HistoryDialogPreview() {
-    PebbleTheme {
-        HistoryDialog(
-            historyData = PreviewHistoryData,
-            {},
-            {},
-            onClear = {}
-        ) { }
     }
 }

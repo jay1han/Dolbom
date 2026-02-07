@@ -30,10 +30,8 @@ void phone_init() {
     persist_read_string(STOR_BTON_4,  bton, sizeof(bton));
     
     disp_set(disp_pbat, pbat);
-    if (net[0] != 0)
-	disp_set(disp_cell,  net);
-    else 
-	disp_set(disp_cell, cell);
+    disp_set(disp_net,   net);
+    disp_set(disp_cell, cell);
     disp_set(disp_sim , sim);
     disp_set(disp_btid, btid);
     disp_set(disp_btc,  btc);
@@ -122,8 +120,7 @@ void phone_cell(int network_gen, int active_sim, char *carrier) {
         strncpy(cell, cell1, sizeof(cell));
         cell[sizeof(cell) - 1] = 0;
         changed[STOR_CELL_4] = true;
-	if (net[0] == 0)
-	    disp_set(disp_cell, cell);
+	disp_set(disp_cell, cell);
     }
 
     char sim1[4];
@@ -227,6 +224,6 @@ void phone_net(bool has_internet) {
         if (!has_internet) strcpy(net, ">|");
 	else net[0] = 0;
 	changed[STOR_NET_4] = true;
-        disp_set(disp_cell, net);
+        disp_set(disp_net, net);
     }
 }
