@@ -38,7 +38,7 @@
     <string name="unplugged">Unplugged</string>
     <string name="plugged">Plugged</string>
     <string name="and_charging">" &amp; Charging"</string>
-    <string name="format_rate">%.1f%%/day, %.1f days/chg</string>
+    <string name="format_rate">%.1f%%/day, %.1fd/chg</string>
     <string name="format_estimate">%.1f days remaining</string>
     <string name="format_cycle">"%d%% at %s (%s)"</string>
     <string name="format_history_since">"%d cycles since %s"</string>
@@ -146,5 +146,6 @@
     <string name="history_restore">Restore</string>
     <string name="history_clear_all">Clear all</string>
     <string name="packet_stat_format">Past %s\n%.1f/hour\n%d sent %d received\n%ds max gap</string>
+    <string name="history_format">\n%.1f%%/day %.1fd/chg</string>
 
 </resources>

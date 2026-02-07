@@ -202,6 +202,12 @@ object History: Backupable {
             }
         }
         historyFlow.value = historyData
+        savedHistory.edit {
+            putLong(Const.HIST_INIT_DATE, historyData.historyDate.epochSeconds)
+            putInt(Const.HIST_CYCLES, historyData.historyCycles)
+            putFloat(Const.HIST_RATE, historyData.historyRate)
+            commit()
+        }
         return true
     }
 

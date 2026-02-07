@@ -138,7 +138,7 @@ fun BatteryDialog(
                             duration.formatDuration()
                         ) +
                             if (historyData.historyRate > 0f)
-                                "\n%.1f%%/day\n%.1f days/charge"
+                                stringResource(R.string.history_format)
                                     .format(historyData.historyRate,
                                         90f/historyData.historyRate)
                             else ""
