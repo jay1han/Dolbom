@@ -184,7 +184,9 @@ fun MainTopBar(
                         else R.drawable.outline_do_not_disturb_on_24
                     ),
                     contentDescription = "Do not disturb",
-                    modifier = Modifier.padding(end = 12.dp).scale(1.5f)
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .scale(1.5f)
                         .clickable { onDnd() }
                 )
                 
@@ -193,7 +195,9 @@ fun MainTopBar(
                         if (isConnected) watchInfo.modelString()
                         else stringResource(R.string.disconnected),
                     fontSize = Const.titleSize,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
                         .clickable { onWatch() }
                 )
             }
@@ -203,7 +207,8 @@ fun MainTopBar(
                 Text(
                     text = "${watchInfo.battery}%",
                     fontSize = Const.titleSize,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
                         .clickable { onBattery() }
                 )
             }
@@ -222,7 +227,9 @@ fun MainPage(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
     ){
         IndicatorList(
             context = context,
@@ -245,14 +252,14 @@ fun WatchDialog(
     onRefresh: ()-> Unit,
     onClose: () -> Unit
 ){
-    val packetsAverage by PebbleStats.average.collectAsState(0f)
-    
     Dialog(
         onDismissRequest = onClose
     ) {
         Card {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
                 Text(
                     text = if (isConnected) watchInfo.modelString() else "Disconnected",
@@ -301,7 +308,9 @@ fun WatchDialog(
                 
                 Button(
                     onClick = onRefresh,
-                    modifier = Modifier.align(Alignment.End).padding(top=8.dp)
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 8.dp)
                 ) {
                     Text(
                         text = "Refresh",
@@ -317,21 +326,19 @@ fun WatchDialog(
                 val packetsReceived by PebbleStats.received.collectAsState(0)
                 val packetsAverage by PebbleStats.average.collectAsState(0f)
                 val packetsSince by PebbleStats.since.collectAsState(Clock.System.now())
+                val packetsGap by PebbleStats.longest.collectAsState(0)
                 Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    val packetStatsText = StringBuilder().apply {
-                        append("Past ")
-                        append((Clock.System.now() - packetsSince).formatDuration())
-                        append("\n")
-                        append("%.1f/hour".format(packetsAverage))
-                        append("\n")
-                        append("%d sent %d received"
-                            .format(packetsSent, packetsReceived))
-                    }.toString()
                     Text(
-                        text = packetStatsText,
+                        text = stringResource(R.string.packet_stat_format).format(
+                            (Clock.System.now() - packetsSince).formatDuration(),
+                            packetsAverage,
+                            packetsSent,
+                            packetsReceived,
+                            packetsGap
+                        ),
                         fontSize = Const.textSize,
                     )
 
@@ -340,7 +347,8 @@ fun WatchDialog(
                             onReset()
                             onClose()
                         },
-                        modifier = Modifier.padding(top = 12.dp)
+                        modifier = Modifier
+                            .padding(top = 12.dp)
                             .align(Alignment.End)
                     ) {
                         Text(

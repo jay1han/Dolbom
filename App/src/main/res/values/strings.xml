@@ -145,5 +145,6 @@
     <string name="history_backup">Backup</string>
     <string name="history_restore">Restore</string>
     <string name="history_clear_all">Clear all</string>
+    <string name="packet_stat_format">Past %s\n%.1f/hour\n%d sent %d received\n%ds max gap</string>
 
 </resources>

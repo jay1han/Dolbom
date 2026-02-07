@@ -9,6 +9,7 @@ import com.getpebble.android.kit.PebbleKit
 import com.getpebble.android.kit.util.PebbleDictionary
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 private val FaceReceivers = mapOf(
     com.getpebble.android.kit.Constants.INTENT_APP_RECEIVE to FaceDataReceiver,
@@ -301,6 +302,8 @@ object PebbleStats
     val received = MutableStateFlow(0)
     val since = MutableStateFlow(Clock.System.now())
     val average = MutableStateFlow(0f)
+    val longest = MutableStateFlow(0)
+    private var lastTime = Instant.DISTANT_PAST
 
     fun reset() {
         sent.value = 0
@@ -310,10 +313,16 @@ object PebbleStats
     }
     
     private fun updateAverage() {
-        if ((Clock.System.now() - since.value).inWholeSeconds > 2) {
-            average.value = 3600f * (sent.value + received.value) /
-                    (Clock.System.now() - since.value).inWholeSeconds
+        val now = Clock.System.now()
+        if (lastTime != Instant.DISTANT_PAST) {
+            val gap = (now - lastTime).inWholeSeconds
+            if (gap > longest.value) longest.value = gap.toInt()
         }
+        lastTime = now
+
+        val period = (now - since.value).inWholeSeconds
+        if (period > 2)
+            average.value = 3600f * (sent.value + received.value) / period
     }
 
     fun sent(count: Int = 1) {
