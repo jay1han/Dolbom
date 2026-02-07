@@ -74,36 +74,40 @@ fun BatteryDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                val historyText = StringBuilder()
+                val cycleText = StringBuilder()
                 var clockNow by remember { mutableStateOf(Clock.System.now()) }
                 
                 if (!historyData.cycleDate.isDistantPast) {
-                    historyText.append(stringResource(R.string.format_cycle)
+                    cycleText.append(stringResource(R.string.format_cycle)
                         .format(historyData.cycleLevel,
                             historyData.cycleDate.formatTime(),
                             (clockNow - historyData.cycleDate).formatDurationMinutes()
                         ))
-                    historyText.append("\n")
-                    if (historyData.cycleRate > 0f) {
-                        historyText.apply {
+                    cycleText.append("\n")
+                    val rate =
+                        if (historyData.cycleRate > 0f) historyData.cycleRate
+                        else historyData.historyRate
+
+                    if (rate > 0f) {
+                        cycleText.apply {
                             append(stringResource(R.string.format_rate)
                                 .format(
-                                    historyData.cycleRate,
-                                    90f / historyData.cycleRate
+                                    rate,
+                                    90f / rate
                                 ))
                             append("\n")
                         }
-                        val estimate = (watchInfo.battery.toFloat() - 10f) / historyData.cycleRate
+                        val estimate = (watchInfo.battery.toFloat() - 10f) / rate
                         if (estimate > 0) {
-                            historyText.append(stringResource(R.string.format_estimate).format(estimate))
+                            cycleText.append(stringResource(R.string.format_estimate).format(estimate))
                         } else {
-                            historyText.append(stringResource(R.string.low_estimate))
+                            cycleText.append(stringResource(R.string.low_estimate))
                         }
-                    } else historyText.append(stringResource(R.string.not_enough_data))
-                } else historyText.append(stringResource(R.string.no_past_data))
+                    } else cycleText.append(stringResource(R.string.not_enough_data))
+                } else cycleText.append(stringResource(R.string.no_past_data))
 
                 Text(
-                    text = historyText.toString(),
+                    text = cycleText.toString(),
                     fontSize = Const.smallSize,
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
@@ -123,9 +127,12 @@ fun BatteryDialog(
                             fontSize = Const.textSize,
                         )
                     }
+
                 } else {
                     Text(
-                        text = "History",
+                        text =
+                            if (historyData.cycleRate > 0f) "History"
+                            else stringResource(R.string.from_historical_data),
                         fontSize = Const.textSize,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -137,10 +144,12 @@ fun BatteryDialog(
                             historyData.historyDate.formatDate(),
                             duration.formatDuration()
                         ) +
-                            if (historyData.historyRate > 0f)
+                            if (historyData.cycleRate > 0f)
                                 stringResource(R.string.history_format)
-                                    .format(historyData.historyRate,
-                                        90f/historyData.historyRate)
+                                    .format(
+                                        historyData.historyRate,
+                                        90f / historyData.historyRate
+                                    )
                             else ""
                     Text(
                         text = historyText,
@@ -154,11 +163,13 @@ fun BatteryDialog(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(
-                            onClick = { historyBackup.save(
-                                onSuccess = { result ->
-                                    saveSuccess(result)
-                                }
-                            ) },
+                            onClick = {
+                                historyBackup.save(
+                                    onSuccess = { result ->
+                                        saveSuccess(result)
+                                    }
+                                )
+                            },
                         ) {
                             Text(
                                 text = stringResource(R.string.history_backup),
@@ -207,15 +218,6 @@ val PreviewHistoryData = HistoryData(
     cycleRate =7.5f,
 )
 
-val EmptyHistoryData = HistoryData(
-    historyDate = Clock.System.now(),
-    historyCycles = 0,
-    historyRate = 0f,
-    cycleDate = Clock.System.now(),
-    cycleLevel = 80,
-    cycleRate =7.5f,
-)
-
 @Preview
 @Composable
 fun BatteryDialogPreview() {
@@ -229,6 +231,15 @@ fun BatteryDialogPreview() {
     }
 }
 
+val EmptyHistoryData = HistoryData(
+    historyDate = Clock.System.now(),
+    historyCycles = 0,
+    historyRate = 0f,
+    cycleDate = Clock.System.now(),
+    cycleLevel = 80,
+    cycleRate =7.5f,
+)
+
 @Preview
 @Composable
 fun BatteryDialogEmpty() {
@@ -236,6 +247,28 @@ fun BatteryDialogEmpty() {
         BatteryDialog(
             watchInfo = PreviewWatchInfo,
             historyData = EmptyHistoryData,
+            historyBackup = Backup(History, LocalContext.current, ComponentActivity()),
+            { _, _ -> {} }
+        ) {}
+    }
+}
+
+val InsufficientHistoryData = HistoryData(
+    historyDate = Clock.System.now(),
+    historyCycles = 10,
+    historyRate = 7.5f,
+    cycleDate = Clock.System.now(),
+    cycleLevel = 80,
+    cycleRate = 0f
+)
+
+@Preview
+@Composable
+fun BatteryDialogInsufficient() {
+    PebbleTheme {
+        BatteryDialog(
+            watchInfo = PreviewWatchInfo,
+            historyData = InsufficientHistoryData,
             historyBackup = Backup(History, LocalContext.current, ComponentActivity()),
             { _, _ -> {} }
         ) {}

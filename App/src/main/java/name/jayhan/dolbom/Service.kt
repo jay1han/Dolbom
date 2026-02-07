@@ -148,10 +148,13 @@ class PebbleService:
         var text = ""
         if (Pebble.isConnected.value) {
             title = "${Pebble.watchInfo.modelString()} ${Pebble.watchInfo.battery}%"
+            val rate =
+                if (History.historyData.cycleRate > 0f) History.historyData.cycleRate
+                else History.historyData.historyRate
             val estimate =
-                if (History.historyData.cycleRate > 0f)
+                if (rate > 0f)
                     "%.1f days".format(
-                        (Pebble.watchInfo.battery.toFloat() - 10f) / History.historyData.cycleRate
+                        (Pebble.watchInfo.battery.toFloat() - 10f) / rate
                     )
                 else ""
             text = "\u2590%s\u258c %s".format(

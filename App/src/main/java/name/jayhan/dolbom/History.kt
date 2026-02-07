@@ -84,13 +84,13 @@ object History: Backupable {
                             if (historyData.historyDate.isDistantPast) dischargeRate
                             else (historyData.historyRate * historyData.historyCycles + dischargeRate) /
                                     (historyData.historyCycles + 1)
-                        
+
                         historyData = historyData.copy(
                             historyCycles = historyData.historyCycles + 1,
                             historyRate = newRate,
                             cycleRate = newRate,
                         )
-                        
+
                         savedHistory.edit {
                             if (historyData.historyDate.isDistantPast) {
                                 historyData = historyData.copy(historyDate = historyData.cycleDate)
@@ -101,31 +101,34 @@ object History: Backupable {
                             putFloat(Const.CYCLE_RATE, historyData.cycleRate)
                             commit()
                         }
-                        Log.v(Const.TAG, "History saved ${historyData.historyCycles+1} cycles rate=$newRate")
-    
+                        Log.v(
+                            Const.TAG,
+                            "History saved ${historyData.historyCycles + 1} cycles rate=$newRate"
+                        )
+
                         historyFlow.value = historyData
                     }
                 }
 
-            !plugged                           ->
+            !plugged ->
                 // Unplugged, re-starting cycle
                 if (historyData.nowPlugged || level > historyData.cycleLevel) {
                     Log.v(Const.TAG, "History unplugged at $level > ${historyData.cycleLevel}")
-                    
+
                     historyData = historyData.copy(
                         cycleDate = now,
                         cycleLevel = level,
                     )
-                    
+
                     savedHistory.edit {
                         putLong(Const.HIST_CYCLE_TIME, historyData.cycleDate.epochSeconds)
                         putInt(Const.HIST_CYCLE_LEVEL, historyData.cycleLevel)
                         commit()
                     }
-    
+
                     historyFlow.value = historyData
                 }
-                
+
                 // Continuing unplugged state
                 else {
                     val discharge = historyData.cycleLevel - level
@@ -133,19 +136,26 @@ object History: Backupable {
                     if (discharge >= 5 && duration.inWholeSeconds > 12 * 3600) {
                         val inDays = duration.inWholeSeconds.toFloat() / (3600 * 24)
                         val dischargeRate = discharge.toFloat() / inDays
-                        
+
                         historyData = historyData.copy(
                             cycleRate =
                                 if (historyFlow.value.historyCycles > 0)
                                     (historyFlow.value.historyRate + dischargeRate) / 2f
                                 else dischargeRate
                         )
-                        
+
                         savedHistory.edit {
                             putFloat(Const.CYCLE_RATE, historyData.cycleRate)
                             commit()
                         }
-                        
+
+                        historyFlow.value = historyData
+                    } else {
+                        historyData = historyData.copy(cycleRate = 0f)
+                        savedHistory.edit {
+                            putFloat(Const.CYCLE_RATE, historyData.cycleRate)
+                            commit()
+                        }
                         historyFlow.value = historyData
                     }
                 }
