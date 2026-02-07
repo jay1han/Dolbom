@@ -67,11 +67,13 @@ data class SingleIndicator(
 
     fun matches(
         notification: Notification
-    ): Boolean {
-        return this.filterText.isNotEmpty() &&
-                this.filterType.listNonEmptyExtrasOf(notification.extras).any { (_, value) ->
-                    value.contains(this.filterText)
-                }
+    ): FilterType? {
+        if (this.filterText.isNotEmpty() &&
+            this.filterType.listNonEmptyExtrasOf(notification.extras).any { (_, value) ->
+                value.contains(this.filterText)
+            }
+        ) return this.filterType
+        else return null
     }
     
     companion object {
@@ -173,10 +175,12 @@ object Indicators: Backupable
                             score = 10
                         }
                     } else {
-                        if (indicator.matches(notification)) {
-                            if (score < 20) {
+                        val filterType = indicator.matches(notification)
+                        if (filterType != null) {
+                            val thisScore = 20 + filterType.r
+                            if (score < thisScore) {
                                 match = indicator
-                                score = 20
+                                score = thisScore
                             }
                         }
                     }
@@ -188,9 +192,14 @@ object Indicators: Backupable
                                 score = 50
                             }
                         } else {
-                            if (indicator.matches(notification)) {
+                            val filterType = indicator.matches(notification)
+                            if (filterType != null) {
+                                val thisScore = 60 + filterType.r
                                 match = indicator
-                                break
+                                if (score < thisScore) {
+                                    match = indicator
+                                    score = thisScore
+                                }
                             }
                         }
                     }
@@ -232,7 +241,7 @@ object Indicators: Backupable
         newList: List<SingleIndicator>
     ) {
         allIndicators = newList.sortedBy {
-            Notifications.getApplicationName(it.packageName) + ":${it.packageName}:${it.channelId}:${it.filterText}"
+            Notifications.getApplicationName(it.packageName) + ":${it.packageName}:${it.channelId}:${it.filterType.r}:${it.filterText}"
         }.toMutableList()
 
         savedSettings.edit {
