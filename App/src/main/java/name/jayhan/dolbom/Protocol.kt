@@ -47,13 +47,11 @@ enum class MsgType {
     WIFI,
     BT,
     NOTI,
-    PING,
-    PONG,
     NET,
 }
 
 val MsgName = listOf(
-    "NONE", "INFO", "FRESH", "WBATT", "ACTION", "TZ", "PHONE_DND", "PHONE_CHG", "CELL", "WIFI", "BT", "NOTI", "PING", "PONG", "NET"
+    "NONE", "INFO", "FRESH", "WBATT", "ACTION", "TZ", "PHONE_DND", "PHONE_CHG", "CELL", "WIFI", "BT", "NOTI", "NET"
 )
 
 enum class ActionType {

@@ -42,8 +42,6 @@ typedef enum {
     MSG_WIFI,
     MSG_BT,
     MSG_NOTI,
-    MSG_PING,
-    MSG_PONG,
     MSG_NET,
     MSG_TYPE
 } msg_type_t;
@@ -61,8 +59,6 @@ static const char MSG_NAME[MSG_TYPE][8] = {
     "WIFI",
     "BT",
     "NOTI",
-    "PING",
-    "PONG",
     "NET"
 };
 
@@ -137,14 +133,6 @@ void send_batt() {
     
     app_message_outbox_send();
     APP_LOG(APP_LOG_LEVEL_INFO, "BATT out");
-}
-
-void send_pong() {
-    DictionaryIterator *iter;
-    app_message_outbox_begin(&iter);
-    dict_write_int8(iter, KEY_MSG_TYPE_I8, MSG_PONG);
-    app_message_outbox_send();
-    APP_LOG(APP_LOG_LEVEL_INFO, "PONG out");
 }
 
 void dict_parse(DictionaryIterator *iter, void *context) {
@@ -251,7 +239,6 @@ void dict_parse(DictionaryIterator *iter, void *context) {
     case MSG_NOTI: phone_noti(message.notifications); break;
     case MSG_WBATT: send_batt(); break;
     case MSG_ACTION: break;
-    case MSG_PING: send_pong(); break;
     case MSG_FRESH: send_fresh(); break;
     case MSG_NET: phone_net(message.has_internet); break;
         

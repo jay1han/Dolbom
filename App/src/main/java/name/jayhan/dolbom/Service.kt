@@ -34,7 +34,6 @@ class PebbleService:
     private val protocol = Protocol()
     
     private lateinit var alarmMan: AlarmManager
-    private val alarmListener = AlarmListener()
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -72,7 +71,6 @@ class PebbleService:
             addAction(Const.INTENT_DND)
             addAction(Const.INTENT_CLEAR_STICKY)
             addAction(Const.INTENT_SEND_PEBBLE)
-            addAction(Const.INTENT_PEBBLE_PONG)
         }
         context.registerReceiver(receiver, filter,RECEIVER_EXPORTED)
 
@@ -201,13 +199,12 @@ class PebbleService:
         wifiCallback = WifiCallback(context)
         internetCallback = InternetCallback(context)
         phoneCallback = PhoneCallback(context)
-        alarmListener.startTimer(Const.INTERVAL_DISCONNECTED)
         Log.v(Const.TAG, "Modules started")
     }
     
     fun refreshService() {
         Log.v(Const.TAG, "RefreshService")
-        protocol.reset()
+        // protocol.reset()
         zenRule.refresh()
         batteryReceiver.refresh()
         bluetoothReceiver.refresh()
@@ -237,45 +234,6 @@ class PebbleService:
         Log.v(Const.TAG, "Modules stopped")
     }
     
-    inner class AlarmListener:
-        AlarmManager.OnAlarmListener
-    {
-        private var countAlarmed = 0
-        
-        fun startTimer(timeoutSecs: Int) {
-            alarmMan.set(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + timeoutSecs * 1000,
-                null,
-                this,
-                null
-            )
-        }
-        
-        fun clearAlarm() {
-            if (countAlarmed > 0) {
-                countAlarmed = 0
-                refreshService()
-            }
-            if (!Pebble.isConnected.value) {
-                Pebble.isConnected.value = true
-                updateNotification()
-            }
-            startTimer(Const.INTERVAL_CONNECTED)
-        }
-        
-        override fun onAlarm() {
-            if (countAlarmed >= 1)
-                Pebble.sendIntent(context, MsgType.PING) {}
-            if (countAlarmed >= 2) {
-                Pebble.isConnected.value = false
-                updateNotification()
-            }
-            if (countAlarmed < 10) countAlarmed += 1
-            startTimer(Const.INTERVAL_DISCONNECTED)
-        }
-    }
-
     inner class Receiver: BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
@@ -329,8 +287,6 @@ class PebbleService:
                     Notifications.Accumulator.clearSticky()
                     Notifications.refresh(context)
                 }
-                
-                Const.INTENT_PEBBLE_PONG -> alarmListener.clearAlarm()
                 
                 Const.INTENT_SEND_PEBBLE -> protocol.send(context, intent)
             }

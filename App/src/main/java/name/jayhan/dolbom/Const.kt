@@ -29,7 +29,6 @@ object Const {
     const val INTENT_STOP = "name.jayhan.dolbom.STOP_SERVICE"
 
     const val INTENT_SEND_PEBBLE = "name.jayhan.dolbom.SEND_PEBBLE"
-    const val INTENT_PEBBLE_PONG = "name.jayhan.dolbom.PEBBLE_PONG"
     const val EXTRA_MSG_TYPE = "msg_type"
     const val EXTRA_PHONE_CHG = "phone_chg"
     const val EXTRA_PHONE_PLUG = "phone_plug"

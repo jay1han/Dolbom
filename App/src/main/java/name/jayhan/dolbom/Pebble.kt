@@ -22,6 +22,7 @@ private object FaceDataReceiver:
 {
     override fun receiveData(context: Context?, transactionId: Int, data: PebbleDictionary?) {
         PebbleKit.sendAckToPebble(context, transactionId)
+        Pebble.received(context, true)
         PebbleStats.received()
 
         if (data != null) {
@@ -78,13 +79,7 @@ private object FaceDataReceiver:
                     if (!Pebble.watchInfo.hasInfo())
                         if (context != null) Pebble.sendIntent(context, MsgType.INFO) {}
                 }
-                
-                MsgType.PONG.ordinal -> {
-                    Log.v(Const.TAG, "in PONG")
-                }
             }
-            
-            Pebble.received(context, true)
         }
     }
 }
@@ -256,9 +251,10 @@ object Pebble: BroadcastReceiver()
         isAcked: Boolean
     ) {
         if (isAcked) {
+            isConnected.value = true
             lastReceived.value = clock.now()
-            context?.sendBroadcast(Intent(Const.INTENT_PEBBLE_PONG))
         } else {
+            isConnected.value = false
             restartService(context)
         }
     }
