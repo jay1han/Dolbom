@@ -144,7 +144,7 @@
     <string name="overwrite_no">No</string>
     <string name="history_backup">Backup</string>
     <string name="history_restore">Restore</string>
-    <string name="history_clear_all">Clear all</string>
+    <string name="history_clear_all">Clear history</string>
     <string name="packet_stat_format">Past %s\n%.1f/hour\n%d sent %d received\n%ds max gap</string>
     <string name="history_format">\n%.1f%%/day %.1fd/chg</string>
     <string name="from_historical_data">From historical data</string>

@@ -265,12 +265,13 @@ class PebbleService:
         }
         
         override fun onAlarm() {
-            Pebble.sendIntent(context, MsgType.PING) {}
-            if (countAlarmed < 10) countAlarmed += 1
+            if (countAlarmed >= 1)
+                Pebble.sendIntent(context, MsgType.PING) {}
             if (countAlarmed >= 2) {
                 Pebble.isConnected.value = false
                 updateNotification()
             }
+            if (countAlarmed < 10) countAlarmed += 1
             startTimer(Const.INTERVAL_DISCONNECTED)
         }
     }
