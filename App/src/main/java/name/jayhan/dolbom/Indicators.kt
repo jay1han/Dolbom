@@ -207,8 +207,6 @@ object Indicators: Backupable
             }
         }
 
-        if (notification.flags.maskAny(Notification.FLAG_FOREGROUND_SERVICE))
-            return null
         if (match == null) {
             if (notification.flags.maskAny(
                     Notification.FLAG_ONGOING_EVENT or
@@ -221,8 +219,10 @@ object Indicators: Backupable
         }
 
         if (match.ignore) return null
-        if (notification.flags.maskAll(Notification.FLAG_LOCAL_ONLY)
-            && !match.local) return null
+        if (notification.flags.maskAny(
+                Notification.FLAG_LOCAL_ONLY or
+                        Notification.FLAG_FOREGROUND_SERVICE
+            ) && !match.local) return null
         if (notification.flags.maskAny(
                 Notification.FLAG_ONGOING_EVENT or
                         Notification.FLAG_NO_CLEAR

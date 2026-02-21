@@ -79,6 +79,7 @@ class PhoneFinder(
         currentVol = audioMan.getStreamVolume(AudioManager.STREAM_MUSIC)
         val maxVol = audioMan.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         audioMan.setStreamVolume(AudioManager.STREAM_MUSIC, maxVol, 0)
+        mediaPlayer.isLooping = true
         mediaPlayer.start()
         
         cameraManager.setTorchMode(cameraId, true)
